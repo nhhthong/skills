@@ -60,7 +60,7 @@ Default posture: if a `git remote` points at GitHub, propose GitHub; at GitLab, 
 
 For local markdown, also ask for the ticket id prefix. Recommend the prefix the requirement document already uses (for example `EC`), else `T`.
 
-**Section D: Domain docs.** Skip when storage is `private`: terms and decisions go to `.work/notes.md` instead. When `in-repo`, default to **single-context** (one `GLOSSARY.md` and `docs/adr/` at the repo root) and write it without asking. Offer **multi-context** (a root `GLOSSARY-MAP.md`) only when exploration found monorepo signals.
+**Section D: Domain docs.** Skip when storage is `private`: terms and decisions go to memory instead (`glossary` notes and `decision` memos). When `in-repo`, default to **single-context** (one `GLOSSARY.md` and `docs/adr/` at the repo root) and write it without asking. Offer **multi-context** (a root `GLOSSARY-MAP.md`) only when exploration found monorepo signals.
 
 ### 3. Confirm and edit
 
@@ -103,7 +103,7 @@ For an "other" tracker, write `docs/agents/issue-tracker.md` from scratch using 
 
 **Private.** Write one file, `.work/config.md`, with three sections (`## Issue tracker`, `## Domain docs`, `## Workflow`) taken from the same templates, with `Storage: private`. Append `.work/` to `.git/info/exclude`. Touch nothing else: no `CLAUDE.md`, no `GLOSSARY.md`, no ADRs, no `docs/agents/`.
 
-**Both.** Create `.work/` and an empty `.work/notes.md` whose first line is `# Notes (format: see workflow.md)`. For `local` tracker also create `.work/tickets/`.
+**Both.** Create `.work/`. For `local` tracker also create `.work/tickets/`. Call `memo_info` to check that memory works: it names the project and the database file under `~/.claude/memo/`. If the tool is missing, the `memo` server did not start (it needs Node 22.18 or newer); create `.work/notes.md` with the first line `# Notes (format: see workflow.md)` as the fallback and say so.
 
 ### 5. Verify and point to the next step
 

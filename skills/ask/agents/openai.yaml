@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ask"
+  short_description: "Show what each skill does"
+policy:
+  allow_implicit_invocation: false

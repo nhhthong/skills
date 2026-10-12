@@ -11,7 +11,7 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 1. **State the question** in one line. Done when it fits on one line and names what it blocks.
 
-2. **Look for an earlier answer.** `grep -i` `.work/notes.md` and the ADR titles (`docs/adr/`) for the topic, and read the spec index's decisions. A decision that still binds ends the skill: report it and ask only whether to reopen it.
+2. **Look for an earlier answer.** call `memo_callback` (types `decision`, `note`) and check the ADR titles (`docs/adr/`) for the topic, and read the spec index's decisions. A decision that still binds ends the skill: report it and ask only whether to reopen it.
 
 3. **Research.** Library behaviour: use Context7 if the session has it, otherwise the library's official docs. Anything deeper: call the Skill tool with "explore-research" and wait for the result, because the choice is blocking the work. Every claim carries its source. If the question concerns infrastructure, read [INFRA.md](INFRA.md) now.
 
@@ -21,7 +21,7 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 6. **Wait for the user's choice.** A choice that is hard to reverse (a data store, a public API shape, a service boundary, an auth model, how money is handled) is never made without the user, even when they are away: leave the dependent work blocked, keep the question open in the spec index, and say which ticket waits.
 
-7. **Record it once.** Call the Skill tool with "clarify-domain" for the recording rules: one `decision` line in `.work/notes.md`; an ADR when the three ADR conditions hold or the project's documents require one; the full text in exactly one of them. Then:
+7. **Record it once.** Call the Skill tool with "clarify-domain" for the recording rules: one `decision` in memory (`memo_post`, with `rationale` and `alternatives`); an ADR when the three ADR conditions hold or the project's documents require one; the full text in exactly one of them. Then:
    - Close the `spike` ticket that carried the question (`Status: done`, with the decision's id in `## Result`).
    - Change the spec index's open point to ✅ with the decision's id.
 

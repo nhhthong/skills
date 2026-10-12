@@ -1,0 +1,3 @@
+interface:
+  display_name: "Memo post"
+  short_description: "Record issues, attempts, fixes, decisions and notes"

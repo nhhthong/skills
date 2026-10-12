@@ -27,7 +27,7 @@ Cut tickets only for the epic about to be worked. Later epics stay as lines in t
 
 ### 3. Explore the codebase (optional)
 
-If the repo has code and you have not explored it, do so to understand the current state. Ticket titles and descriptions should use the project's domain glossary vocabulary (or the `glossary` lines in `.work/notes.md`), and respect ADRs in the area you're touching.
+If the repo has code and you have not explored it, do so to understand the current state. Ticket titles and descriptions should use the project's domain glossary vocabulary (or the `glossary` notes in memory: `memo_callback` with type `note`), and respect ADRs in the area you're touching.
 
 Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
 

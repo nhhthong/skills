@@ -5,7 +5,7 @@ How work is delivered in this repo, and where memory lives. Skills read this fil
 ## Storage
 
 - **Storage**: `<in-repo | private>`. Private means everything under `.work/` stays out of git (`.git/info/exclude`) and no `GLOSSARY.md`, ADR or `CLAUDE.md` edit is made for the skills.
-- **Notes**: `.work/notes.md`, append-only. Research notes go in `.work/research/`.
+- **Memory**: the `memo` MCP server (shipped with this plugin) keeps issues, attempts, fixes, decisions and notes in SQLite at `~/.claude/memo/<project>-<id>.db`. It is outside the repo, so `in-repo` and `private` do not change it. Research notes go in `.work/research/`.
 
 ## Delivery
 
@@ -20,18 +20,20 @@ How work is delivered in this repo, and where memory lives. Skills read this fil
 
 Where the repo already states a rule (CONTRIBUTING, a PR template, the project's own spec), the repo's rule wins over any default in a skill. Name the source here and keep it as the single copy.
 
-## Notes format
+## Memory
 
-One line per entry in `.work/notes.md`, newest at the bottom, never edited or deleted:
+Tools: `memo_post` writes, `memo_callback` searches, `memo_get` reads one memo, `memo_info` shows the project and counts. Codes: `I-n` issue, `A-n` attempt, `F-n` fix, `D-n` decision, `N-n` note. Each memo can name an `epic` (the epic directory) and a `ticket`.
+
+The project is identified by its first git commit, so a re-clone or a moved folder finds the same memory. Run `node <plugin>/mcp/memo/cli.ts export` to dump it as Markdown for backup or sharing.
+
+### Fallback: `.work/notes.md`
+
+Only when the `memo` server is not running. One line per entry, newest at the bottom, never edited:
 
 ```
 YYYY-MM-DD | kind | tag, tag | text
 ```
 
-- `kind` is one of `decision`, `note`, `attempt`, `fix`, `bug`, `glossary`.
-- Tags come from the tags already in the file. Add a new tag only when no existing one fits (`loyalty` and `loyalty-program` are two dead ends for one search).
-- `bug` lines start with the normalized error message (no absolute paths, line numbers, ids, timestamps or ports), then ` :: ` and a short symptom.
-- `attempt` lines end with `-> failed`, `-> partial` or `-> worked`. `fix` lines end with `(unconfirmed)` until the original loop is green, then a new `fix` line ends with `(confirmed)`.
-- To change a `decision` or `note`, append a new line that starts with `supersedes YYYY-MM-DD <first words of the old line>:`. Readers treat the older line as history.
-- Mask secrets before writing. Do not record chores or anything git or the tracker already shows.
-- Search with `grep -i` over the file.
+- `kind` is one of `decision`, `note`, `attempt`, `fix`, `bug`, `glossary`. `bug` lines start with the normalized error message, then ` :: ` and the symptom. `attempt` lines end with `-> failed`, `-> partial` or `-> worked`. `fix` lines end with `(unconfirmed)` or `(confirmed)`.
+- To change a line, append a new one that starts with `supersedes YYYY-MM-DD <first words of the old line>:`.
+- Search with `grep -i`. Mask secrets before writing.

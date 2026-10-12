@@ -8,7 +8,7 @@
 [![Version](https://img.shields.io/badge/version-0.1.0-blue)](.claude-plugin/plugin.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-26 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
+30 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
 
 
 ## Install
@@ -17,6 +17,8 @@
 claude plugin marketplace add nhhthong/skills
 claude plugin install dev@nhhthong-skills
 ```
+
+**Requirements:** [Node.js](https://nodejs.org) 22.18 or newer (24 recommended). The `memo` server and the script templates are TypeScript that Node runs directly: no build step, no `npm install`, no packages. Without Node the skills still work, and memory falls back to `.work/notes.md`.
 
 
 ## How it works
@@ -52,6 +54,7 @@ flowchart TD
 | Many independent tickets in a phase | `implement-spec` (parallel worktrees; you run the printed integration script) |
 | A ticket needs information only another person has | `clarify-ask` writes a questionnaire for them |
 | Choose between options (database, queue, library) | `explore-decide` researches and recommends; you choose |
+| Not sure where to start | `ask-me <what you want to do>` names the skills to run; `ask` lists them all |
 
 Run `clarify-grill-docs`, `plan-spec` and `plan-tickets` in one session, then start each `implement-ticket` in a fresh one. Anything the source leaves open stays an open point with a name and a date; skills never fill it with a guess.
 
@@ -144,8 +147,18 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 </details>
 
 <details>
-<summary><b>Other</b>: Manual steps; writing for agents (2)</summary>
+<summary><b>Memo</b>: Remember and recall across sessions (2)</summary>
 
+- [`memo-post`](skills/memo-post/SKILL.md) (agent or you): Record an issue, a tried approach, a fix, a decision with its reason, or a lesson.
+- [`memo-callback`](skills/memo-callback/SKILL.md) (agent or you): Search earlier issues, fixes, decisions and notes by question, ticket, epic or file.
+
+</details>
+
+<details>
+<summary><b>Other</b>: Navigation, manual steps, writing for agents (4)</summary>
+
+- [`ask`](skills/ask/SKILL.md) (you type): Show what each skill does, one line each, for all or one group.
+- [`ask-me`](skills/ask-me/SKILL.md) (you type): Say what you want to do and get the skills to run, in order.
 - [`wizard`](skills/wizard/SKILL.md) (you type): Generate an interactive script that walks you through steps only a human can do.
 - [`agent-docs`](skills/agent-docs/SKILL.md) (agent): Write skills, `CLAUDE.md` and other documents agents read.
 
@@ -153,22 +166,36 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 
 ## What the skills write
 
-Everything lives under `.work/` in the project:
+Work files live under `.work/` in the project:
 
 ```text
 .work/
 ├── config.md          # private storage only: tracker, domain, workflow
 ├── spec-index.md      # requirement codes, open points, decisions, infrastructure order
 ├── tickets/           # <epic>/, external/ (pasted tickets), tracked/ (tracker copies)
-├── questionnaires/
-└── notes.md           # append-only: decisions, notes, bugs, attempts, fixes, terms
+└── questionnaires/
 ```
 
-`notes.md` is how a new session finds what an earlier one learned. Under `private` storage, skills create nothing else in the repository.
+Under `private` storage, skills create nothing else in the repository.
+
+## Memory
+
+The plugin starts a small MCP server, `memo`, that keeps what sessions learn in a local SQLite database (full-text search, no network). It lives outside the repo at `~/.claude/memo/<project>-<id>.db`, one file per project, found again after a re-clone because the project is identified by its first commit.
+
+| Tool | Does |
+| --- | --- |
+| `memo_post` | Record an issue (`I-n`), attempt (`A-n`), fix (`F-n`), decision (`D-n`) or note (`N-n`), linked to an epic and a ticket |
+| `memo_callback` | Search by question, type, epic, ticket, tag or file, best match first |
+| `memo_get` | Read one memo with its linked attempts, fixes and history |
+| `memo_info` | Which project and file is in use, counts, open issues |
+
+`debug-diagnose`, `explore-decide`, `clarify-domain` and `implement-ticket` use it on their own. Without Node, skills fall back to `.work/notes.md`. Back up or share with `node mcp/memo/cli.ts export` (run from the plugin folder).
+
+## Development
+
+Only for editing this repo, never for using the plugin: `npm install` adds `@types/node` and TypeScript so the editor and `npm run typecheck` know the `node:*` modules. `npm test` runs the memo server tests.
 
 ## Credits
-
-
 
 > **Based on [Matt Pocock's skills](https://github.com/mattpocock/skills)** (MIT). Most of the ideas and many of the files come from his work: grilling sessions, a shared domain language, tracer-bullet tickets, red-green-refactor, deep modules and two-axis code review. This repo is maintained on its own and no longer tracks his.
 

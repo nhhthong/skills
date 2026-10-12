@@ -1,0 +1,56 @@
+# Skill catalog
+
+One line per skill: what it does, and when to reach for it. `type` = you type the command. `auto` = the agent starts it when it fits; you can type it too. Keep this file in step with the skills: it is the single list that `ask` and `ask-me` read.
+
+## setup
+- `/dev:setup-repo` (type): choose where memory lives, delivery, tracker, domain docs. Use once per repo, first.
+- `/dev:setup-need-install` (type): check installed helper tools, recommend which to add. Use on a new machine or project.
+
+## clarify
+- `/dev:clarify-grill-docs` (type): interview you until the design is settled, recording terms and decisions. Use when you have an idea but not a design.
+- `/dev:clarify-ask` (type): turn a question you cannot answer alone into a questionnaire for someone else. Use when the answer is in another person's head.
+- `/dev:clarify-explain` (type): re-pitch the last message in plain terms. Use when you did not understand the agent.
+- `/dev:clarify-grill` (auto): the interview itself, rounds of questions with a recommended answer.
+- `/dev:clarify-domain` (auto): challenge terms against the glossary, record each term and decision once.
+
+## explore
+- `/dev:explore-decide` (auto): research a technical choice and recommend one option. Use when stuck between options.
+- `/dev:explore-research` (auto): investigate a question in primary sources, save cited findings. Use for "how does X work".
+- `/dev:explore-prototype` (auto): build a throwaway prototype to answer a design question.
+
+## plan
+- `/dev:plan-spec` (type): index a spec by requirement code, or write one from a conversation. Use when you have a source document or settled design.
+- `/dev:plan-tickets` (type): cut epics and tracer-bullet tickets with blocking edges. Use after the spec.
+
+## implement
+- `/dev:implement-ticket` (type): take one ticket to a printed commit message and commands; resumes unfinished work. Use to do a ticket, or to continue.
+- `/dev:implement-spec` (type): implement a whole spec with parallel subagents. Use when the tickets are ready and independent.
+
+## test
+- `/dev:test-plan` (auto): choose the minimum proof a ticket needs.
+- `/dev:test-tdd` (auto): red-green-refactor one slice at a time.
+
+## debug
+- `/dev:debug-diagnose` (auto): build a loop that fails on the bug, then find and fix the cause. Use for a bug you cannot explain.
+
+## review
+- `/dev:review-code` (type): review a diff on Standards and Spec in parallel. Use before you commit.
+- `/dev:review-pr` (auto): shape a pull request body with evidence. Use when opening a PR.
+
+## design
+- `/dev:design-improve` (type): scan the code for modules to deepen. Use when the code feels tangled.
+- `/dev:design-modules` (auto): the vocabulary for deep modules and seams.
+
+## session
+- `/dev:session-progress` (type): where the work stands, what is open, what to do next. Use when you come back.
+- `/dev:session-handoff` (type): compact the conversation for another agent. Use before you stop or switch.
+- `/dev:session-retro` (type): suggest improvements to the agent's setup after a session.
+
+## memo
+- `/dev:memo-post` (auto): record an issue, attempt, fix, decision or lesson.
+- `/dev:memo-callback` (auto): search earlier issues, fixes, decisions and notes. Use to ask "have we seen this".
+
+## other
+- `/dev:wizard` (type): generate a script that walks you through steps only a human can do.
+- `/dev:agent-docs` (auto): write skills, `CLAUDE.md` and other documents agents read.
+- `/dev:ask` (type): list these skills. `/dev:ask-me` (type): say what you want to do, get the command to run.

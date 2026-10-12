@@ -36,7 +36,7 @@ Rules:
 - Every item in the source gets exactly one code, and every code gets one status. This is the completion criterion.
 - A value the source does not state is an **open point**, not a default. A default looks decided and nobody asks again. Write: the question, who owes it, since when, and which requirement or ticket needs it first.
 - Where the source contradicts itself (a name used two ways, a decision recorded as open in one place and settled in another), list both readings as an open point and ask. Never pick the newer.
-- Decisions made in conversation get one line in `## Decisions`, with the full text in an ADR if one exists, or as a `decision` line in `.work/notes.md`. Write the full text in one place only.
+- Decisions made in conversation get one line in `## Decisions`, with the full text in an ADR if one exists, or as a `decision` in memory (`memo_post`). Write the full text in one place only.
 - List what the source puts out of scope.
 - List the infrastructure the source names, in the order it is first needed, as a table of component, first needed by, and status. Do not decide anything new here; `explore-decide` does that when a ticket first needs a component.
 

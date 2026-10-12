@@ -23,7 +23,7 @@ Set `Status: in-progress`. Done when you can state the ticket's id and title (an
 
 ### 1. Orient
 
-Read `CLAUDE.md`, `CONTRIBUTING.md`, the ticket, `.work/spec-index.md` and the glossary (or the `glossary` lines in `.work/notes.md`). `grep -i` `.work/notes.md` for the ticket's module, requirement codes and error messages; notes bind this ticket.
+Read `CLAUDE.md`, `CONTRIBUTING.md`, the ticket, `.work/spec-index.md` and the glossary (or the `glossary` notes in memory). Call `memo_callback` with the ticket id, then with the module, requirement codes and error messages; the decisions and gotchas it returns bind this ticket.
 
 If the repo has code, find where the work goes. Send wide searches to a subagent so your context stays clean: the module, its entry points, the neighbouring tests, the conventions a new file must match. A fact that would cost the next session time to rediscover (where a module lives, which convention is unwritten, a trap) becomes a `note` line in `.work/notes.md`.
 
@@ -50,7 +50,7 @@ Call the Skill tool with "test-plan". Done when the plan is in the ticket file u
 
 Run the typecheck regularly, single test files often, and the whole suite once at the end. When a test fails, change the code. Tick each acceptance criterion in the ticket file as it is met.
 
-A problem found on the way that is not fixed in this ticket (a defect in other code, a broken environment): if it affects other tickets or needs someone else, open a `bug` ticket for it through the tracker; otherwise add a `bug` line to `.work/notes.md`.
+A problem found on the way that is not fixed in this ticket (a defect in other code, a broken environment): if it affects other tickets or needs someone else, open a `bug` ticket for it through the tracker; otherwise record it with `memo_post` as an `issue` linked to this ticket.
 
 Done when every acceptance criterion is ticked and the proof is green on the current code.
 

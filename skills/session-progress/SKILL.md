@@ -15,7 +15,7 @@ If the user passed an argument, treat it as the target: an epic or a ticket id.
    - Tickets: `grep -rEH '^\*\*(Type|Parent|Blocked by|Status|Step):\*\*' .work/tickets` gives every ticket's header lines. With a real tracker, add its open issues (`gh issue list` or `glab issue list`) for tickets that have no local file yet.
    - Open points: the `Open points` and `Infrastructure` sections of `.work/spec-index.md`, and every ticket of type `spike` whose `Status` is not `done`.
    - Git: the current branch, `git status --short`, and `git log -1 --format='%h %s'`. Read the branch name pattern from `workflow.md` to match branches to tickets.
-   - The last lines of `.work/notes.md` for the ticket in progress.
+   - `memo_callback` with the ticket in progress: open issues and recent decisions. For a question about what was learned or decided, tell the user to run `/dev:memo-callback <question>`.
 
    If `.work/` is missing, say the repo has no recorded work and stop. Done when every epic and every ticket of the epic in progress has a status you can quote from a file.
 

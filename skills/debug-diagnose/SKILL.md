@@ -11,7 +11,7 @@ When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear me
 
 ## Look up earlier attempts
 
-Before Phase 1, normalize the error message (drop absolute paths, line numbers, ids, timestamps and ports) and `grep -i` `.work/notes.md` for it and for the module name. If an earlier `bug` line matches, read its `attempt` and `fix` lines first, skip every approach marked `-> failed`, and start from where the last one stopped. Say what you found in one line, or say there was nothing.
+Before Phase 1, normalize the error message (drop absolute paths, line numbers, ids, timestamps and ports) and call `memo_callback` with it and with the module name. If an earlier `issue` matches, read it with `memo_get` (its attempts and fixes) first, skip every approach marked `failed`, and start from where the last one stopped. Say what you found in one line, or say there was nothing.
 
 ## Redact
 
@@ -36,7 +36,7 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 7. **Property / fuzz loop.** If the bug is "sometimes wrong output", run 1000 random inputs and look for the failure mode.
 8. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
 9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
-10. **HITL bash script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.sh` so the loop is still structured. Captured output feeds back to you.
+10. **HITL script.** Last resort. If a human must click, drive _them_ with `scripts/hitl-loop.template.mts` (run with `node`) so the loop is still structured. Captured output feeds back to you.
 
 Build the right feedback loop, and the bug is 90% fixed.
 
@@ -65,7 +65,7 @@ Phase 1 is done when the loop is **tight** and **red-capable**: you can name **o
 - [ ] **Red-capable**: it drives the actual bug code path and asserts the **user's exact symptom**, so it can go red on this bug and green once fixed. Not "runs without erroring"; it must be able to _catch this specific bug_.
 - [ ] **Deterministic**: same verdict every run (flaky bugs: a pinned, high reproduction rate, per above).
 - [ ] **Fast**: seconds, not minutes.
-- [ ] **Agent-runnable**: you can run it unattended; a human in the loop only via `scripts/hitl-loop.template.sh`.
+- [ ] **Agent-runnable**: you can run it unattended; a human in the loop only via `scripts/hitl-loop.template.mts` (run with `node`).
 
 If you catch yourself reading code to build a theory before this command exists, **stop: jumping straight to a hypothesis is the exact failure this skill prevents.** No red-capable command, no Phase 2.
 
@@ -73,7 +73,7 @@ If you catch yourself reading code to build a theory before this command exists,
 
 Run the loop. Watch it go red as the bug appears.
 
-Record the bug in `.work/notes.md` now, as a `bug` line (normalized error message, ` :: `, the symptom), unless a matching line exists. A bug found while working on a ticket is recorded the same way and names that ticket in its tags.
+Record the bug now with `memo_post` as an `issue`: `signature` is the normalized error message plus the module, the body is the symptom. A matching signature is counted, not duplicated. A bug found while working on a ticket is recorded the same way with that `ticket`.
 
 Confirm:
 
@@ -99,7 +99,7 @@ Each hypothesis must be **falsifiable**: state the prediction it makes.
 
 > Format: "If <X> is the cause, then <changing Y> will make the bug disappear / <changing Z> will make it worse."
 
-After each hypothesis is tested, append an `attempt` line: what was tried, ending in `-> failed`, `-> partial` or `-> worked`. Append it right after the test, because the session can end before Phase 6.
+After each hypothesis is tested, record an `attempt` with `memo_post` (linked to the issue, `outcome` `failed`, `partial` or `worked`, body: what was tried). Record it right after the test, because the session can end before Phase 6.
 
 If you cannot state the prediction, the hypothesis is a vibe: discard or sharpen it.
 
@@ -131,7 +131,7 @@ If a correct seam exists:
 
 1. Turn the minimised repro into a failing test at that seam.
 2. Watch it fail. If you forced the red by mutating code or a fixture, `diff` against a pristine copy to prove the mutation landed before you trust it.
-3. Apply the fix, and append a `fix` line to `.work/notes.md` marked `(unconfirmed)`.
+3. Apply the fix, and record a `fix` with `memo_post` (`status: unconfirmed`, linked to the issue).
 4. Watch it pass.
 5. Re-run the Phase 1 feedback loop against the original (un-minimised) scenario.
 
@@ -144,4 +144,4 @@ Required before declaring done:
 - [ ] All `[DEBUG-...]` instrumentation removed (`grep` the prefix)
 - [ ] Throwaway prototypes deleted (or moved to a clearly-marked debug location)
 - [ ] The hypothesis that turned out correct is stated in the commit / PR message, so the next debugger learns
-- [ ] `.work/notes.md` holds the `bug` line, every `attempt` line, and a `fix` line marked `(confirmed)` now that the Phase 1 loop is green
+- [ ] memory holds the `issue`, every `attempt` (with `outcome`), and the `fix` set to `confirmed` now that the Phase 1 loop is green

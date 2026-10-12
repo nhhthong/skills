@@ -1,0 +1,3 @@
+interface:
+  display_name: "Memo callback"
+  short_description: "Recall earlier issues, fixes, decisions and notes"

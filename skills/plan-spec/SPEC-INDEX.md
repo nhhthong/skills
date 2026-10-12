@@ -21,7 +21,7 @@ Markers: ✅ decided · ⚠️ open · ❌ blocked by an outside party.
 - ⚠️ O-1: <the question>. Owed by <who> since <date>. Needed before <requirement or ticket>.
 
 ## Decisions
-- D-1: <one line>. Full text: <ADR path or "notes.md">.
+- D-1: <one line>. Full text: <ADR path or memo code, for example D-3>.
 
 ## Infrastructure
 | Component | First needed by | Status |
