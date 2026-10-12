@@ -1,0 +1,49 @@
+{
+  "name": "dev",
+  "version": "0.1.0",
+  "description": "Skills for taking work from an empty source or a big project's ticket to delivery: clarify, plan, implement, test, debug and review, with notes that survive between sessions.",
+  "author": {
+    "name": "nhhthong",
+    "url": "https://github.com/nhhthong"
+  },
+  "homepage": "https://github.com/nhhthong/skills",
+  "repository": "https://github.com/nhhthong/skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "engineering",
+    "tdd",
+    "code-review",
+    "spec",
+    "tickets",
+    "project-memory"
+  ],
+  "skills": [
+    "./skills/agent-docs",
+    "./skills/clarify-ask",
+    "./skills/clarify-domain",
+    "./skills/clarify-explain",
+    "./skills/clarify-grill",
+    "./skills/clarify-grill-docs",
+    "./skills/debug-diagnose",
+    "./skills/design-improve",
+    "./skills/design-modules",
+    "./skills/explore-decide",
+    "./skills/explore-prototype",
+    "./skills/explore-research",
+    "./skills/implement-spec",
+    "./skills/implement-ticket",
+    "./skills/plan-spec",
+    "./skills/plan-tickets",
+    "./skills/review-code",
+    "./skills/review-pr",
+    "./skills/session-handoff",
+    "./skills/session-progress",
+    "./skills/session-retro",
+    "./skills/setup-repo",
+    "./skills/setup-need-install",
+    "./skills/test-plan",
+    "./skills/test-tdd",
+    "./skills/wizard"
+  ]
+}

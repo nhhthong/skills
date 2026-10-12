@@ -1,0 +1,5 @@
+interface:
+  display_name: "Work"
+  short_description: "Take one ticket from start to delivery"
+policy:
+  allow_implicit_invocation: false

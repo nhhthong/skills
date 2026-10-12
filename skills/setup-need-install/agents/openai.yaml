@@ -1,0 +1,5 @@
+interface:
+  display_name: "Setup Need Install"
+  short_description: "Recommend helper tools that fit this machine and project"
+policy:
+  allow_implicit_invocation: false

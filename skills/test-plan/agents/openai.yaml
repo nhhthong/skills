@@ -1,0 +1,3 @@
+interface:
+  display_name: "Test Plan"
+  short_description: "Choose the minimum proof a ticket needs"

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Progress"
+  short_description: "Where the work stands and how it is split"
+policy:
+  allow_implicit_invocation: false
