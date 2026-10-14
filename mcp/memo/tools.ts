@@ -4,6 +4,7 @@ import { resolveProject } from './project.ts';
 
 const str = { type: 'string' };
 const strs = { type: 'array', items: str };
+const ref = { type: 'object', properties: { kind: { type: 'string', enum: ['file', 'commit', 'req', 'url'] }, value: str }, required: ['kind', 'value'] };
 const projectDir = { type: 'string', description: 'Project directory. Omit to use the server working directory.' };
 
 export interface Tool {
@@ -15,7 +16,7 @@ export interface Tool {
 export const TOOLS: Tool[] = [
   {
     name: 'memo_post',
-    description: 'Record project memory: an issue (problem met), attempt (approach tried, even failed), fix (what worked), decision (architecture choice with reason) or note (technical lesson). Pass `code` (e.g. I-3) to update an existing memo instead. An issue with a known `signature` is deduplicated and its occurrence count grows.',
+    description: 'Record project memory: an issue (problem met), attempt (approach tried, even failed), fix (what worked), decision (architecture choice with reason) or note (technical lesson). Pass `code` (e.g. I-3) to update an existing memo instead; a field the update cannot apply is an error, never ignored. A decision title is fixed and its body only grows with `append`; to change a decision, post a new one with `supersedes`. An issue with a known `signature` is deduplicated and its occurrence count grows. The reply may carry `warnings` (missing rationale, epic, tags, titles...): fix them with one more memo_post on the same code.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -28,17 +29,18 @@ export const TOOLS: Tool[] = [
         epic_title: str,
         ticket: { ...str, description: 'Ticket key, e.g. EC-7.' },
         ticket_title: str,
-        tags: strs,
-        refs: { type: 'array', items: { type: 'object', properties: { kind: { type: 'string', enum: ['file', 'commit', 'req', 'url'] }, value: str }, required: ['kind', 'value'] } },
+        tags: { ...strs, description: 'Replaces the tag list.' },
+        refs: { type: 'array', items: ref, description: 'Added to the existing refs (merged by kind and value).' },
+        refs_remove: { type: 'array', items: ref, description: 'On update: refs to delete.' },
         status: { ...str, description: 'issue: open|resolved|wontfix. fix: unconfirmed|confirmed|stale. decision: active|superseded|stale. note: active|stale.' },
-        signature: { ...str, description: 'issue only: stable key for dedup, e.g. error class + file.' },
-        issue: { ...str, description: 'attempt/fix: code of the issue it belongs to.' },
-        attempt: { ...str, description: 'fix: code of the attempt it came from.' },
+        signature: { ...str, description: 'issue only, set at creation: stable key for dedup, e.g. error class + file.' },
+        issue: { ...str, description: 'attempt/fix, set at creation: code of the issue it belongs to.' },
+        attempt: { ...str, description: 'fix, set at creation: code of the attempt it came from.' },
         outcome: { type: 'string', enum: ['failed', 'partial', 'worked'], description: 'attempt only.' },
         pr_ref: { ...str, description: 'fix only: PR or commit reference.' },
         rationale: { ...str, description: 'decision only: why this was chosen.' },
         alternatives: { ...strs, description: 'decision only: options rejected.' },
-        supersedes: { ...str, description: 'decision only: code of the decision this replaces.' },
+        supersedes: { ...str, description: 'decision only, set at creation: code of the decision this replaces.' },
         kind: { type: 'string', enum: ['convention', 'gotcha', 'lesson', 'structure', 'glossary'], description: 'note only.' },
         session_id: str,
         branch: { ...str, description: 'Defaults to the current git branch.' },

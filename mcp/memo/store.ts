@@ -4,6 +4,7 @@ import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { MIGRATIONS } from './schema.ts';
 import { currentBranch } from './project.ts';
+import { auditMemo, hasCallMarkup } from './audit.ts';
 
 export const SCHEMA_VERSION = MIGRATIONS.length;
 export const TYPES = ['issue', 'attempt', 'fix', 'decision', 'note'];
@@ -18,11 +19,21 @@ const STATUS: Record<string, string[]> = {
 const TABLE: Record<string, string> = { issue: 'issues', attempt: 'attempts', fix: 'fixes', decision: 'decisions', note: 'notes' };
 const NOTE_KINDS = ['convention', 'gotcha', 'lesson', 'structure', 'glossary'];
 const OUTCOMES = ['failed', 'partial', 'worked'];
+/** Fields that belong to some types only; passing one to another type is an error, never a silent no-op. */
+const ONLY_FOR: Record<string, string[]> = {
+  signature: ['issue'], outcome: ['attempt'], issue: ['attempt', 'fix'], attempt: ['fix'], pr_ref: ['fix'],
+  rationale: ['decision'], alternatives: ['decision'], supersedes: ['decision'], kind: ['note'],
+};
+/** Fields set once at creation. An update that carries one fails instead of ignoring it. */
+const FIXED_ON_UPDATE = ['signature', 'issue', 'attempt', 'supersedes', 'session_id', 'branch'];
+/** Text fields checked for tool-call markup that leaked into a value. */
+const TEXT_FIELDS = ['title', 'body', 'rationale', 'epic_title', 'ticket_title', 'signature', 'pr_ref'] as const;
 
 export class MemoError extends Error {}
 function fail(msg: string): never { throw new MemoError(msg); }
 const now = (): string => new Date().toISOString();
 const str = (v: unknown): string | null => (v == null || v === '' ? null : String(v));
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Row = Record<string, any>;
@@ -44,7 +55,7 @@ interface Db {
 export interface PostArgs {
   type?: string; code?: string; title?: string; body?: string; append?: boolean;
   epic?: string; epic_title?: string; ticket?: string; ticket_title?: string;
-  tags?: string[]; refs?: { kind: string; value: string }[];
+  tags?: string[]; refs?: { kind: string; value: string }[]; refs_remove?: { kind: string; value: string }[];
   status?: string; signature?: string; issue?: string; attempt?: string; outcome?: string;
   pr_ref?: string; rationale?: string; alternatives?: string[]; supersedes?: string;
   kind?: string; session_id?: string; branch?: string; append_body?: boolean;
@@ -158,7 +169,10 @@ export class Store {
 
   // ---- memo_post ---------------------------------------------------------
   post(a: PostArgs): Row {
-    return this.tx(() => (a.code ? this.#update(a) : this.#create(a)));
+    const r = this.tx(() => (a.code ? this.#update(a) : this.#create(a)));
+    if (r.deduped || r.updated === false) return r;
+    const warnings = auditMemo(this.get(r.code)).filter((f) => f.severity === 'warn').map((f) => `${f.check}: ${f.message}`);
+    return warnings.length ? { ...r, warnings } : r;
   }
 
   #create(a: PostArgs): Row {
@@ -225,18 +239,28 @@ export class Store {
     const found = this.byCode(a.code);
     if (!found) return fail('code is required to update');
     const { id, type, code } = found;
+    const arg = a as Row;
+    if (a.type != null && a.type !== type) fail(`${code} is a ${type}; a memo's type cannot change`);
+    for (const k of FIXED_ON_UPDATE) if (arg[k] != null) fail(`${k} cannot be changed on update; it is set when the memo is created`);
     this.#validate(type, a, true);
     const t = now();
-    if (str(a.title)) this.db.prepare('UPDATE memos SET title=? WHERE id=?').run(String(a.title), id);
-    if (a.body != null) {
-      const cur = this.db.prepare('SELECT body FROM memos WHERE id=?').get(id).body;
-      this.db.prepare('UPDATE memos SET body=? WHERE id=?').run(a.append ? (cur ? `${cur}\n\n${a.body}` : String(a.body)) : String(a.body), id);
+    const changed: string[] = [];
+    const cur = this.db.prepare('SELECT title, body FROM memos WHERE id=?').get(id);
+    if (str(a.title) && a.title !== cur.title) {
+      if (type === 'decision') fail('A decision title cannot change. Post a new decision with supersedes.');
+      this.db.prepare('UPDATE memos SET title=? WHERE id=?').run(String(a.title), id);
+      changed.push('title');
+    }
+    if (a.body != null && (a.append || a.body !== cur.body)) {
+      if (type === 'decision' && !a.append) fail('A decision body changes only with append: true. To change the decision itself, post a new one with supersedes.');
+      this.db.prepare('UPDATE memos SET body=? WHERE id=?').run(a.append ? (cur.body ? `${cur.body}\n\n${a.body}` : String(a.body)) : String(a.body), id);
+      changed.push('body');
     }
     if (str(a.epic) || str(a.ticket)) {
       const epic = this.epicId(a.epic, a.epic_title);
       const ticket = this.ticketId(a.ticket, epic, a.ticket_title);
-      if (epic) this.db.prepare('UPDATE memos SET epic_id=? WHERE id=?').run(epic, id);
-      if (ticket) this.db.prepare('UPDATE memos SET ticket_id=? WHERE id=?').run(ticket, id);
+      if (epic) { this.db.prepare('UPDATE memos SET epic_id=? WHERE id=?').run(epic, id); changed.push('epic'); }
+      if (ticket) { this.db.prepare('UPDATE memos SET ticket_id=? WHERE id=?').run(ticket, id); changed.push('ticket'); }
     }
     if (a.status != null && STATUS[type]) {
       const table = TABLE[type];
@@ -248,34 +272,55 @@ export class Store {
         }
       }
       if (type === 'note') this.db.prepare('UPDATE notes SET verified_at=? WHERE memo_id=?').run(a.status === 'active' ? t : null, id);
+      changed.push('status');
     }
-    if (type === 'attempt' && a.outcome) this.db.prepare('UPDATE attempts SET outcome=? WHERE memo_id=?').run(a.outcome, id);
-    if (type === 'fix' && str(a.pr_ref)) this.db.prepare('UPDATE fixes SET pr_ref=? WHERE memo_id=?').run(String(a.pr_ref), id);
-    if (type === 'decision' && a.rationale != null) this.db.prepare('UPDATE decisions SET rationale=? WHERE memo_id=?').run(String(a.rationale), id);
-    if (type === 'note' && a.kind) this.db.prepare('UPDATE notes SET kind=? WHERE memo_id=?').run(a.kind, id);
+    if (a.outcome) { this.db.prepare('UPDATE attempts SET outcome=? WHERE memo_id=?').run(a.outcome, id); changed.push('outcome'); }
+    if (str(a.pr_ref)) { this.db.prepare('UPDATE fixes SET pr_ref=? WHERE memo_id=?').run(String(a.pr_ref), id); changed.push('pr_ref'); }
+    if (a.rationale != null) { this.db.prepare('UPDATE decisions SET rationale=? WHERE memo_id=?').run(String(a.rationale), id); changed.push('rationale'); }
+    if (a.alternatives != null) { this.db.prepare('UPDATE decisions SET alternatives=? WHERE memo_id=?').run(JSON.stringify(a.alternatives), id); changed.push('alternatives'); }
+    if (a.kind) { this.db.prepare('UPDATE notes SET kind=? WHERE memo_id=?').run(a.kind, id); changed.push('kind'); }
+    changed.push(...this.#attach(id, a));
+    if (!changed.length) return { code, updated: false };
     this.db.prepare('UPDATE memos SET updated_at=? WHERE id=?').run(t, id);
-    this.#attach(id, a, true);
-    this.event(id, 'updated', Object.keys(a).filter((k) => k !== 'code').join(','));
+    this.event(id, 'updated', changed.join(','));
     return { code, updated: true };
   }
 
   #validate(type: string, a: PostArgs, update = false): void {
+    const arg = a as Row;
     const oneOf = (v: unknown, list: string[], name: string): void => { if (v != null && !list.includes(v as string)) fail(`${name} must be one of ${list.join(', ')}`); };
+    for (const [k, types] of Object.entries(ONLY_FOR)) if (arg[k] != null && !types.includes(type)) fail(`${k} applies to ${types.join(' and ')} only`);
     oneOf(a.status, STATUS[type] ?? [], 'status');
     oneOf(a.outcome, OUTCOMES, 'outcome');
     oneOf(a.kind, NOTE_KINDS, 'kind');
     if (a.alternatives != null && !Array.isArray(a.alternatives)) fail('alternatives must be an array of strings');
-    for (const r of a.refs ?? []) oneOf(r?.kind, REF_KINDS, 'refs[].kind');
+    for (const r of [...(a.refs ?? []), ...(a.refs_remove ?? [])]) oneOf(r?.kind, REF_KINDS, 'refs[].kind');
+    if (str(a.epic_title) && !str(a.epic)) fail('epic_title needs epic (the epic key)');
+    if (str(a.ticket_title) && !str(a.ticket)) fail('ticket_title needs ticket (the ticket key)');
+    for (const f of TEXT_FIELDS) if (hasCallMarkup(f, arg[f])) fail(`${f} contains tool-call markup; send the value again without it`);
+    for (const v of [...(a.alternatives ?? []), ...(a.tags ?? [])]) if (hasCallMarkup('alternatives', v)) fail(`alternatives or tags contain tool-call markup; send the value again without it`);
     if (!update && type === 'fix' && !str(a.issue) && !str(a.title)) fail('fix needs an issue code or a title');
   }
 
-  #attach(id: number, a: PostArgs, update = false): void {
-    if (a.tags) { this.setTags(id, a.tags); }
-    if (a.refs?.length) {
-      if (update) this.db.prepare('DELETE FROM refs WHERE memo_id=?').run(id);
-      for (const r of a.refs) this.db.prepare('INSERT INTO refs(memo_id,kind,value) VALUES(?,?,?)').run(id, r.kind, String(r.value));
+  /** Tags replace the list; refs merge by (kind, value) and refs_remove deletes. Returns the fields that changed. */
+  #attach(id: number, a: PostArgs): string[] {
+    const changed: string[] = [];
+    if (a.tags) { this.setTags(id, a.tags); changed.push('tags'); }
+    const has = this.db.prepare('SELECT 1 AS x FROM refs WHERE memo_id=? AND kind=? AND value=?');
+    let added = false;
+    for (const r of a.refs ?? []) {
+      if (has.get<Row | undefined>(id, r.kind, String(r.value))) continue;
+      this.db.prepare('INSERT INTO refs(memo_id,kind,value) VALUES(?,?,?)').run(id, r.kind, String(r.value));
+      added = true;
     }
+    if (added) changed.push('refs');
+    let removed = false;
+    for (const r of a.refs_remove ?? []) {
+      if (Number(this.db.prepare('DELETE FROM refs WHERE memo_id=? AND kind=? AND value=?').run(id, r.kind, String(r.value)).changes)) removed = true;
+    }
+    if (removed) changed.push('refs_remove');
     this.reindex(id);
+    return changed;
   }
 
   // ---- memo_callback -----------------------------------------------------
@@ -333,10 +378,10 @@ export class Store {
 
   // ---- memo_get ----------------------------------------------------------
   get(code: string): Row {
-    const m = this.db.prepare(`SELECT m.*, e.key AS epic, t.key AS ticket FROM memos m
+    const m = this.db.prepare(`SELECT m.*, e.key AS epic, e.title AS epic_title, t.key AS ticket, t.title AS ticket_title FROM memos m
       LEFT JOIN epics e ON e.id=m.epic_id LEFT JOIN tickets t ON t.id=m.ticket_id WHERE m.code=?`).get<Row | undefined>(String(code).toUpperCase());
     if (!m) return fail(`No memo with code ${code}`);
-    const out: Row = { code: m.code, type: m.type, title: m.title, body: m.body, epic: m.epic, ticket: m.ticket, branch: m.branch, created_at: m.created_at, updated_at: m.updated_at };
+    const out: Row = { code: m.code, type: m.type, title: m.title, body: m.body, epic: m.epic, epic_title: m.epic_title, ticket: m.ticket, ticket_title: m.ticket_title, branch: m.branch, created_at: m.created_at, updated_at: m.updated_at };
     const detail = this.db.prepare(`SELECT * FROM ${TABLE[m.type]} WHERE memo_id=?`).get(m.id);
     delete detail.memo_id;
     if (m.type === 'decision') detail.alternatives = JSON.parse(detail.alternatives);

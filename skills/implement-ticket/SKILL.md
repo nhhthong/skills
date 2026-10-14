@@ -48,7 +48,7 @@ Call the Skill tool with "dev:test-plan". Done when the plan is in the ticket fi
 - **Tier `check`.** Make the change, then run the proof command from the plan.
 - **Tier `light` or `full`.** Call the Skill tool with "dev:test-tdd" and build one slice at a time at the plan's seams.
 
-Run the typecheck regularly, single test files often, and the whole suite once at the end. When a test fails, change the code. Tick each acceptance criterion in the ticket file as it is met.
+Run the typecheck regularly, single test files often, and the whole suite once at the end. When a test fails, change the code. When it fails for a reason outside the slice you are building (a leaked key, a race with a container, a query that returns the wrong row), record it as a problem, not a note: an `issue` with `memo_post`, an `attempt` for each approach tried, and a `fix` once it is green. Tick each acceptance criterion in the ticket file as it is met.
 
 A problem found on the way that is not fixed in this ticket (a defect in other code, a broken environment): if it affects other tickets or needs someone else, open a `bug` ticket for it through the tracker; otherwise record it with `memo_post` as an `issue` linked to this ticket.
 

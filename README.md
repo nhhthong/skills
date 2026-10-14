@@ -192,7 +192,14 @@ The plugin starts a small MCP server, `memo`, that keeps what sessions learn in 
 | `memo_get` | Read one memo with its linked attempts, fixes and history |
 | `memo_info` | Which project and file is in use, counts, open issues |
 
-`debug-diagnose`, `explore-decide`, `clarify-domain` and `implement-ticket` use it on their own. Without Node, skills fall back to `.work/notes.md`. Back up or share with `node mcp/memo/cli.ts export` (run from the plugin folder).
+`debug-diagnose`, `explore-decide`, `clarify-domain` and `implement-ticket` use it on their own. Without Node, skills fall back to `.work/notes.md`.
+
+Every write is checked. A malformed value (tool-call markup in a field), a field the memo's type does not have, or an edit to a decision's title is refused. A memo that is incomplete (a decision without a rationale, no epic or tags, a ticket without a title) is stored, and the reply lists `warnings` for the agent to fill in at once.
+
+Run from the plugin folder (`~/.claude/plugins/cache/nhhthong-skills/dev/<version>/`):
+
+- `node mcp/memo/cli.ts export`: back up or share the memory as Markdown.
+- `node mcp/memo/cli.ts audit [--json]`: list memos written before the checks existed that break them. Read-only; exits 1 when a memo holds an error.
 
 ## Development
 

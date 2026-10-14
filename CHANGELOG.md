@@ -24,6 +24,19 @@ Fixes from a field report: six tickets (EC-4 to EC-9) taken to delivery in a Go 
 - `implement-ticket` points to `/dev:plan-ticket-change split` when a diff is over the PR size cap.
 - Shorter descriptions for `explore-decide`, `design-modules`, `wizard` and `plan-tickets` (each now under 250 characters). `review-pr` has a description that says what it does.
 
+### Fixed
+
+Hotfix to the `memo` server (server version 0.1.0 → 0.2.0; the plugin stays 0.2.0), from a second field report.
+
+- Updating a decision's `alternatives` is stored. It used to answer `updated: true` and change nothing.
+- An update that carries a field it cannot apply (`supersedes`, `signature`, `issue`, `attempt`, a field of another type, a different `type`) is refused with the field's name instead of being ignored. The history records only the fields that changed.
+- A decision's `title` cannot change and its `body` only grows with `append: true`, as the `memo-post` rule always said. `rationale`, `alternatives`, epic, ticket, tags and refs can still be corrected.
+- A value holding tool-call markup (`<parameter name=`, `</parameter>`, or a field's own closing tag such as `</rationale>`) is refused.
+- `refs` on an update are merged with the existing ones instead of replacing them; `refs_remove` deletes some.
+- `memo_post` returns `warnings` for an incomplete memo: a decision without a rationale or with rejected options only in its body, no epic, no tags, an epic or ticket without a title, an attempt or fix without an issue. `memo_get` now returns `epic_title` and `ticket_title`.
+- `node mcp/memo/cli.ts audit [--json]` runs the same checks over every memo, to find data written before this fix.
+- `memo-post`: rewritten rule 5 to match the server, one rule to fix `warnings` at once, and when to split a body. `memo-callback`: a memo found wrong against the repository is marked `stale` or superseded in the same turn. `implement-ticket`: a test that fails for a reason outside the slice is recorded as an `issue`, `attempt` and `fix`, not as a note.
+
 ### Renamed
 
 - `/dev:ask` → `/dev:help`, so it no longer reads like `/dev:ask-me`. Type `/dev:help` from now on.

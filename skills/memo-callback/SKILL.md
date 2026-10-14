@@ -17,4 +17,4 @@ If the `memo_callback` tool does not exist, memory is not installed: `grep -i` `
 
 With no argument, call `memo_info` for the overview (open issues, epics, tickets) and show the last updated memos.
 
-Memory shows what was true when it was written. Before recommending a file, function or flag a memo names, check it still exists.
+Memory shows what was true when it was written. Before recommending a file, function, flag, version or value a memo names, check it against the repository. When it no longer holds, repair the memory in the same turn: a note or fix gets `status: "stale"` (or an update with the corrected text), a decision gets a new `decision` with `supersedes`. A newer memo that covers the same ground makes the older one `stale`.

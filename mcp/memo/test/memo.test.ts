@@ -103,3 +103,57 @@ test('stdio server speaks MCP', async () => {
   assert.equal(JSON.parse(lines[3].result.content[0].text).count, 1);
   assert.equal(lines[4].result.isError, true);
 });
+
+// ---- hotfix: field report on 0.2.0 ------------------------------------------
+
+test('B1: updating alternatives is stored, and the event names only what changed', () => {
+  const s = mk();
+  s.post({ type: 'decision', title: 'Use Redis', rationale: 'atomic', alternatives: ['a'] });
+  s.post({ code: 'D-1', alternatives: ['b', 'c'] });
+  const d = s.get('D-1');
+  assert.deepEqual(d.alternatives, ['b', 'c']);
+  assert.equal(d.events.at(-1).detail, 'alternatives');
+});
+
+test('B1: a field the update cannot apply fails loudly', () => {
+  const s = mk();
+  s.post({ type: 'decision', title: 'Use Redis', rationale: 'atomic' });
+  s.post({ type: 'issue', title: 'x', signature: 'sig' });
+  assert.throws(() => s.post({ code: 'D-1', supersedes: 'D-1' }), /supersedes cannot be changed/);
+  assert.throws(() => s.post({ code: 'I-1', signature: 'other' }), /signature cannot be changed/);
+  assert.throws(() => s.post({ code: 'D-1', type: 'note' }), /D-1 is a decision/);
+  assert.throws(() => s.post({ code: 'D-1', kind: 'gotcha' }), /kind applies to note only/);
+  s.post({ code: 'D-1', type: 'decision', rationale: 'atomic and fast' });
+  assert.equal(s.get('D-1').rationale, 'atomic and fast');
+});
+
+test('B2: a decision title or body changes only by appending', () => {
+  const s = mk();
+  s.post({ type: 'decision', title: 'Use Redis', body: 'one', rationale: 'r' });
+  assert.throws(() => s.post({ code: 'D-1', title: 'Use Kafka' }), /decision title cannot change/);
+  assert.throws(() => s.post({ code: 'D-1', body: 'two' }), /decision body changes only with append/);
+  s.post({ code: 'D-1', title: 'Use Redis', body: 'two', append: true, alternatives: ['x'], tags: ['cache'] });
+  const d = s.get('D-1');
+  assert.equal(d.body, 'one\n\ntwo');
+  assert.deepEqual(d.alternatives, ['x']);
+  assert.equal(d.events.at(-1).detail, 'body,alternatives,tags');
+});
+
+test('B3: tool-call markup inside a field is rejected', () => {
+  const s = mk();
+  const broken = 'Atomic reservation.</rationale>\n<parameter name="alternatives">["a", "b"]';
+  assert.throws(() => s.post({ type: 'decision', title: 'Use Redis', rationale: broken }), /rationale contains tool-call markup/);
+  assert.throws(() => s.post({ type: 'decision', title: 'Use Redis', rationale: 'Atomic.</rationale>' }), /rationale contains tool-call markup/);
+  assert.throws(() => s.post({ type: 'note', title: 'x', body: 'a</parameter>' }), /body contains tool-call markup/);
+  s.post({ type: 'note', title: 'HTML layout', body: 'Close the page with </body> and </html>.' });
+  assert.equal(s.get('N-1').body, 'Close the page with </body> and </html>.');
+});
+
+test('B4: refs on update are merged, refs_remove deletes', () => {
+  const s = mk();
+  s.post({ type: 'note', title: 'x', refs: [{ kind: 'file', value: 'a.go' }] });
+  s.post({ code: 'N-1', refs: [{ kind: 'file', value: 'b.go' }, { kind: 'file', value: 'a.go' }] });
+  assert.deepEqual(s.get('N-1').refs.map((r: { value: string }) => r.value), ['a.go', 'b.go']);
+  s.post({ code: 'N-1', refs_remove: [{ kind: 'file', value: 'a.go' }] });
+  assert.deepEqual(s.get('N-1').refs.map((r: { value: string }) => r.value), ['b.go']);
+});

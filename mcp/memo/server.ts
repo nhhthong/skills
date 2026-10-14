@@ -18,7 +18,7 @@ function handle(msg: Row): unknown {
       return reply(id, {
         protocolVersion: PROTOCOLS.includes(params?.protocolVersion) ? params.protocolVersion : PROTOCOLS[0],
         capabilities: { tools: {} },
-        serverInfo: { name: 'memo', version: '0.1.0' },
+        serverInfo: { name: 'memo', version: '0.2.0' },
       });
     case 'ping': return isRequest && reply(id, {});
     case 'tools/list': return reply(id, { tools: TOOLS });
