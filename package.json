@@ -4,7 +4,8 @@
   "description": "Editor and CI tooling only. The plugin itself needs no install step: Node runs the TypeScript directly.",
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test mcp/memo/test/memo.test.ts"
+    "check": "node scripts/check-skills.mts",
+    "test": "node scripts/check-skills.mts && node --test mcp/memo/test/memo.test.ts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

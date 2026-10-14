@@ -21,7 +21,7 @@ Markers: ✅ decided · ⚠️ open · ❌ blocked by an outside party.
 - ⚠️ O-1: <the question>. Owed by <who> since <date>. Needed before <requirement or ticket>.
 
 ## Decisions
-- D-1: <one line>. Full text: <ADR path or memo code, for example D-3>.
+- <memo code, for example D-3>: <one line>. ADR: <path, only if one exists>.
 
 ## Infrastructure
 | Component | First needed by | Status |
@@ -31,4 +31,4 @@ Markers: ✅ decided · ⚠️ open · ❌ blocked by an outside party.
 - <taken from the source>
 ```
 
-An open point becomes a `spike` ticket when `/plan-tickets` cuts a ticket that needs it. Closing the spike produces a decision, and the open point's line changes to ✅ with the decision's id.
+An open point becomes a `spike` ticket when `/dev:plan-tickets` cuts a ticket that needs it. Closing the spike produces a decision, and the open point's line changes to ✅ with the decision's id.

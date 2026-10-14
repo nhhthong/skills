@@ -18,7 +18,7 @@ If the `memo_post` tool does not exist, memory is not installed: append the entr
 | A choice and why | `decision` | `rationale`, `alternatives` (what was rejected), `supersedes` |
 | A lesson, convention, gotcha, term | `note` | `kind` (`convention`, `gotcha`, `lesson`, `structure`, `glossary`) |
 
-Always set `epic` (the epic directory name) and `ticket` (the ticket id) when the work has them. Add `refs` (`file`, `commit`, `req`, `url`) for the files and requirement codes involved, and a few `tags`. Reuse tags that exist: `memo_info` lists the top ones.
+Always set `epic` (the epic directory name) with `epic_title`, and `ticket` (the ticket id) with `ticket_title` (the title line of its ticket file), when the work has them. Without the titles, listings show only the keys. Add `refs` (`file`, `commit`, `req`, `url`) for the files and requirement codes involved, and a few `tags`. Reuse tags that exist: `memo_info` lists the top ones.
 
 ## Rules
 

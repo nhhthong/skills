@@ -1,6 +1,6 @@
 ---
 name: explore-decide
-description: Research a technical choice and bring the options with one recommendation, so the user does not research it. Use when two or more reasonable options exist, an open point blocks a ticket, a library's API is uncertain, or a ticket needs infrastructure that is not in place yet.
+description: Research a technical choice and recommend one option. Use when two or more reasonable options exist, an open point or spike blocks a ticket, a library's API is uncertain, or a ticket needs infrastructure not yet in place.
 ---
 
 # Decide
@@ -13,7 +13,7 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 2. **Look for an earlier answer.** call `memo_callback` (types `decision`, `note`) and check the ADR titles (`docs/adr/`) for the topic, and read the spec index's decisions. A decision that still binds ends the skill: report it and ask only whether to reopen it.
 
-3. **Research.** Library behaviour: use Context7 if the session has it, otherwise the library's official docs. Anything deeper: call the Skill tool with "explore-research" and wait for the result, because the choice is blocking the work. Every claim carries its source. If the question concerns infrastructure, read [INFRA.md](INFRA.md) now.
+3. **Research.** Library behaviour: use Context7 if the session has it, otherwise the library's official docs. Anything deeper: call the Skill tool with "dev:explore-research" and wait for the result, because the choice is blocking the work. Every claim carries its source. If the question concerns infrastructure, read [INFRA.md](INFRA.md) now.
 
 4. **Compare 2 to 3 options** against the constraints in the spec, the ticket and the repo (existing stack, team skills, hosting). An option the constraints rule out is dropped with the reason.
 
@@ -21,10 +21,10 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 6. **Wait for the user's choice.** A choice that is hard to reverse (a data store, a public API shape, a service boundary, an auth model, how money is handled) is never made without the user, even when they are away: leave the dependent work blocked, keep the question open in the spec index, and say which ticket waits.
 
-7. **Record it once.** Call the Skill tool with "clarify-domain" for the recording rules: one `decision` in memory (`memo_post`, with `rationale` and `alternatives`); an ADR when the three ADR conditions hold or the project's documents require one; the full text in exactly one of them. Then:
+7. **Record it once.** Call the Skill tool with "dev:clarify-domain" for the recording rules: one `decision` in memory (`memo_post`, with `rationale` and `alternatives`); an ADR when the three ADR conditions hold or the project's documents require one; the full text in exactly one of them. Then:
    - Close the `spike` ticket that carried the question (`Status: done`, with the decision's id in `## Result`).
    - Change the spec index's open point to ✅ with the decision's id.
 
    Done when the decision exists in one place, and the spike and open point point to it.
 
-Next step: say which ticket the decision unblocks, and `/implement-ticket <ID>` to continue.
+Next step: say which ticket the decision unblocks, and `/dev:implement-ticket <ID>` to continue.

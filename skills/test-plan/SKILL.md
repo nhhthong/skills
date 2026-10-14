@@ -32,7 +32,7 @@ The question that picks the amount: *would a mistake show itself the moment some
 
 4. **Keep the architecture rules proven.** When the project states a rule that breaks silently if misconfigured (a lint rule that blocks one service from importing another, a service reading only its own schema), the ticket that sets it up includes a check that the rule fires: a deliberate violation must fail. This holds even in the first phase.
 
-5. **Take expected values from outside the code.** A number from the spec, a worked example, a literal. A test that recomputes the expected value with the code's own logic passes by construction. When the spec gives no source for a value, the value is an open point: call the Skill tool with "explore-decide" or ask the user, and write no test for it yet. A performance, load or stress test needs a number from the spec; with none, write no test and say what is missing.
+5. **Take expected values from outside the code.** A number from the spec, a worked example, a literal. A test that recomputes the expected value with the code's own logic passes by construction. When the spec gives no source for a value, the value is an open point: call the Skill tool with "dev:explore-decide" or ask the user, and write no test for it yet. A performance, load or stress test needs a number from the spec; with none, write no test and say what is missing.
 
 6. **Respect what the repo has.** Use the framework, naming and layout the repo already uses. A ticket small enough to be proven by another ticket's test may declare `covered by <ID>` instead of adding its own.
 

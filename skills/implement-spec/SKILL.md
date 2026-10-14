@@ -1,12 +1,12 @@
 ---
 name: implement-spec
-description: "Implement the result of /plan-spec and /plan-tickets in code."
+description: "Implement the result of /dev:plan-spec and /dev:plan-tickets in code."
 disable-model-invocation: true
 ---
 
 You have been provided a spec. This spec should have tickets associated with it, describing how to implement the spec.
 
-Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/setup-repo`.
+Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
 
 The goal is the entire spec implemented on a single **integration branch**, with every ticket resolved the way the issue tracker closes work.
 
@@ -29,20 +29,20 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 3. Create the integration branch. Read the delivery rules in `workflow.md`. If delivery is `pr` and the repo has a PR size cap, the integration branch cannot be one PR for the whole spec: plan one PR per ticket branch instead, or let the user split it.
 
 4. Use **implementer subagents** to implement each ticket on the current **frontier**, each in its own worktree on its own branch based on the integration branch. Each implementer subagent:
-   - reads the ticket's test plan, or calls the Skill tool with `test-plan` to write one, and runs the proof command directly when the ticket's tier is `check`;
-   - calls the Skill tool with `test-tdd` to build the ticket when the plan calls for tests;
+   - reads the ticket's test plan, or calls the Skill tool with `dev:test-plan` to write one, and runs the proof command directly when the ticket's tier is `check`;
+   - calls the Skill tool with `dev:test-tdd` to build the ticket when the plan calls for tests;
    - leaves its changes uncommitted, and reports the ticket id, the files changed and a commit message in the repo's convention.
 
    Under `run`: each implementer commits in its worktree and merges the integration branch tip into its own branch before reporting done.
 
-5. **Hand off the integration.** Once the frontier's implementers are done, print one script for the user: for each worktree, `git -C <worktree> add -A` and `git -C <worktree> commit` with that ticket's message, then on the integration branch `git merge --no-ff <ticket branch>`. Save it to `.work/handoff/integration-<n>.sh` as well. Tickets blocked by this frontier need the merged code, so stop here and tell the user to run the script and then `/implement-spec` again to start the next frontier.
+5. **Hand off the integration.** Once the frontier's implementers are done, print one script for the user: for each worktree, `git -C <worktree> add -A` and `git -C <worktree> commit` with that ticket's message, then on the integration branch `git merge --no-ff <ticket branch>`. Save it to `.work/handoff/integration-<n>.sh` as well. Tickets blocked by this frontier need the merged code, so stop here and tell the user to run the script and then `/dev:implement-spec` again to start the next frontier.
 
    Under `run`: a **merger subagent** merges each completed ticket into the integration branch, and if that changes the frontier you kick off the next implementers straight away.
 
 6. Repeat steps 4 and 5 until every ticket is done.
 
-7. Once all tickets are merged, tell the user to run `/review-code` on the integration branch (it is a skill you type, so you cannot call it). When the user comes back with the findings, fix them in a single **implementer subagent** and hand off that change the same way.
+7. Once all tickets are merged, review the integration branch against the commit it was created from. With `Review: typed` (or no `Review` line) in `workflow.md`, tell the user to run `/dev:review-code <that commit>` (it is a skill you type, so you cannot call it). With `Review: inline`, read [the review-code skill](../review-code/SKILL.md) and run its process yourself. With the findings in hand, fix them in a single **implementer subagent** and hand off that change the same way.
 
-8. Print the closing commands: `git push -u origin <integration branch>`, and for `pr` delivery the command that opens the pull request (one per ticket branch when the PR size cap applies), with the body from the Skill tool called with `review-pr`. Under `run`, push and open a draft PR after the first merge, and mark it ready at the end.
+8. Print the closing commands: `git push -u origin <integration branch>`, and for `pr` delivery the command that opens the pull request (one per ticket branch when the PR size cap applies), with the body from the Skill tool called with `dev:review-pr`. Under `run`, push and open a draft PR after the first merge, and mark it ready at the end.
 
 9. Print the `git worktree remove <path>` commands for every implementer worktree, and run them only after the user confirms.

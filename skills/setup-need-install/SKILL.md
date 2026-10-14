@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Setup: Need Install
 
-Recommend helper tools that fit this machine and this project, and install the ones the user approves. The tools and their install commands are in [CATALOG.md](CATALOG.md). This skill adds nothing to the catalog by itself.
+Recommend helper tools that fit this machine and this project, and install the ones the user approves. The tools and their install commands are in [TOOLS.md](TOOLS.md). This skill adds nothing to that list by itself.
 
 Read-only until step 5: detection changes nothing.
 
@@ -33,7 +33,7 @@ In the current directory, read-only:
 - Web UI: dependencies in `package.json` (react, vue, svelte, next, nuxt, astro, angular, tailwind), or `.html`, `.css`, `.tsx`, `.vue` files.
 - Browser tests: `playwright.config.*`, `cypress/`, a `test:e2e` script, `@playwright/test` in dependencies.
 - An empty or near-empty folder with only a spec or roadmap.
-- The repo's storage setting (`.work/config.md` or `docs/agents/workflow.md`) when `/setup-repo` has run: under `Storage: private`, nothing may be added to the repo.
+- The repo's storage setting (`.work/config.md` or `docs/agents/workflow.md`) when `/dev:setup-repo` has run: under `Storage: private`, nothing may be added to the repo.
 
 Done when you can state, in two lines, what kind of project this is.
 

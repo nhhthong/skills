@@ -4,4 +4,4 @@ description: A relentless interview to sharpen a plan or design, which also crea
 disable-model-invocation: true
 ---
 
-Call the Skill tool twice, for "clarify-grill" and "clarify-domain".
+Call the Skill tool twice, for "dev:clarify-grill" and "dev:clarify-domain".

@@ -56,7 +56,7 @@ Default posture: if a `git remote` points at GitHub, propose GitHub; at GitLab, 
 - **GitHub**: issues live in GitHub Issues (uses the `gh` CLI)
 - **GitLab**: issues live in GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
 - **Local markdown**: tickets live as files under `.work/tickets/` (good for new projects, solo work, and repos where tickets live in another system)
-- **Other** (Jira, Linear, etc.): ask the user to describe the workflow in one paragraph; record it as freeform prose. The user pastes a ticket's text into `/implement-ticket`, which writes it to a local ticket file.
+- **Other** (Jira, Linear, etc.): ask the user to describe the workflow in one paragraph; record it as freeform prose. The user pastes a ticket's text into `/dev:implement-ticket`, which writes it to a local ticket file.
 
 For local markdown, also ask for the ticket id prefix. Recommend the prefix the requirement document already uses (for example `EC`), else `T`.
 
@@ -112,4 +112,4 @@ For an "other" tracker, write `docs/agents/issue-tracker.md` from scratch using 
 
 Tell the user setup is complete. Skills find their configuration in `docs/agents/*.md` (reached from `CLAUDE.md`) or in `.work/config.md`. They can edit those files directly later; re-run this skill only to switch settings or start over.
 
-Next steps: with no source yet, `/clarify-grill-docs`; with a requirement document, `/plan-spec`; with a ticket in hand, `/implement-ticket`.
+Next steps: with no source yet, `/dev:clarify-grill-docs`; with a requirement document, `/dev:plan-spec`; with a ticket in hand, `/dev:implement-ticket`.

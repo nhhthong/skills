@@ -10,7 +10,7 @@ How the engineering skills should consume this repo's domain documentation when 
 
 In a repo set up with `Storage: private` (see `.work/config.md`), none of these files exist: read the `glossary` notes and `decision` memos (`memo_callback`) instead.
 
-If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `clarify-domain` skill (reached via `/clarify-grill-docs` and `/design-improve`) creates them lazily when terms or decisions actually get resolved.
+If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `clarify-domain` skill (reached via `/dev:clarify-grill-docs` and `/dev:design-improve`) creates them lazily when terms or decisions actually get resolved.
 
 ## File structure
 
@@ -44,7 +44,7 @@ Multi-context repo (presence of `GLOSSARY-MAP.md` at the root):
 
 When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `GLOSSARY.md`. Don't drift to synonyms the glossary explicitly avoids.
 
-If the concept you need isn't in the glossary yet, that's a signal: either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/clarify-domain`).
+If the concept you need isn't in the glossary yet, that's a signal: either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/dev:clarify-domain`).
 
 ## Flag ADR conflicts
 

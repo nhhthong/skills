@@ -5,10 +5,10 @@
 **From an empty source, or a ticket in a big project, to delivery.**
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-0.1.1-blue)](.claude-plugin/plugin.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-30 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
+31 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
 
 
 ## Install
@@ -91,10 +91,11 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 </details>
 
 <details>
-<summary><b>Plan</b>: From source to tickets (2)</summary>
+<summary><b>Plan</b>: From source to tickets (3)</summary>
 
 - [`plan-spec`](skills/plan-spec/SKILL.md) (you type): Index a structured source by requirement code, or write a full spec from a conversation; open points stay open.
 - [`plan-tickets`](skills/plan-tickets/SKILL.md) (you type): Cut epics if needed, then tracer-bullet tickets with types, requirement codes and blocking edges.
+- [`plan-ticket-change`](skills/plan-ticket-change/SKILL.md) (you type): Split a ticket in two, cancel it, or reopen it, keeping ids, blocking edges, the spec index and memory in step.
 
 </details>
 
@@ -193,7 +194,9 @@ The plugin starts a small MCP server, `memo`, that keeps what sessions learn in 
 
 ## Development
 
-Only for editing this repo, never for using the plugin: `npm install` adds `@types/node` and TypeScript so the editor and `npm run typecheck` know the `node:*` modules. `npm test` runs the memo server tests.
+Only for editing this repo, never for using the plugin: `npm install` adds `@types/node` and TypeScript so the editor and `npm run typecheck` know the `node:*` modules. `npm test` runs `npm run check` and then the memo server tests.
+
+`npm run check` (no install needed) fails when the skill folders, `.claude-plugin/plugin.json`, `skills/ask/SKILLS.md`, this README and each skill's `agents/openai.yaml` disagree, or a description is over 250 characters. Adding a skill means: its folder with `SKILL.md` and `agents/openai.yaml`, a line in `plugin.json`, a line in `SKILLS.md`, a line here and the count at the top. The check names whatever is missing.
 
 ## Credits
 

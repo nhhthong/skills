@@ -1,6 +1,6 @@
 ---
 name: wizard
-description: Generate an interactive Node (TypeScript, .mts) wizard that walks a human through steps only they can perform: provisioning infrastructure, setting up credentials or CI secrets, walking an unfamiliar third-party dashboard, or running a one-off migration or cutover.
+description: Generate an interactive Node script that walks you through steps only a human can do: provisioning, credentials and CI secrets, a third-party dashboard, a one-off migration or cutover.
 disable-model-invocation: true
 ---
 

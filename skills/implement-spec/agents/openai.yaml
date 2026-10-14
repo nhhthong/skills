@@ -1,5 +1,5 @@
 interface:
   display_name: "Implement Spec"
-  short_description: "Implement the result of /plan-spec and /plan-tickets in code."
+  short_description: "Implement the result of /dev:plan-spec and /dev:plan-tickets in code."
 policy:
   allow_implicit_invocation: false

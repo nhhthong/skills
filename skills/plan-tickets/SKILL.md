@@ -1,6 +1,6 @@
 ---
 name: plan-tickets
-description: Break a plan, spec, or the current conversation into epics and a set of tracer-bullet tickets, each declaring its type, requirements and blocking edges, published to the configured tracker (one file per ticket locally, or native links on a real tracker).
+description: Break a plan, spec, or the current conversation into epics and tracer-bullet tickets, each with its type, requirements and blocking edges, published to the configured tracker.
 disable-model-invocation: true
 ---
 
@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Break a plan, spec, or conversation into **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it. When the source has no structure yet, cut **epics** first.
 
-Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/setup-repo`.
+Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
 
 Every item is an **issue** with a `type`: `epic` (a parent that groups a region of work), `feature` (a new behaviour, cut through every layer), `task` (work that changes no behaviour a user sees), `bug`, or `spike` (a question to answer before work can start). "Ticket" means a `feature`, `task` or `bug` issue that this skill cuts and `implement-ticket` picks up.
 
@@ -48,7 +48,7 @@ Break the work into **tracer bullet** tickets.
 
 Give each ticket its **blocking edges**: the other tickets that must complete before it can start. A ticket with no blockers can start immediately.
 
-**Infrastructure arrives with the first ticket that needs it.** Do not cut an "infrastructure first" ticket for components nothing uses yet. When a ticket touches a component that the spec index does not yet list as in place (a queue, a cache, a new service), call the Skill tool with "explore-decide" for its infrastructure branch, then write that component's acceptance criteria into the same ticket and record it in the ticket's `New infrastructure` line.
+**Infrastructure arrives with the first ticket that needs it.** Do not cut an "infrastructure first" ticket for components nothing uses yet. When a ticket touches a component that the spec index does not yet list as in place (a queue, a cache, a new service), call the Skill tool with "dev:explore-decide" for its infrastructure branch, then write that component's acceptance criteria into the same ticket and record it in the ticket's `New infrastructure` line.
 
 **Open points.** A requirement still marked ⚠️ in the spec index: the first ticket that needs it lists a `spike` issue for that open point in its `Blocked by`. Cut the spike with the question as its body. `implement-ticket` closes it through `explore-decide` before any code is written.
 
@@ -73,7 +73,7 @@ Iterate until the user approves the breakdown. A good ticket crosses the layers,
 
 ### 6. Publish the tickets to the configured tracker
 
-Publish the approved tickets. **How** depends on the tracker `/setup-repo` configured; the tickets are the same either way, only the shape of the blocking edges changes:
+Publish the approved tickets. **How** depends on the tracker `/dev:setup-repo` configured; the tickets are the same either way, only the shape of the blocking edges changes:
 
 - **Local files** → write one file per ticket under `.work/tickets/<epic-slug>/<NN>-<ID>-<slug>.md`, numbered from `01` in dependency order (blockers first). Get each ID by the "Next id" rule in the tracker doc. Use the per-ticket file template below: one ticket per file, never a single combined file.
 - **A real issue tracker (GitHub, GitLab, Linear, ...)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Make each ticket a sub-issue of its epic, and set its type as the tracker doc says.
@@ -92,14 +92,15 @@ Do NOT close or modify any parent issue.
 **Blocked by:** <ticket ids, or "None (can start immediately)">
 **Status:** ready
 **New infrastructure:** <component, or "none">
-**Step:** <added by /implement-ticket; leave empty>
+**Step:** <added by /dev:implement-ticket; leave empty>
+**Base:** <added by /dev:implement-ticket; leave empty>
 
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
 
 - [ ] Acceptance criterion 1
 - [ ] Acceptance criterion 2
 
-## Test plan (added by /implement-ticket)
+## Test plan (added by /dev:implement-ticket)
 
 ## Result
 

@@ -14,11 +14,11 @@ Epics, tickets and the spec index for this repo live as Markdown files in `.work
 
 ## Conventions
 
-- One directory per epic under `.work/tickets/`. Only the epic being worked has ticket files; later epics stay as lines in `spec-index.md` until `/plan-tickets` cuts them.
+- One directory per epic under `.work/tickets/`. Only the epic being worked has ticket files; later epics stay as lines in `spec-index.md` until `/dev:plan-tickets` cuts them.
 - One file per ticket, never a single combined file. `NN` is the order within the epic, numbered from `01`, blockers first.
 - `ID` is the ticket id: the prefix below plus a number, for example `EC-7`. Prefix: `<PREFIX>`.
 - **Next id**: the highest number in any ticket file name across all epics, plus one. Compute it by listing `.work/tickets/`; never reuse a number.
-- A ticket pasted from another system (Jira, Linear) gets a file too, named after its own id, so `/implement-ticket` has one shape to read.
+- A ticket pasted from another system (Jira, Linear) gets a file too, named after its own id, so `/dev:implement-ticket` has one shape to read.
 - Header lines at the top of each file: `Type`, `Parent`, `Requirements`, `Blocked by`, `Status`, `New infrastructure`. `Status` takes `ready`, `in-progress`, `in-review`, `done` or `dropped`.
 - Comments and conversation history append to the bottom of the file under a `## Comments` heading.
 

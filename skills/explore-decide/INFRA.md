@@ -35,4 +35,4 @@ When the choice implies a rule (each service reads only its own schema, no servi
 
 ## Steps only a human can do
 
-Creating cloud accounts, setting secrets in CI, clicking through a provider dashboard: list them in the ticket under `New infrastructure`, and suggest `/wizard` for generating a script that walks the user through them.
+Creating cloud accounts, setting secrets in CI, clicking through a provider dashboard: list them in the ticket under `New infrastructure`, and suggest `/dev:wizard` for generating a script that walks the user through them.

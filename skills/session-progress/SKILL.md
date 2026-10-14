@@ -5,7 +5,7 @@ argument-hint: "An epic, a ticket id, or nothing for the overview"
 disable-model-invocation: true
 ---
 
-Give the user a **progress report**: where the work stands, and how it is broken down. This skill only reads. Changing a status belongs to `/implement-ticket`; closing an open point belongs to `explore-decide`.
+Give the user a **progress report**: where the work stands, and how it is broken down. This skill only reads. Changing a status belongs to `/dev:implement-ticket`; closing an open point belongs to `explore-decide`.
 
 If the user passed an argument, treat it as the target: an epic or a ticket id.
 
@@ -32,7 +32,7 @@ If the user passed an argument, treat it as the target: an epic or a ticket id.
 
    Report each one. Leave the repair to the skill that owns it.
 
-4. **Choose the next step.** The first of these that applies: resume the ticket that is `in-progress` (`/implement-ticket <ID>`); the lowest-numbered `ready` ticket whose blockers are all `done` (`/implement-ticket <ID>`); an open point to settle (`explore-decide`); the next epic to cut (`/plan-tickets`).
+4. **Choose the next step.** The first of these that applies: resume the ticket that is `in-progress` (`/dev:implement-ticket <ID>`); the lowest-numbered `ready` ticket whose blockers are all `done` (`/dev:implement-ticket <ID>`); an open point to settle (`explore-decide`); the next epic to cut (`/dev:plan-tickets`).
 
 5. **Write the report** in the format below.
 

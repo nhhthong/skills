@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["mcp/memo/**/*.ts", "skills/**/*.mts"]
+  "include": ["mcp/memo/**/*.ts", "skills/**/*.mts", "scripts/**/*.mts"]
 }

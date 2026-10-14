@@ -5,7 +5,7 @@ argument-hint: "A group (clarify, plan, ...), a skill name, or nothing for all"
 disable-model-invocation: true
 ---
 
-Show the user the skill catalog in [CATALOG.md](CATALOG.md). Print the lines as they are; do not rewrite or expand them.
+Show the user the skill catalog in [SKILLS.md](SKILLS.md). Print the lines as they are; do not rewrite or expand them.
 
 - No argument: print every group, with its heading.
 - A group prefix (`clarify`, `test`, ...): print only that group.

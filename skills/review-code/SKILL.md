@@ -1,27 +1,33 @@
 ---
 name: review-code
 description: "Review the changes since a fixed point on two axes: Standards (this repo's documented coding standards) and Spec (what the originating ticket or spec asked for)."
+argument-hint: "A commit, branch or tag to compare against, or a ticket id"
 disable-model-invocation: true
 ---
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Two-axis review of the changes since a fixed point the user supplies, uncommitted work included:
 
 - **Standards**: does the code conform to this repo's documented coding standards?
 - **Spec**: does the code faithfully implement the originating issue / spec?
 
 Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
 
-Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/setup-repo`.
+Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
 
 ## Process
 
 ### 1. Pin the fixed point
 
-Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). If they didn't specify one, ask for it.
+Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). A ticket id (`EC-7`) is accepted too: find its file under `.work/tickets/` and use its `**Base:**` line; that ticket file is then also the spec for step 2. If they didn't specify one, or the ticket has no `Base:` line, ask for it.
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+Capture the diff command once. The review usually runs before the commit, so it compares the **working tree**, not just commits:
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here, not inside two parallel sub-agents.
+- `BASE=$(git merge-base <fixed-point> HEAD)`
+- Diff: `git diff $BASE -- . ':(exclude).work'` (commits since the merge-base plus uncommitted changes to tracked files; the tracker directory is left out).
+- New files: `git ls-files --others --exclude-standard -- . ':(exclude).work'`. They are not in the diff; the sub-agents read them in full.
+- Commits: `git log <fixed-point>..HEAD --oneline` (may be empty when nothing is committed yet).
+
+Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and that the diff or the new-file list is non-empty. A bad ref or nothing to review should fail here, not inside two parallel sub-agents.
 
 ### 2. Identify the spec source
 
@@ -62,13 +68,13 @@ Issue both sub-agent calls together, in the foreground, and aggregate the report
 
 **Standards sub-agent prompt** should include:
 
-- The full diff command and commit list.
+- The full diff command, the new-file list and the commit list.
 - The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full (the sub-agent has no other access to it).
 - The brief: "Report, per file/hunk where relevant, (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls: documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
 
 **Spec sub-agent prompt** should include:
 
-- The diff command and commit list.
+- The diff command, the new-file list and the commit list.
 - The path or fetched contents of the spec.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
 

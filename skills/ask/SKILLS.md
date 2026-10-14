@@ -1,6 +1,6 @@
 # Skill catalog
 
-One line per skill: what it does, and when to reach for it. `type` = you type the command. `auto` = the agent starts it when it fits; you can type it too. Keep this file in step with the skills: it is the single list that `ask` and `ask-me` read.
+One line per skill: what it does, and when to reach for it. `type` = you type the command. `auto` = the agent starts it when it fits; you can type it too. It is the single list that `ask` and `ask-me` read. `npm run check` fails when it, `.claude-plugin/plugin.json`, the README or a skill's frontmatter disagree.
 
 ## setup
 - `/dev:setup-repo` (type): choose where memory lives, delivery, tracker, domain docs. Use once per repo, first.
@@ -21,6 +21,7 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 ## plan
 - `/dev:plan-spec` (type): index a spec by requirement code, or write one from a conversation. Use when you have a source document or settled design.
 - `/dev:plan-tickets` (type): cut epics and tracer-bullet tickets with blocking edges. Use after the spec.
+- `/dev:plan-ticket-change` (type): split, cancel or reopen a ticket. Use when a ticket is too big or no longer needed.
 
 ## implement
 - `/dev:implement-ticket` (type): take one ticket to a printed commit message and commands; resumes unfinished work. Use to do a ticket, or to continue.

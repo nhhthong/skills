@@ -11,6 +11,7 @@ How work is delivered in this repo, and where memory lives. Skills read this fil
 
 - **Delivery**: `<commit | pr>`. `commit` means the work goes onto the current branch. `pr` means a branch and a pull request.
 - **Git writes**: `hand-off`. Skills do not run `git commit`, `git push` or open a pull request. They print the commit message and the exact commands for you to run. Change this to `run` to let skills run them. A direct request in a session ("commit it") is also honoured for that session.
+- **Review**: `typed`. `implement-ticket` stops before delivery and asks you to run `/dev:review-code`. Change this to `inline` to let it run the same two-axis review itself, against the ticket's `Base:` commit, and go on to delivery.
 - **Branch names**: `<pattern, for example type/ticket-id-short-description>`
 - **Commit messages**: `<convention, for example Conventional Commits>`
 - **PR size cap**: `<for example 400 changed lines, or none>`
