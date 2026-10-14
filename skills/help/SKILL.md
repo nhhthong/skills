@@ -1,5 +1,5 @@
 ---
-name: ask
+name: help
 description: Show what each skill does, in one line each.
 argument-hint: "A group (clarify, plan, ...), a skill name, or nothing for all"
 disable-model-invocation: true

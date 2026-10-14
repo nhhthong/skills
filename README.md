@@ -5,10 +5,10 @@
 **From an empty source, or a ticket in a big project, to delivery.**
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
-[![Version](https://img.shields.io/badge/version-0.1.1-blue)](.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue)](.claude-plugin/plugin.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-31 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
+32 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
 
 
 ## Install
@@ -54,7 +54,7 @@ flowchart TD
 | Many independent tickets in a phase | `implement-spec` (parallel worktrees; you run the printed integration script) |
 | A ticket needs information only another person has | `clarify-ask` writes a questionnaire for them |
 | Choose between options (database, queue, library) | `explore-decide` researches and recommends; you choose |
-| Not sure where to start | `ask-me <what you want to do>` names the skills to run; `ask` lists them all |
+| Not sure where to start | `ask-me <what you want to do>` names the skills to run; `help` lists them all |
 
 Run `clarify-grill-docs`, `plan-spec` and `plan-tickets` in one session, then start each `implement-ticket` in a fresh one. Anything the source leaves open stays an open point with a name and a date; skills never fill it with a guess.
 
@@ -123,9 +123,10 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 </details>
 
 <details>
-<summary><b>Review</b>: Check the work (2)</summary>
+<summary><b>Review</b>: Check the work (3)</summary>
 
 - [`review-code`](skills/review-code/SKILL.md) (you type): Review a diff on two axes, Standards and Spec, in parallel subagents.
+- [`review-learn`](skills/review-learn/SKILL.md) (you type): Write a short learning note for a finished ticket or epic, with Mermaid diagrams, under `.work/learn/`.
 - [`review-pr`](skills/review-pr/SKILL.md) (agent): Shape a pull request body: a summary visual, before and after evidence, merge danger.
 
 </details>
@@ -158,7 +159,7 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 <details>
 <summary><b>Other</b>: Navigation, manual steps, writing for agents (4)</summary>
 
-- [`ask`](skills/ask/SKILL.md) (you type): Show what each skill does, one line each, for all or one group.
+- [`help`](skills/help/SKILL.md) (you type): Show what each skill does, one line each, for all or one group.
 - [`ask-me`](skills/ask-me/SKILL.md) (you type): Say what you want to do and get the skills to run, in order.
 - [`wizard`](skills/wizard/SKILL.md) (you type): Generate an interactive script that walks you through steps only a human can do.
 - [`agent-docs`](skills/agent-docs/SKILL.md) (agent): Write skills, `CLAUDE.md` and other documents agents read.
@@ -174,6 +175,7 @@ Work files live under `.work/` in the project:
 ├── config.md          # private storage only: tracker, domain, workflow
 ├── spec-index.md      # requirement codes, open points, decisions, infrastructure order
 ├── tickets/           # <epic>/, external/ (pasted tickets), tracked/ (tracker copies)
+├── learn/             # learning notes written by /dev:review-learn
 └── questionnaires/
 ```
 
@@ -196,7 +198,7 @@ The plugin starts a small MCP server, `memo`, that keeps what sessions learn in 
 
 Only for editing this repo, never for using the plugin: `npm install` adds `@types/node` and TypeScript so the editor and `npm run typecheck` know the `node:*` modules. `npm test` runs `npm run check` and then the memo server tests.
 
-`npm run check` (no install needed) fails when the skill folders, `.claude-plugin/plugin.json`, `skills/ask/SKILLS.md`, this README and each skill's `agents/openai.yaml` disagree, or a description is over 250 characters. Adding a skill means: its folder with `SKILL.md` and `agents/openai.yaml`, a line in `plugin.json`, a line in `SKILLS.md`, a line here and the count at the top. The check names whatever is missing.
+`npm run check` (no install needed) fails when the skill folders, `.claude-plugin/plugin.json`, `skills/help/SKILLS.md`, this README and each skill's `agents/openai.yaml` disagree, or a description is over 250 characters. Adding a skill means: its folder with `SKILL.md` and `agents/openai.yaml`, a line in `plugin.json`, a line in `SKILLS.md`, a line here and the count at the top. The check names whatever is missing.
 
 ## Credits
 

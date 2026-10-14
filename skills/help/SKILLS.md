@@ -1,6 +1,6 @@
 # Skill catalog
 
-One line per skill: what it does, and when to reach for it. `type` = you type the command. `auto` = the agent starts it when it fits; you can type it too. It is the single list that `ask` and `ask-me` read. `npm run check` fails when it, `.claude-plugin/plugin.json`, the README or a skill's frontmatter disagree.
+One line per skill: what it does, and when to reach for it. `type` = you type the command. `auto` = the agent starts it when it fits; you can type it too. It is the single list that `help` and `ask-me` read. `npm run check` fails when it, `.claude-plugin/plugin.json`, the README or a skill's frontmatter disagree.
 
 ## setup
 - `/dev:setup-repo` (type): choose where memory lives, delivery, tracker, domain docs. Use once per repo, first.
@@ -36,6 +36,7 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 
 ## review
 - `/dev:review-code` (type): review a diff on Standards and Spec in parallel. Use before you commit.
+- `/dev:review-learn` (type): write a learning note with Mermaid diagrams for a finished ticket or epic. Use after delivery, to share what was built.
 - `/dev:review-pr` (auto): shape a pull request body with evidence. Use when opening a PR.
 
 ## design
@@ -54,4 +55,4 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 ## other
 - `/dev:wizard` (type): generate a script that walks you through steps only a human can do.
 - `/dev:agent-docs` (auto): write skills, `CLAUDE.md` and other documents agents read.
-- `/dev:ask` (type): list these skills. `/dev:ask-me` (type): say what you want to do, get the command to run.
+- `/dev:help` (type): list these skills. `/dev:ask-me` (type): say what you want to do, get the command to run.

@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Skills for taking work from an empty source or a big project's ticket to delivery: clarify, plan, implement, test, debug and review, with a local memory (SQLite) that survives between sessions.",
   "author": {
     "name": "nhhthong",
@@ -20,7 +20,7 @@
   ],
   "skills": [
     "./skills/agent-docs",
-    "./skills/ask",
+    "./skills/help",
     "./skills/ask-me",
     "./skills/clarify-ask",
     "./skills/clarify-domain",
@@ -41,6 +41,7 @@
     "./skills/plan-ticket-change",
     "./skills/plan-tickets",
     "./skills/review-code",
+    "./skills/review-learn",
     "./skills/review-pr",
     "./skills/session-handoff",
     "./skills/session-progress",

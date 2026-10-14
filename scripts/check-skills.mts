@@ -3,7 +3,7 @@
 //
 // Sources of truth: each skills/<name>/SKILL.md frontmatter.
 // Checked against: .claude-plugin/plugin.json, skills/<name>/agents/openai.yaml,
-// skills/ask/SKILLS.md and README.md.
+// skills/help/SKILLS.md and README.md.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -61,8 +61,8 @@ const listed = (manifest.skills ?? []).map((p) => p.replace(/^\.\/skills\//, '')
 for (const name of names) if (!listed.includes(name)) fail(`plugin.json: "./skills/${name}" missing`);
 for (const name of listed) if (!names.includes(name)) fail(`plugin.json: "./skills/${name}" has no folder`);
 
-// skills/ask/SKILLS.md: each skill once, with the right (type) or (auto) mark.
-const catalog = read('skills/ask/SKILLS.md');
+// skills/help/SKILLS.md: each skill once, with the right (type) or (auto) mark.
+const catalog = read('skills/help/SKILLS.md');
 const catalogMarks = new Map<string, string[]>();
 for (const m of catalog.matchAll(/`\/dev:([a-z-]+)` \((type|auto)\)/g)) {
   catalogMarks.set(m[1], [...(catalogMarks.get(m[1]) ?? []), m[2]]);

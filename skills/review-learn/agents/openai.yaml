@@ -1,0 +1,5 @@
+interface:
+  display_name: "Learning Note"
+  short_description: "Summarise finished work as a note with Mermaid diagrams"
+policy:
+  allow_implicit_invocation: false

@@ -9,6 +9,7 @@ Epics, tickets and the spec index for this repo live as Markdown files in `.work
 ├── spec-index.md                      # requirement codes, open points, decisions, infrastructure order
 ├── tickets/<epic-slug>/<NN>-<ID>-<slug>.md
 ├── research/                          # cited research notes
+├── learn/                             # learning notes from /dev:review-learn
 └── notes.md                           # only when memory is not installed (see workflow.md)
 ```
 
