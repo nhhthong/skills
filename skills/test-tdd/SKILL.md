@@ -34,5 +34,7 @@ When the shape of that interface is itself in question (how deep the module is, 
 ## Rules of the loop
 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
+- **Red for the right reason.** Run the new test before the code exists and read the failure: it must fail on the behaviour the slice adds or the bug's exact symptom. A test that passes, or fails on a typo, an import or a fixture, is fixed before any production code changes.
+- **Tests hold the expected behaviour.** Change an existing test or loosen an assertion only when the expected behaviour itself changed, and name the ticket line that changed it. A test that disagrees with new code is evidence about the code first.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
 - **Refactoring is not part of the loop.** It belongs to the review stage (the `/dev:review-code` command), not the red → green implementation cycle.

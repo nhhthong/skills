@@ -94,6 +94,7 @@ Do NOT close or modify any parent issue.
 **New infrastructure:** <component, or "none">
 **Step:** <added by /dev:implement-ticket; leave empty>
 **Base:** <added by /dev:implement-ticket; leave empty>
+**Baseline:** <added by /dev:implement-ticket; leave empty>
 
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
 

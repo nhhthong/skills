@@ -11,13 +11,24 @@ Every ticket worked has a **local ticket file** under `.work/tickets/`. The file
 
 **Write the `Step:` line before starting each step**, naming the step you are about to do (`orient`, `fill gaps`, `plan proof`, `build`, `review`, `deliver`, `close`). The last `Step:` line says where a dead session stopped.
 
+## Rigor follows the tier
+
+The tier that `test-plan` picks in step 3 (`check`, `light`, `full`) decides how much of the process below runs. A small change gets a small process: tier `check` runs no baseline, its proof is the plan's existing command, and its verdict is `VERIFIED` when that command exits 0 on the current code, `NOT VERIFIED` when it fails, and `INCONCLUSIVE` when it could not run.
+
+Read a leaf only when its condition holds:
+
+- Tier `light` or `full`, or a subagent reports work as done: [PROOF.md](../test-plan/PROOF.md).
+- Tier `light` or `full`, a sweep or migration, a bug ticket, or work you will deliver as more than one commit: [SEQUENCE.md](SEQUENCE.md).
+
+Name each leaf you read on the `Applied:` line of `## Result`. A step that does not apply to this ticket gets a `skip: <step>: <reason>` line there instead of silent omission.
+
 ## Steps
 
 ### 0. Identify the ticket
 
 - **A ticket id.** Read its file in `.work/tickets/`. If the ticket exists only on the tracker, read it there and write a local file for it at `.work/tickets/tracked/<ID>-<slug>.md` in the ticket template of `plan-tickets`, with a `Tracker:` line holding its URL.
 - **Pasted ticket text** (from Jira or anywhere else). Write it as a ticket file at `.work/tickets/external/<ID>-<slug>.md`, using the id it already has. Fill `Type` (a guess you state), `Requirements: none`, `Blocked by: None`, and the acceptance criteria from the text.
-- **Nothing.** Resume: find the ticket with `Status: in-progress` or `in-review` (`grep -rl` over `.work/tickets/`). With none, say so and suggest `/dev:session-progress`. With one, read its last `Step:` and `## Result`, compare with `git status` and `git log`, and **run the tests again before writing more code**: the file can be one step behind the working tree. A ticket waiting at `Step: review` goes on from step 5; one at `Status: in-review` whose commit now exists is closed as `done`.
+- **Nothing.** Resume: find the ticket with `Status: in-progress` or `in-review` (`grep -rl` over `.work/tickets/`). With none, say so and suggest `/dev:session-progress`. With one, read its last `Step:` and `## Result`, compare with `git status` and `git log`, and **run the tests again before writing more code**: the file can be one step behind the working tree. The ticket file is the record: continue from it rather than redoing finished steps, and trust its claims only once the rerun proof agrees with them. A ticket waiting at `Step: review` goes on from step 5; one at `Status: in-review` whose commit now exists is closed as `done`.
 
 Set `Status: in-progress`. Done when you can state the ticket's id and title (and, when resuming, the step you will continue from).
 
@@ -43,7 +54,7 @@ Call the Skill tool with "dev:test-plan". Done when the plan is in the ticket fi
 
 ### 4. Build
 
-- **Branch.** Follow `workflow.md`. With delivery `pr`, work on a branch named by the repo's pattern (creating the branch is fine; committing is not). With `commit`, stay on the current branch. Before the first change, write `**Base:** <git rev-parse HEAD>` under the ticket's header lines: it is the fixed point the review compares against.
+- **Branch.** Follow `workflow.md`. With delivery `pr`, work on a branch named by the repo's pattern (creating the branch is fine; committing is not). With `commit`, stay on the current branch. Before the first change, write `**Base:** <git rev-parse HEAD>` under the ticket's header lines: it is the fixed point the review compares against. For tier `light` or `full`, record the baseline as [SEQUENCE.md](SEQUENCE.md) says.
 - **Bug ticket.** Call the Skill tool with "dev:debug-diagnose" and let it lead; it records attempts in the notes.
 - **Tier `check`.** Make the change, then run the proof command from the plan.
 - **Tier `light` or `full`.** Call the Skill tool with "dev:test-tdd" and build one slice at a time at the plan's seams.
@@ -52,7 +63,7 @@ Run the typecheck regularly, single test files often, and the whole suite once a
 
 A problem found on the way that is not fixed in this ticket (a defect in other code, a broken environment): if it affects other tickets or needs someone else, open a `bug` ticket for it through the tracker; otherwise record it with `memo_post` as an `issue` linked to this ticket.
 
-Done when every acceptance criterion is ticked and the proof is green on the current code.
+Done when every acceptance criterion is ticked and the proof is green on the current code, run by you in this session. For tier `light` or `full`, the verdict is `VERIFIED` by [PROOF.md](../test-plan/PROOF.md).
 
 ### 5. Review
 
@@ -67,7 +78,7 @@ Done when each finding is either fixed or written under `## Result` with the rea
 
 Follow `workflow.md`. **Skills do not run `git commit`, `git push` or open a pull request.** Print them for the user, unless `workflow.md` says `Git writes: run` or the user asks you in this session to run them.
 
-- **commit**: print the commit message in the repo's convention, then the commands in order: `git add` with the explicit files from `git status` (leave out `.work/`), then `git commit` with that message.
+- **commit**: print the commit message in the repo's convention, then the commands in order: `git add` with the explicit files from `git status` (leave out `.work/`), then `git commit` with that message. When the work is more than one unit, print one commit per unit in the order [SEQUENCE.md](SEQUENCE.md) gives.
 - **pr**: check the diff against the PR size cap first; if it is over, stop, propose how to split the ticket, and tell the user to run `/dev:plan-ticket-change split <ID>` to apply it. Then print the branch check, the commit message and commands as above, `git push -u origin <branch>`, and the command that opens the pull request. Call the Skill tool with "dev:review-pr" for the body and print it. The repo's PR template wins over the skill's template.
 
 Done when the message and the commands are printed (or, under `Git writes: run`, you have a commit hash or a PR URL).
@@ -75,7 +86,7 @@ Done when the message and the commands are printed (or, under `Git writes: run`,
 ### 7. Close
 
 - Set `Status: in-review`: the work is complete and waits for the user to commit or merge it. Set `Status: done` when the user confirms the commit or the merge, or when a later `/dev:implement-ticket` or `/dev:session-progress` finds the commit on the branch.
-- Fill `## Result`: what changed, the proof and its outcome, the commit message and commands you printed (or the PR or commit), the decisions made, the follow-ups.
+- Fill `## Result`: what changed; the proof command, the output lines that decide it, and the verdict (`VERIFIED`, `NOT VERIFIED` or `INCONCLUSIVE`); pre-existing failures from the baseline; the commit message and commands you printed (or the PR or commit); the decisions made; the follow-ups; the `Applied:` line and any `skip:` lines.
 - Turn a `fix` note from `(unconfirmed)` to `(confirmed)` by appending a new line.
 - Add `note` lines for anything the next session would lose time without.
 - A tracker ticket: mirror the status on the tracker and close it only after delivery is confirmed.

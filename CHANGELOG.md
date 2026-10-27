@@ -2,6 +2,23 @@
 
 All notable changes to the `dev` plugin. Versions follow [Semantic Versioning](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+Adds ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT). To be released as 1.0.0.
+
+### Added
+
+- `test-plan/PROOF.md`: one proof standard. Check the real artifact, not a proxy; proof levels 1 to 5; verdicts `VERIFIED`, `NOT VERIFIED`, `INCONCLUSIVE`.
+- `implement-ticket/SEQUENCE.md`: baseline at `Base:`, one checked unit at a time, and commit order (red test before fix).
+- `**Baseline:**` ticket header line and a `Baseline:` line in `light` and `full` test plans.
+- `npm run check` fails on broken relative links, leaf files no `SKILL.md` reaches, and unknown `dev:<name>` references.
+
+### Changed
+
+- `implement-ticket`: rigor follows the test-plan tier. Tier `check` runs no baseline, and reads a leaf only for a bug, a sweep or work delivered as more than one commit. `## Result` records the proof output, the verdict, an `Applied:` line and `skip:` lines.
+- `test-plan`: a "Contained" yes needs a `file:line` or an empty caller search. No new test beats a bad one.
+- `test-tdd`: a new test must fail for the right reason; tests change only when the expected behaviour changed.
+
 ## [0.2.0] - 2026-10-14
 
 Fixes from a field report: six tickets (EC-4 to EC-9) taken to delivery in a Go repo with `Storage: in-repo`, `Delivery: pr`.
