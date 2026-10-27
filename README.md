@@ -38,7 +38,7 @@ flowchart TD
     N -- "phase done" --> T
 ```
 
-`/dev:implement-ticket` takes one ticket through: identify, orient in the code, fill the gaps, plan the proof (an existing command, one test, or tests per risk; some tickets need none), build, review, deliver. It writes a `Step:` line before each stage, so a dead session resumes with `/dev:implement-ticket`.
+`/dev:implement-ticket` takes one ticket through: identify, orient in the code, fill the gaps, plan the proof (an existing command, one test, or tests per risk; some tickets need none), build, review, deliver. It writes a `Step:` line before each stage, so a dead session resumes with `/dev:implement-ticket`. The proof tier sets how much process runs: a `check` ticket runs the existing command and nothing more, while `light` and `full` tickets also record a baseline and must reach a `VERIFIED` verdict on the real code.
 
 **By default, skills never run `git commit` or `git push`.** They print the commit message and the exact commands for you to run. Set `Git writes: run` in `workflow.md` to change that.
 
@@ -176,6 +176,7 @@ Work files live under `.work/` in the project:
 ├── spec-index.md      # requirement codes, open points, decisions, infrastructure order
 ├── tickets/           # <epic>/, external/ (pasted tickets), tracked/ (tracker copies)
 ├── learn/             # learning notes written by /dev:review-learn
+├── proof/             # scripts written only to prove a ticket's result
 └── questionnaires/
 ```
 
@@ -205,11 +206,13 @@ Run from the plugin folder (`~/.claude/plugins/cache/nhhthong-skills/dev/<versio
 
 Only for editing this repo, never for using the plugin: `npm install` adds `@types/node` and TypeScript so the editor and `npm run typecheck` know the `node:*` modules. `npm test` runs `npm run check` and then the memo server tests.
 
-`npm run check` (no install needed) fails when the skill folders, `.claude-plugin/plugin.json`, `skills/help/SKILLS.md`, this README and each skill's `agents/openai.yaml` disagree, or a description is over 250 characters. Adding a skill means: its folder with `SKILL.md` and `agents/openai.yaml`, a line in `plugin.json`, a line in `SKILLS.md`, a line here and the count at the top. The check names whatever is missing.
+`npm run check` (no install needed) fails when the skill folders, `.claude-plugin/plugin.json`, `skills/help/SKILLS.md`, this README and each skill's `agents/openai.yaml` disagree, or a description is over 250 characters. It also fails when a relative link in a skill's Markdown does not resolve, a leaf file (a `.md` beside a `SKILL.md`) cannot be reached by links from any `SKILL.md`, or a skill names a `dev:<name>` that does not exist. Adding a skill means: its folder with `SKILL.md` and `agents/openai.yaml`, a line in `plugin.json`, a line in `SKILLS.md`, a line here and the count at the top. The check names whatever is missing.
 
 ## Credits
 
 > **Based on [Matt Pocock's skills](https://github.com/mattpocock/skills)** (MIT). Most of the ideas and many of the files come from his work: grilling sessions, a shared domain language, tracer-bullet tickets, red-green-refactor, deep modules and two-axis code review. This repo is maintained on its own and no longer tracks his.
+>
+> **Ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack)** by Lauren Tan (MIT): the proof standard and proof levels, sequencing work into verifiable units, and small leaf files read only when a trigger holds.
 
 ## License
 

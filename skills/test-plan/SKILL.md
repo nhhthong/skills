@@ -7,7 +7,7 @@ description: Choose the minimum proof a ticket needs before code is written: a c
 
 A ticket needs the **proof** that fits its risk, and no more. Proof is a command that goes red when the work is wrong: a build, a lint rule, a smoke check, or a test.
 
-The question that picks the amount: *would a mistake show itself the moment someone looks, and would reverting the commit undo it?* Then a command that already exists is enough. A mistake that can sit silent and cost something later earns a test.
+The question that picks the amount: *would a mistake show itself the moment someone looks, and would reverting the commit undo it?* Then a command that already exists is enough. A mistake that can sit silent and cost something later earns a test. What counts as proof, and how sure a claim is, is defined once in [PROOF.md](PROOF.md).
 
 ## Steps
 
@@ -16,7 +16,7 @@ The question that picks the amount: *would a mistake show itself the moment some
 2. **Pick the tier.** Answer three questions about the ticket:
    - **Seen**: does a mistake show the moment someone looks (a colour, a layout, a label, a config value that fails the build)?
    - **Undone by code alone**: does reverting the commit put everything back, with nothing stored, sent, migrated or charged?
-   - **Contained**: does it leave every trust boundary, shared record and other ticket's behaviour as it was?
+   - **Contained**: does it leave every trust boundary, shared record and other ticket's behaviour as it was? A yes here needs proof level 2 from [PROOF.md](PROOF.md): the `file:line` of each caller of what changed, or a search for callers that returns none. A yes you cannot point to is a no.
 
    | Answers | Tier | Proof |
    |---|---|---|
@@ -34,7 +34,7 @@ The question that picks the amount: *would a mistake show itself the moment some
 
 5. **Take expected values from outside the code.** A number from the spec, a worked example, a literal. A test that recomputes the expected value with the code's own logic passes by construction. When the spec gives no source for a value, the value is an open point: call the Skill tool with "dev:explore-decide" or ask the user, and write no test for it yet. A performance, load or stress test needs a number from the spec; with none, write no test and say what is missing.
 
-6. **Respect what the repo has.** Use the framework, naming and layout the repo already uses. A ticket small enough to be proven by another ticket's test may declare `covered by <ID>` instead of adding its own.
+6. **Respect what the repo has.** Use the framework, naming and layout the repo already uses. A ticket small enough to be proven by another ticket's test may declare `covered by <ID>` instead of adding its own. No new test beats a bad one: when the only test you could write would mostly check mocks, depend on timing, or need heavy setup for a small change, use the closest command that runs the real code instead (a script, a curl, a CLI call) and say why in the plan.
 
 7. **Mutation testing.** Propose it only for a severe module that is already stable, and ask first. Never add it silently.
 
@@ -54,6 +54,7 @@ Proof: <command> exits 0
 ```
 Tier: <light | full>
 Seams: <the public boundaries the tests observe, one line each>
+Baseline: <command run at Base before the first change: the touched area's tests for light, the whole suite for full>
 
 | What | Kind | Proof | Expected value comes from |
 |---|---|---|---|

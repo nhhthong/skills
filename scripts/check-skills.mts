@@ -4,8 +4,11 @@
 // Sources of truth: each skills/<name>/SKILL.md frontmatter.
 // Checked against: .claude-plugin/plugin.json, skills/<name>/agents/openai.yaml,
 // skills/help/SKILLS.md and README.md.
+// Also checks the leaves: every relative link in a skill's Markdown resolves, every
+// leaf file (a .md beside a SKILL.md) is reachable by links from some SKILL.md, and
+// every `dev:<name>` a skill names exists.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join, relative, sep } from 'node:path';
 
 const ROOT = join(import.meta.dirname, '..');
 const SKILLS = join(ROOT, 'skills');
@@ -88,6 +91,43 @@ for (const name of names) {
 const count = /(\d+) small skills/.exec(readme);
 if (!count || Number(count[1]) !== names.length) {
   fail(`README.md: says ${count ? count[1] : 'no'} small skills, there are ${names.length}`);
+}
+
+// Leaves: relative links resolve, every leaf is reachable from a SKILL.md, every `dev:<name>` exists.
+// Paths are kept in POSIX form so the checks agree on Windows too.
+const posix = (p: string): string => p.split(sep).join('/');
+const markdown = readdirSync(SKILLS, { recursive: true, encoding: 'utf8' })
+  .filter((p) => p.endsWith('.md'))
+  .map((p) => posix(join('skills', p)));
+// A fenced block, indented or not, holds examples, not links to check.
+const FENCE = /^[ \t]*(`{3,})[^\n]*\n[\s\S]*?^[ \t]*\1[ \t]*$/gm;
+const LINK = /\]\(([^)\s#]+)(?:#[^)]*)?\)/g;
+const links = new Map<string, string[]>();
+for (const path of markdown) {
+  const prose = read(path).replace(FENCE, '');
+  const out: string[] = [];
+  for (const m of prose.matchAll(LINK)) {
+    const target = m[1];
+    if (/^[a-z][a-z0-9+.-]*:/i.test(target)) continue;
+    const resolved = posix(relative(ROOT, join(ROOT, dirname(path), target)));
+    if (!existsSync(join(ROOT, resolved))) fail(`${path}: link to "${target}" does not resolve`);
+    else out.push(resolved);
+  }
+  links.set(path, out);
+  for (const m of prose.matchAll(/\bdev:([a-z][a-z-]*[a-z])(?![-\w])/g)) {
+    if (!names.includes(m[1])) fail(`${path}: names "dev:${m[1]}", which is not a skill`);
+  }
+}
+const reached = new Set<string>();
+const queue = markdown.filter((p) => p.endsWith('/SKILL.md'));
+for (let path = queue.pop(); path !== undefined; path = queue.pop()) {
+  if (reached.has(path)) continue;
+  reached.add(path);
+  queue.push(...(links.get(path) ?? []));
+}
+for (const path of markdown) {
+  if (path.endsWith('/CREDITS.md')) continue;
+  if (!reached.has(path)) fail(`${path}: leaf file that no SKILL.md reaches`);
 }
 
 if (errors.length) {
