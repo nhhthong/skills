@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Skills for taking work from an empty source or a big project's ticket to delivery: clarify, plan, implement, test, debug and review, with a local memory (SQLite) that survives between sessions.",
   "author": {
     "name": "nhhthong",
