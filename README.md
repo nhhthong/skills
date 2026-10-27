@@ -11,7 +11,7 @@
 [![Node.js](https://img.shields.io/badge/node-%E2%89%A522.18-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[Quick start](#quick-start) · [How it works](#how-it-works) · [Workflows](#common-workflows) · [Skills](#skills) · [Changelog](#changelog)
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Skills](#skills) · [Changelog](#changelog)
 
 </div>
 
@@ -42,7 +42,7 @@ Then, inside your project:
 /dev:ask-me <what you want to do>    not sure? get the skills to run, in order
 ```
 
-> **Requirements:** [Node.js](https://nodejs.org) 22.18 or newer (24 recommended). The `memo` server and the scripts are TypeScript that Node runs directly: no build step, no `npm install`. Without Node the skills still work, and memory falls back to `.work/notes.md`.
+> **Requires** [Node.js](https://nodejs.org) 22.18+ for the memory server. Without it, skills still work and memory falls back to `.work/notes.md`.
 
 ## How it works
 
@@ -192,36 +192,11 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 
 ## Files the skills write
 
-```text
-.work/
-├── config.md          # private storage only: tracker, domain, workflow
-├── spec-index.md      # requirement codes, open points, decisions, infrastructure order
-├── tickets/           # <epic>/, external/ (pasted tickets), tracked/ (tracker copies)
-├── plans/             # two-way planning drafts and their comparison
-├── handoff/           # scripts printed for you to run
-├── proof/             # scripts written only to prove a ticket's result
-├── research/          # cited research notes
-├── learn/             # learning notes from /dev:review-learn
-└── questionnaires/    # questions for someone else, from /dev:clarify-ask
-```
-
-Under `private` storage, `.work/` stays out of git and skills create nothing else in the repository.
+Tickets, the spec index, plans, proof scripts and notes go under `.work/` in the project. Under `private` storage, `.work/` stays out of git and nothing else in the repo is touched.
 
 ## Memory
 
-A small MCP server, `memo`, keeps what sessions learn in a local SQLite database: full-text search, no network. It lives at `~/.claude/memo/<project>-<id>.db`, one file per project, and is found again after a re-clone because the project is identified by its first commit.
-
-| Tool | Does |
-| --- | --- |
-| `memo_post` | Record an issue (`I-n`), attempt (`A-n`), fix (`F-n`), decision (`D-n`) or note (`N-n`), linked to an epic and a ticket |
-| `memo_callback` | Search by question, type, epic, ticket, tag or file, best match first |
-| `memo_get` | Read one memo with its linked attempts, fixes and history |
-| `memo_info` | Which project and file is in use, counts, open issues |
-
-Every write is checked: malformed values and edits to a decision's title are refused, and an incomplete memo comes back with `warnings` for the agent to fill in. From the plugin folder (`~/.claude/plugins/cache/nhhthong-skills/dev/<version>/`):
-
-- `node mcp/memo/cli.ts export`: back up or share the memory as Markdown.
-- `node mcp/memo/cli.ts audit [--json]`: list older memos that break the checks; read-only.
+A local MCP server, `memo`, keeps issues, attempts, fixes and decisions in SQLite at `~/.claude/memo/`, one file per project, so the next session finds them. No network. Back it up with `node mcp/memo/cli.ts export` from the plugin folder.
 
 ## Changelog
 
@@ -248,23 +223,16 @@ Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Development
 
-Only for editing this repo, never for using the plugin.
-
 ```bash
-npm install         # @types/node and TypeScript, for the editor and typecheck
-npm test            # npm run check, then the memo and check-tickets tests
-npm run typecheck
+npm install && npm test   # skill consistency check, then the script tests
 ```
 
-`npm run check` needs no install. It fails when the skill folders, `.claude-plugin/plugin.json`, `skills/help/SKILLS.md`, this README and each `agents/openai.yaml` disagree; when a description is over 250 characters; when a relative link does not resolve; when a leaf file is not reached from any `SKILL.md`; or when a skill names a `dev:<name>` that does not exist.
-
-Adding a skill means its folder with `SKILL.md` and `agents/openai.yaml`, a line in `plugin.json`, a line in `SKILLS.md`, a line here and the count at the top. The check names whatever is missing.
+`npm test` names whatever a new skill is missing: its `SKILL.md`, `agents/openai.yaml`, or its line in `plugin.json`, `skills/help/SKILLS.md` and this README.
 
 ## Credits
 
-> **Based on [Matt Pocock's skills](https://github.com/mattpocock/skills)** (MIT). Most of the ideas and many of the files come from his work: grilling sessions, a shared domain language, tracer-bullet tickets, red-green-refactor, deep modules and two-axis code review. This repo is maintained on its own and no longer tracks his.
->
-> **Ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack)** by Lauren Tan (MIT): the proof standard and proof levels, sequencing work into verifiable units, leaf files read only when a trigger holds, two-way planning compared like an `arena`, design red flags from `architect`, and the skills `review-impact` (`blast-radius`), `explore-why` (`why`), `test-benchmark` (`benchmark-checklist`) and `setup-verify` (`create-verification-skill`), with lead judgment for reviews (`interrogate`) and premise and root-cause rules for debugging.
+- [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT): the base of this repo.
+- [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT): proof levels, tier-gated rigor, leaf files, two-way planning, and the skills behind `review-impact`, `explore-why`, `test-benchmark` and `setup-verify`.
 
 ## License
 
