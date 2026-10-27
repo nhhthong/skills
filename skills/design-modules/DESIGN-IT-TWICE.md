@@ -21,7 +21,7 @@ Show this to the user, then immediately proceed to Step 2. The user reads and th
 
 Spawn 3+ sub-agents in parallel. Each must produce a **radically different** interface for the deepened module.
 
-Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](DEEPENING.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
+Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](DEEPENING.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Tell each agent to make the best design it can under its constraint and not to hedge toward a middle: the differences are what the comparison uses. Give each agent a different design constraint:
 
 - Agent 1: "Minimize the interface: aim for 1–3 entry points max. Maximise leverage per entry point."
 - Agent 2: "Maximise flexibility: support many use cases and extension."
@@ -32,8 +32,8 @@ Include both [SKILL.md](SKILL.md) vocabulary and GLOSSARY.md vocabulary in the b
 
 Each sub-agent outputs:
 
-1. Interface (types, methods, params, plus invariants, ordering, error modes)
-2. Usage example showing how callers use it
+1. Usage first: two or three real call sites from this codebase, written before the interface. The interface is derived from them; when the two disagree, change the interface, not the usage
+2. Interface (types, methods, params, plus invariants, ordering, error modes)
 3. What the implementation hides behind the seam
 4. Dependency strategy and adapters (see [DEEPENING.md](DEEPENING.md))
 5. Trade-offs: where leverage is high, where it's thin
@@ -46,6 +46,6 @@ Present designs sequentially so the user can absorb each one, then compare them 
 
 After comparing, give your own recommendation: the base design and why. Then **graft**: walk each other design once for the one or two parts worth porting, and fold them into the base by hand so it stays one coherent design. Designs that converge on one shape are strong agreement: recommend that shape with no graft. Designs that diverge wildly mean Step 1 was under-specified: sharpen the constraints and run Step 2 again rather than averaging them. Be opinionated: the user wants a strong read, not a menu.
 
-Screen the base before recommending it: a change that looks right from one file should be right for the whole repo. Reject a design whose callers must know its internal rules, or whose types need casts or always-set optional fields to compile.
+Screen the base against [RED-FLAGS.md](RED-FLAGS.md) before recommending it, and every other design before grafting from it: a change that looks right from one file should be right for the whole repo.
 
 The judge, rubric and graft steps are adapted from pstack (Lauren Tan, MIT): `arena`, `architect`.

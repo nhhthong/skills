@@ -21,7 +21,7 @@ Work from whatever is already in the conversation context. If the user passes a 
 ### 2. Cut epics only when the source lacks them
 
 - The source already divides the work into phases with completion criteria (a roadmap): each phase is an epic. Write nothing for the epics, say you skipped the step, and cut tickets for the phase being worked next.
-- No such structure: group the requirements into 4 to 10 epics by area of the business, not by directory. The first epic is a runnable skeleton (toolchain, scaffold, one smoke check). Show the epics as a table and get the user's approval before going on.
+- No such structure: group the requirements into 4 to 10 epics by area of the business, not by directory. The first epic is a runnable skeleton (toolchain, scaffold, one smoke check). Show the epics as a table and go on. Ask only when two groupings fit equally well.
 
 Cut tickets only for the epic about to be worked. Later epics stay as lines in the spec index until their turn.
 
@@ -34,6 +34,17 @@ Look for opportunities to prefactor the code to make the implementation easier. 
 ### 4. Draft vertical slices
 
 Break the work into **tracer bullet** tickets.
+
+**Two ways for anything but a small epic.** Cut the epic with [TWO-WAY.md](TWO-WAY.md), a forward and a backward draft compared, unless every one of these is a clear yes:
+
+- **Small**: you expect three tickets or fewer.
+- **One place**: every requirement lands in one module or package of this repo.
+- **Nothing crosses**: no caller, service, partner API, queue, webhook, email or file outside the repo sends to it or receives from it.
+- **Nothing stored changes shape**: no new table, column, migration, file format, cache key or backfill.
+- **Nothing new or open**: no component missing from the spec index's `Infrastructure` table, and no requirement marked ⚠️ or ❌.
+- **Nothing severe**: no money, auth, permissions, personal data, deletes, schedules, retries, ordering, or two writers on one record.
+
+A question you cannot answer from the spec or the code counts as no. The user asking for it also runs it. A skip still goes in step 5 as one line: `Two-way: skipped, <the facts that made it small>`. The rules below hold for every draft, the two subagents' included.
 
 <vertical-slice-rules>
 
@@ -52,33 +63,37 @@ Number the tickets **riskiest unknown first**: a spike, a ticket that brings new
 
 **Infrastructure arrives with the first ticket that needs it.** Do not cut an "infrastructure first" ticket for components nothing uses yet. When a ticket touches a component that the spec index does not yet list as in place (a queue, a cache, a new service), call the Skill tool with "dev:explore-decide" for its infrastructure branch, then write that component's acceptance criteria into the same ticket and record it in the ticket's `New infrastructure` line.
 
-**Open points.** A requirement still marked ⚠️ in the spec index: the first ticket that needs it lists a `spike` issue for that open point in its `Blocked by`. Cut the spike with the question as its body. `implement-ticket` closes it through `explore-decide` before any code is written.
+**Open points.** Sort each requirement still marked ⚠️ in the spec index before cutting:
 
-**Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change (rename a column, retype a shared symbol) whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand-contract**. First expand: add the new form beside the old so nothing breaks. Then migrate the call sites over in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, keeping CI green batch to batch because the old form still exists. Finally contract: delete the old form once no caller remains, in a ticket blocked by every migrate batch. Cut the contract ticket in the same epic as the expand: an internal API with no outside caller keeps no compatibility layer once its callers move. When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket; green is promised only there.
+- **Its answer changes the breakdown**: which tickets exist, what blocks what, or which component is built (webhook or polling, one service or two). Settle it now, so no ticket is cut on a guess: call the Skill tool with "dev:explore-decide", or with "dev:explore-prototype" when only a run can tell. Keep the evidence (branch, commit, output) with the decision.
+- **Its answer only changes a value inside a ticket** (a timeout, a label, a limit): the first ticket that needs it lists a `spike` issue for it in its `Blocked by`. Cut the spike with the question as its body. `implement-ticket` closes it through `explore-decide` before any code is written.
 
-### 5. Quiz the user
+**Wide refactors** are the exception to vertical slicing: when one mechanical change (rename a column, retype a shared symbol) breaks call sites across the codebase so that no slice can land green, cut it as [WIDE-REFACTOR.md](WIDE-REFACTOR.md) says.
 
-Present the proposed breakdown as a numbered list. For each ticket, show:
+### 5. Show the breakdown
+
+Present the proposed breakdown as a numbered list, after the two-way summary or skip line. For each ticket, show:
 
 - **Title**: short descriptive name
 - **Type**: `feature`, `task`, `bug` or `spike`
 - **Blocked by**: which other tickets (if any) must complete first
 - **What it delivers**: the end-to-end behaviour this ticket makes work
+- **Proof**: what shows it done
 
-Ask the user:
+Check it yourself before publishing:
 
-- Does the granularity feel right? (too coarse / too fine)
-- Are the blocking edges correct: does each ticket only depend on tickets that genuinely gate it?
-- Should any tickets be merged or split further?
+- The granularity: no ticket too coarse to fit one session, none too fine to verify on its own.
+- The blocking edges: each ticket depends only on tickets that genuinely gate it.
+- What should be merged or split further.
 
-Iterate until the user approves the breakdown. A good ticket crosses the layers, can be verified on its own, and fits one session.
+Then go on to step 6 without waiting. Ask the user only when a requirement is ambiguous or two breakdowns fit equally well. A good ticket crosses the layers, can be verified on its own, and fits one session.
 
 ### 6. Publish the tickets to the configured tracker
 
-Publish the approved tickets. **How** depends on the tracker `/dev:setup-repo` configured; the tickets are the same either way, only the shape of the blocking edges changes:
+Publish the tickets. **How** depends on the tracker `/dev:setup-repo` configured; the tickets are the same either way, only the shape of the blocking edges changes:
 
-- **Local files** → write one file per ticket under `.work/tickets/<epic-slug>/<NN>-<ID>-<slug>.md`, numbered from `01` in dependency order (blockers first). Get each ID by the "Next id" rule in the tracker doc. Use the per-ticket file template below: one ticket per file, never a single combined file.
-- **A real issue tracker (GitHub, GitLab, Linear, ...)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Make each ticket a sub-issue of its epic, and set its type as the tracker doc says.
+- **Local files** → write one file per ticket under `.work/tickets/<epic-slug>/<NN>-<ID>-<slug>.md`, numbered from `01` in dependency order (blockers first). Get each ID by the "Next id" rule in the tracker doc. Use the per-ticket file template below: one ticket per file, never a single combined file. Then run [check-tickets.mts](check-tickets.mts) from this skill's folder: `node <skill folder>/check-tickets.mts .work/tickets --epic <epic-slug> --covers <the epic's requirement codes, comma-separated>`. Fix every line it prints and run it again until it exits 0.
+- **A real issue tracker (GitHub, GitLab, Linear, ...)** → lint the drafts, then print a script for the user, as [REAL-TRACKER.md](REAL-TRACKER.md) says.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
@@ -94,6 +109,8 @@ Do NOT close or modify any parent issue.
 **Blocked by:** <ticket ids, or "None (can start immediately)">
 **Status:** ready
 **New infrastructure:** <component, or "none">
+**Files:** <paths this ticket expects to edit, create or delete, comma-separated>
+**Proof:** <what shows it done: a command and its output, a request and its response, a screen state>
 **Step:** <added by /dev:implement-ticket; leave empty>
 **Base:** <added by /dev:implement-ticket; leave empty>
 **Baseline:** <added by /dev:implement-ticket; leave empty>
@@ -109,33 +126,5 @@ Do NOT close or modify any parent issue.
 
 </local-ticket-template>
 
-<issue-template>
 
-## Parent
-
-A reference to the parent issue on the tracker (the epic, or the source issue if it was an existing one).
-
-## What to build
-
-The end-to-end behaviour this ticket makes work, from the user's perspective, not layer-by-layer implementation.
-
-## Requirements
-
-The requirement codes from the spec index, or "none".
-
-## New infrastructure
-
-The component this ticket introduces, or "none".
-
-## Acceptance criteria
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-
-## Blocked by
-
-- A reference to each blocking ticket, or "None (can start immediately)". Omit this section when blockers were set as native edges.
-
-</issue-template>
-
-In either form, avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
+Outside the `Files:` line, avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.

@@ -11,7 +11,7 @@ The question that picks the amount: *would a mistake show itself the moment some
 
 ## Steps
 
-1. **Read the ground.** Read the ticket (acceptance criteria, `Requirements`, files it touches). Find the repo's test setup: commands in manifests, CI config and `.claude/rules/`, and two neighbouring test files for the local style. A project skill named `verify-<app>` (made by `/dev:setup-verify`) is a proof too: it drives the running app, for tickets that change what a user sees or does. Done when you can name the repo's test command and a test file to imitate, or say that none exists.
+1. **Read the ground.** Read the ticket (acceptance criteria, `Requirements`, its `Files:` and `Proof:` lines). Find the repo's test setup: commands in manifests, CI config and `.claude/rules/`, and two neighbouring test files for the local style. A project skill named `verify-<app>` (made by `/dev:setup-verify`) is a proof too: it drives the running app, for tickets that change what a user sees or does. Done when you can name the repo's test command and a test file to imitate, or say that none exists.
 
 2. **Pick the tier.** Answer three questions about the ticket:
    - **Seen**: does a mistake show the moment someone looks (a colour, a layout, a label, a config value that fails the build)?
@@ -38,7 +38,13 @@ The question that picks the amount: *would a mistake show itself the moment some
 
 7. **Mutation testing.** Propose it only for a severe module that is already stable, and ask first. Never add it silently.
 
-8. **Write the plan and get one yes.** Put it in the ticket file under `## Test plan` (for a tracker ticket, in its local working file). Show the plan to the user and ask once for the whole ticket. Done when the plan is written and approved.
+8. **Check the plan yourself, then go on.** No approval is asked: these checks stand in for it. Before writing a line of code, confirm:
+   - every acceptance criterion names the row or the command that proves it, and the ticket's `Proof:` line is one of them;
+   - every expected value names its source (rule 5), and a value with no source is an open point, not a guess;
+   - each yes in step 2 has its evidence: a `Contained` yes cites `file:line` or an empty caller search;
+   - every kind chosen in step 3 points to the code or spec line that triggered it.
+
+   Fix what fails yourself. Ask the user only when a criterion is ambiguous or two plans fit equally well. Put the plan in the ticket file under `## Test plan` (for a tracker ticket, in its local working file) and show it; the user may stop you. Done when the plan is written and every check holds.
 
 ## Plan format
 

@@ -10,7 +10,7 @@ Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/
 
 The goal is the entire spec implemented on a single **integration branch**, with every ticket resolved the way the issue tracker closes work.
 
-**Skills do not run `git commit`, `git push` or open a pull request.** Creating branches and worktrees is fine. Everything that commits, merges, pushes or opens a PR is printed as a script for the user to run, unless `workflow.md` says `Git writes: run` or the user asks you in this session to run it. The steps below say what changes under `run`.
+**Skills do not run `git commit`, `git push` or open a pull request.** Creating branches and worktrees is fine. Everything that commits, merges or pushes is printed as a script for the user to run, unless `workflow.md` says `Git writes: run` or the user asks you in this session to run it. The steps below say what changes under `run`. Pull request commands are always printed (`Tracker and pull request writes` in `workflow.md`).
 
 The tickets are not a list of steps. They are a **task graph** with blocking relationships between them. This means there is always a **frontier** of tickets which are ready to be grabbed.
 
@@ -28,7 +28,7 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 
 3. Create the integration branch. Read the delivery rules in `workflow.md`. If delivery is `pr` and the repo has a PR size cap, the integration branch cannot be one PR for the whole spec: plan one PR per ticket branch instead, or let the user split it.
 
-4. Use **implementer subagents** to implement each ticket on the current **frontier**, each in its own worktree on its own branch based on the integration branch. Each implementer subagent:
+4. Use **implementer subagents** to implement each ticket on the current **frontier**, each in its own worktree on its own branch based on the integration branch. Two frontier tickets whose `Files:` lines share a path run one after the other, not in parallel: their merge would conflict. Each implementer subagent:
    - reads the ticket's test plan, or calls the Skill tool with `dev:test-plan` to write one, and runs the proof command directly when the ticket's tier is `check`;
    - calls the Skill tool with `dev:test-tdd` to build the ticket when the plan calls for tests;
    - leaves its changes uncommitted, and ends with the report block from [WORKERS.md](WORKERS.md).
@@ -43,6 +43,6 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 
 7. Once all tickets are merged, review the integration branch against the commit it was created from. With `Review: typed` (or no `Review` line) in `workflow.md`, tell the user to run `/dev:review-code <that commit>` (it is a skill you type, so you cannot call it). With `Review: inline`, read [the review-code skill](../review-code/SKILL.md) and run its process yourself. With the findings in hand, fix them in a single **implementer subagent** and hand off that change the same way.
 
-8. Print the closing commands: `git push -u origin <integration branch>`, and for `pr` delivery the command that opens the pull request (one per ticket branch when the PR size cap applies), with the body from the Skill tool called with `dev:review-pr`. Under `run`, push and open a draft PR after the first merge, and mark it ready at the end.
+8. Print the closing commands: `git push -u origin <integration branch>`, and for `pr` delivery the command that opens the pull request (one per ticket branch when the PR size cap applies), with the body from the Skill tool called with `dev:review-pr`. Under `run`, push after the first merge; the pull request commands are still printed.
 
-9. Print the worktree removals as [WORKERS.md](WORKERS.md) says, and run them only after the user confirms.
+9. Remove the worktrees as [WORKERS.md](WORKERS.md) says.

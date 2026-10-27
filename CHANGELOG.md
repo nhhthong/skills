@@ -4,7 +4,7 @@ All notable changes to the `dev` plugin. Versions follow [Semantic Versioning](h
 
 ## [2.0.0] - 2026-10-27
 
-Adds ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT): proof on the real artifact, rigor that follows the ticket's tier, and small leaf files read only when a trigger holds. Major version because `review-code` output and the ticket `## Result` format changed.
+Adds ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT): proof on the real artifact, rigor that follows the ticket's tier, and small leaf files read only when a trigger holds. Major version because `review-code` output and the ticket `## Result` format changed. A skill stops for you only when a criterion is ambiguous or more than one option fits; `session-retro`, `setup-need-install`, `setup-repo` and the `Always pause` list keep their approvals.
 
 ### Added
 
@@ -12,13 +12,21 @@ Adds ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack) by 
 - `explore-why` (agent): why existing code is shaped as it is, from history, pull requests, tickets and memory; ends with Preserve, Change freely, Avoid and Risk.
 - `test-benchmark` (agent): vets a performance number before it is reported or acted on.
 - `setup-verify` (you type): generates a project `verify-<app>` skill that drives the real app and keeps evidence; `refresh` updates it.
-- Leaf files: `test-plan/PROOF.md` (proof levels 1 to 5; verdicts `VERIFIED`, `NOT VERIFIED`, `INCONCLUSIVE`), `implement-ticket/SEQUENCE.md` (baseline, one checked unit at a time, commit order), `review-code/JUDGMENT.md` (finding format and lead judgment), `debug-diagnose/PREMISE.md` (attack the premise, fix the root cause), `implement-spec/WORKERS.md` (worker brief, report block, check before integration, worktree removal).
+- Leaf files: `test-plan/PROOF.md` (proof levels 1 to 5; verdicts `VERIFIED`, `NOT VERIFIED`, `INCONCLUSIVE`), `implement-ticket/SEQUENCE.md` (baseline, one checked unit at a time, commit order), `review-code/JUDGMENT.md` (finding format and lead judgment), `debug-diagnose/PREMISE.md` (attack the premise, fix the root cause), `implement-spec/WORKERS.md` (worker brief, report block, check before integration, worktree removal), `plan-tickets/WIDE-REFACTOR.md` (expand-contract) and `plan-tickets/REAL-TRACKER.md` (draft lint, printed script, issue body), split out so `plan-tickets` loads them only when they apply.
+- `plan-tickets/TWO-WAY.md`: a forward and a backward draft of the epic from two subagents, compared row by row (both, backward only, forward only, order conflict); runs for every epic that is not small, contained and plain, and stops for `clarify-grill` when the drafts disagree on more than half the tickets. A rubric written before the drafts picks the base; risks are tied to the ticket that carries them.
+- `design-modules/RED-FLAGS.md`: design red flags for code an agent extends (leakage, temporal decomposition, split ownership, two ways to do one task, importable internals, hand-synced lists); read by Design It Twice and `design-improve`.
+- Ticket header lines `**Files:**` (expected paths) and `**Proof:**` (what shows it done).
+- `plan-tickets/check-tickets.mts`: lints a breakdown before it is published: file names, header lines (`Files:` and `Proof:` on every non-spike ticket), unique ids, blocking edges (unknown, dropped, numbered late, cycles), requirement codes against the spec index, a spike before every open requirement, and coverage of the epic's codes.
 - `**Baseline:**` ticket header line, and a `Baseline:` line in `light` and `full` test plans.
 - `Always pause` line in `workflow.md`.
 - `npm run check` fails on broken relative links, leaf files no `SKILL.md` reaches, and unknown `dev:<name>` references.
 
 ### Changed
 
+- Skills never run `gh` or `glab` writes (issues, pull requests, comments), even under `Git writes: run`: they print them. `plan-tickets` and `plan-ticket-change` write them to a script in `.work/handoff/`.
+- Fewer stops: `test-plan` asks no approval at any tier; a self-check stands in for it (every criterion has its proof, every expected value its source, every `Contained` yes its `file:line`). Also tier `check` test plans, typed review (`implement-ticket` names `/dev:review-code <ID>` next to the commit commands), `test-tdd` seams, the `plan-tickets` breakdown, `plan-ticket-change` edits, the end of `clarify-grill`, a single-option `explore-decide`, the `wizard` stage list, `review-learn` on an unfinished ticket and `review-code` with no spec go on without asking. `implement-spec` removes merged, clean worktrees itself.
+- `plan-tickets`: an open point whose answer changes the breakdown is settled through `explore-decide` or `explore-prototype` before cutting; one that only changes a value stays a spike.
+- `implement-ticket`: stops and points to `plan-ticket-change` when the plan proves wrong (a repeated workaround, files outside `Files:`, the same deviation in two tickets). `implement-spec` runs frontier tickets with overlapping `Files:` one after the other.
 - `implement-ticket`: rigor follows the test-plan tier; tier `check` runs no baseline. Triggers call `explore-why`, `review-impact` and `test-benchmark` only when their condition holds. `## Result` records the proof output, the verdict, an `Applied:` line and `skip:` lines.
 - `review-code`: a third axis, Impact, runs for risky changes; the smell baseline gains five agent failure shapes; each finding is sorted into act on, consider, noted or dismissed.
 - `review-pr`: Merge Danger comes from the Impact reply; evidence is copied from the ticket's proof.

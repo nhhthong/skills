@@ -10,8 +10,9 @@ How work is delivered in this repo, and where memory lives. Skills read this fil
 ## Delivery
 
 - **Delivery**: `<commit | pr>`. `commit` means the work goes onto the current branch. `pr` means a branch and a pull request.
-- **Git writes**: `hand-off`. Skills do not run `git commit`, `git push` or open a pull request. They print the commit message and the exact commands for you to run. Change this to `run` to let skills run them. A direct request in a session ("commit it") is also honoured for that session.
-- **Review**: `typed`. `implement-ticket` stops before delivery and asks you to run `/dev:review-code`. Change this to `inline` to let it run the same review itself, against the ticket's `Base:` commit, and go on to delivery.
+- **Git writes**: `hand-off`. Skills do not run `git commit`, `git push` or open a pull request. They print the commit message and the exact commands for you to run. Change this to `run` to let skills run the git commands; your `.claude/settings.json` permission rules still apply. A direct request in a session ("commit it") is also honoured for that session.
+- **Tracker and pull request writes**: always printed, even under `Git writes: run`. Skills never run a `gh`, `glab` or tracker command that creates, edits, comments on, labels or closes an issue, or opens, edits or merges a pull or merge request: they print it for the user. Reading (`gh issue view`, `gh pr view`, `gh issue list`) is fine. This line is the single copy of the rule; other files point here.
+- **Review**: `typed`. `implement-ticket` does not stop for review: it names `/dev:review-code <ID>` next to the commit commands, for you to run before committing. Change this to `inline` to let it run the same review itself, against the ticket's `Base:` commit, before delivery.
 - **Branch names**: `<pattern, for example type/ticket-id-short-description>`
 - **Commit messages**: `<convention, for example Conventional Commits>`
 - **PR size cap**: `<for example 400 changed lines, or none>`

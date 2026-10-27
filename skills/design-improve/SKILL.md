@@ -32,7 +32,7 @@ Then spawn a sub-agent to walk the codebase. Don't follow rigid heuristics; expl
 - Where do tightly-coupled modules leak across their seams?
 - Which parts of the codebase are untested, or hard to test through their current interface?
 
-Apply the **deletion test** to anything you suspect is shallow: would deleting it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want.
+Apply the **deletion test** to anything you suspect is shallow: would deleting it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want. Give the sub-agent [the red flags](../design-modules/RED-FLAGS.md) too: each one it finds in a hot spot is a candidate.
 
 ### 2. Present candidates as an HTML report
 
@@ -57,7 +57,7 @@ End the report with a **Top recommendation** section: which candidate you'd tack
 
 See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram patterns, and styling guidance.
 
-Do NOT propose interfaces yet. After the file is written, ask the user: "Which of these would you like to explore?"
+Do NOT propose interfaces yet. After the file is written, ask the user "Which of these would you like to explore?" when there is more than one candidate; with one, go on to step 3 with it.
 
 ### 3. Grilling loop
 

@@ -28,6 +28,6 @@ A report is a claim, not proof ([PROOF.md](../test-plan/PROOF.md)). For each `PA
 
 ## Removing worktrees
 
-Before printing `git worktree remove`, check each worktree: is its branch merged into the integration branch, and how many files does `git -C <path> status --short` list. Print the removal only for merged worktrees with nothing uncommitted. Hold the rest and say why: uncommitted tracked edits are lost on removal, and untracked files are named so the user can keep them.
+Before running `git worktree remove`, check each worktree: is its branch merged into the integration branch, and how many files does `git -C <path> status --short` list. Remove only merged worktrees that list nothing: nothing is lost, the branch keeps every commit. Hold the rest and say why: uncommitted tracked edits are lost on removal, and untracked files are named so the user can keep them.
 
 Adapted from pstack (Lauren Tan, MIT): `swarm`, `principle-separate-before-serializing-shared-state`, and the worktree-cleanup playbook of `poteto-mode`.

@@ -40,7 +40,7 @@ flowchart TD
 
 `/dev:implement-ticket` takes one ticket through: identify, orient in the code, fill the gaps, plan the proof (an existing command, one test, or tests per risk; some tickets need none), build, review, deliver. It writes a `Step:` line before each stage, so a dead session resumes with `/dev:implement-ticket`. The proof tier sets how much process runs: a `check` ticket runs the existing command and nothing more, while `light` and `full` tickets also record a baseline and must reach a `VERIFIED` verdict on the real code.
 
-**By default, skills never run `git commit` or `git push`.** They print the commit message and the exact commands for you to run. Set `Git writes: run` in `workflow.md` to change that.
+**By default, skills never run `git commit` or `git push`.** They print the commit message and the exact commands for you to run. Set `Git writes: run` in `workflow.md` to change that; your `.claude/settings.json` permission rules still apply. **Skills never run `gh` or `glab` writes** (issues, pull requests): they always print them.
 
 ## Use it
 
@@ -99,7 +99,7 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 <summary><b>Plan</b>: From source to tickets (3)</summary>
 
 - [`plan-spec`](skills/plan-spec/SKILL.md) (you type): Index a structured source by requirement code, or write a full spec from a conversation; open points stay open.
-- [`plan-tickets`](skills/plan-tickets/SKILL.md) (you type): Cut epics if needed, then tracer-bullet tickets with types, requirement codes and blocking edges.
+- [`plan-tickets`](skills/plan-tickets/SKILL.md) (you type): Cut epics if needed, then tracer-bullet tickets with types, requirement codes and blocking edges; an epic that is not small gets a forward and a backward draft compared, and every breakdown is linted before it is published.
 - [`plan-ticket-change`](skills/plan-ticket-change/SKILL.md) (you type): Split a ticket in two, cancel it, or reopen it, keeping ids, blocking edges, the spec index and memory in step.
 
 </details>
@@ -219,7 +219,7 @@ Only for editing this repo, never for using the plugin: `npm install` adds `@typ
 
 > **Based on [Matt Pocock's skills](https://github.com/mattpocock/skills)** (MIT). Most of the ideas and many of the files come from his work: grilling sessions, a shared domain language, tracer-bullet tickets, red-green-refactor, deep modules and two-axis code review. This repo is maintained on its own and no longer tracks his.
 >
-> **Ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack)** by Lauren Tan (MIT): the proof standard and proof levels, sequencing work into verifiable units, small leaf files read only when a trigger holds, and the skills `review-impact` (`blast-radius`), `explore-why` (`why`), `test-benchmark` (`benchmark-checklist`) and `setup-verify` (`create-verification-skill`), with lead judgment for reviews (`interrogate`) and premise and root-cause rules for debugging.
+> **Ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack)** by Lauren Tan (MIT): the proof standard and proof levels, sequencing work into verifiable units, small leaf files read only when a trigger holds, two-way planning compared like an `arena`, and the skills `review-impact` (`blast-radius`), `explore-why` (`why`), `test-benchmark` (`benchmark-checklist`) and `setup-verify` (`create-verification-skill`), with lead judgment for reviews (`interrogate`) and premise and root-cause rules for debugging.
 
 ## License
 

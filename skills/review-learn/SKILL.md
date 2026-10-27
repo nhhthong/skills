@@ -17,7 +17,7 @@ The note is a summary of what happened, never a design of what could happen: eve
 - **An epic** (its directory under `.work/tickets/`): every ticket in it with `Status: done` or `in-review`, one note for the epic.
 - **Nothing**: the ticket with `Status: in-review` or `done` whose file changed last.
 
-A ticket that is not `in-review` or `done` is unfinished work: say so, and write the note only if the user agrees.
+A ticket that is not `in-review` or `done` is unfinished work: write the note anyway, and start it with `Unfinished: <Status>`.
 
 Done when you can name the ticket or tickets and the output file: `.work/learn/<ID>-<slug>.md` for a ticket, `.work/learn/<epic-slug>.md` for an epic. If the file exists, update it in place.
 

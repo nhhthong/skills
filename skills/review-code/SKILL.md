@@ -37,7 +37,7 @@ Look for the originating spec, in this order:
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in the tracker doc.
 2. A path the user passed as an argument.
 3. The ticket file under `.work/tickets/` that matches the branch name (its `Requirements` line points into `.work/spec-index.md`), or a spec file under `docs/` or `specs/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+4. If nothing is found, the **Spec** sub-agent skips and reports "no spec found"; the user can run the review again with the spec's path.
 
 ### 3. Identify the standards sources
 

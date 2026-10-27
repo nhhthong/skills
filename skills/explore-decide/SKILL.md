@@ -19,7 +19,7 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 5. **Recommend one.** Word it so that "yes" accepts it. Give the reason in a sentence, and the single biggest cost of the choice.
 
-6. **Wait for the user's choice.** A choice that is hard to reverse (a data store, a public API shape, a service boundary, an auth model, how money is handled) is never made without the user, even when they are away: leave the dependent work blocked, keep the question open in the spec index, and say which ticket waits.
+6. **Wait for the user's choice.** When the constraints leave only one option, record it and go on without waiting. A choice that is hard to reverse (a data store, a public API shape, a service boundary, an auth model, how money is handled) is never made without the user, even when they are away: leave the dependent work blocked, keep the question open in the spec index, and say which ticket waits.
 
 7. **Record it once.** Call the Skill tool with "dev:clarify-domain" for the recording rules: one `decision` in memory (`memo_post`, with `rationale` and `alternatives`); an ADR when the three ADR conditions hold or the project's documents require one; the full text in exactly one of them. Then:
    - Close the `spike` ticket that carried the question (`Status: done`, with the decision's id in `## Result`).

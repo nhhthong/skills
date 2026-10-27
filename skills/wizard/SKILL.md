@@ -21,7 +21,7 @@ Work out every manual step the human must take and every value that gets capture
 - For setup: `.env`, `.env.example`, `.env.*`, `README`, `docker-compose*`, framework config, and `.github/workflows/*` (every `secrets.*` / `vars.*` reference is a value the wizard must produce).
 - For a migration or transition: the current state, the target state, and the irreversible actions between them.
 
-Then show the user the ordered list of stages and the values each produces, and confirm: they may add, drop, or reorder.
+Then show the ordered list of stages and the values each produces, and go on: the user may stop you to add, drop, or reorder. Ask only when the order or a value's source is ambiguous.
 
 **Done when:** every stage is named in order, and for each captured value you know (a) where the human gets it, (b) where it's written (`.env`, a GitHub secret, both, or nowhere; some stages are pure actions), and (c) whether it's secret (hidden entry) or public.
 
