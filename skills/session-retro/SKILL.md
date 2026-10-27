@@ -23,7 +23,9 @@ The user has asked for a **retrospective**. You are suggesting improvements to t
 - **Information access**: look for opportunities to increase the agent's access to information. Teeing dev server logs, readonly access to third-party services. _Use when_ a crucial piece of information was not available to the agent.
 - **Memory**: did the session lose time to something an earlier session already learned? Check memory (`memo_callback`, `memo_info`) and `workflow.md`: a missing note about where a module lives or what a convention is, an open `issue` with no `fix`, a delivery rule the agent got wrong. _Use when_ the agent re-discovered a fact or repeated a failed attempt.
 
-4. Present these candidates to the user, in order of severity.
+4. Group the agent's mistakes into classes; a class counts once it happened twice. Fix each class at the highest level that works: architecture (one owner, one supported way, the wrong import fails), then types, then a lint or check whose error names the fix, then a test, and a written rule last, only for judgement calls. A proposed check comes with proof that it fails on the real past mistake. Done when every candidate from step 3 belongs to a class or is named as a one-off.
+
+5. Present the candidates in order of severity as three lists: **Accepted** (with the file it changes), **Rejected** (with the reason), and **Backlog** (worth doing, not now). Wait for the user to pick from Accepted before editing anything.
 
 **Private storage.** When the repo's configuration says `Storage: private` (`.work/config.md`), the repo belongs to a team that has not agreed to these files. Present every suggestion about `CLAUDE.md`, `AGENTS.md`, `CODING_STANDARDS.md`, lint rules and CI as a proposal for the user to take to the team. Edit nothing outside `.work/`.
 

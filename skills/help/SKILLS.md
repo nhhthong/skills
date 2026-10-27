@@ -5,6 +5,7 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 ## setup
 - `/dev:setup-repo` (type): choose where memory lives, delivery, tracker, domain docs. Use once per repo, first.
 - `/dev:setup-need-install` (type): check installed helper tools, recommend which to add. Use on a new machine or project.
+- `/dev:setup-verify` (type): generate a project skill that drives the real app and keeps evidence. Use once per app, `refresh` after big UI or CLI changes.
 
 ## clarify
 - `/dev:clarify-grill-docs` (type): interview you until the design is settled, recording terms and decisions. Use when you have an idea but not a design.
@@ -17,6 +18,7 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 - `/dev:explore-decide` (auto): research a technical choice and recommend one option. Use when stuck between options.
 - `/dev:explore-research` (auto): investigate a question in primary sources, save cited findings. Use for "how does X work".
 - `/dev:explore-prototype` (auto): build a throwaway prototype to answer a design question.
+- `/dev:explore-why` (auto): find why existing code is shaped the way it is, from history, tickets and memory. Use before changing code you do not understand.
 
 ## plan
 - `/dev:plan-spec` (type): index a spec by requirement code, or write one from a conversation. Use when you have a source document or settled design.
@@ -30,12 +32,14 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 ## test
 - `/dev:test-plan` (auto): choose the minimum proof a ticket needs.
 - `/dev:test-tdd` (auto): red-green-refactor one slice at a time.
+- `/dev:test-benchmark` (auto): vet a performance number before you report or act on it.
 
 ## debug
 - `/dev:debug-diagnose` (auto): build a loop that fails on the bug, then find and fix the cause. Use for a bug you cannot explain.
 
 ## review
-- `/dev:review-code` (type): review a diff on Standards and Spec in parallel. Use before you commit.
+- `/dev:review-code` (type): review a diff on Standards and Spec, plus Impact for risky changes, in parallel. Use before you commit.
+- `/dev:review-impact` (auto): find what a change breaks outside its diff and prove why it is safe. Use for a risky diff or "what could this break".
 - `/dev:review-learn` (type): write a learning note with Mermaid diagrams for a finished ticket or epic. Use after delivery, to share what was built.
 - `/dev:review-pr` (auto): shape a pull request body with evidence. Use when opening a PR.
 

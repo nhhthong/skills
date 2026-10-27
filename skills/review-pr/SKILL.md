@@ -163,8 +163,10 @@ Screenshots are S-tier - when the environment is set up for it and the change is
 
 Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.
 
+Evidence is run on the current code, not described. A ticket's `## Result` already holds the proof command, its output and the verdict ([PROOF.md](../test-plan/PROOF.md)); copy them rather than restating them. A performance number comes with its run count, range and limiter, as `dev:test-benchmark` reports it.
+
 ### Merge Danger
 
-Describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
+When `review-code` ran its Impact axis, or `dev:review-impact` ran on this diff, take the door, the blast radius and the safety fact from its reply instead of judging them again. Otherwise, describe whether it's a one-way or two-way door. You can walk back through two-way doors, but not one-way doors. A PR that is cheap to roll back is lower risk. Changes that involve destructive actions or hard-to-reverse decisions are one-way doors.
 
 The blast radius is the potential impact or scope of the changes introduced by this PR. Consider all possibilities. Examples are layout shift, breakages for consumers, mobile responsiveness, etc.

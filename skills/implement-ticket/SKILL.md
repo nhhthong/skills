@@ -20,7 +20,12 @@ Read a leaf only when its condition holds:
 - Tier `light` or `full`, or a subagent reports work as done: [PROOF.md](../test-plan/PROOF.md).
 - Tier `light` or `full`, a sweep or migration, a bug ticket, or work you will deliver as more than one commit: [SEQUENCE.md](SEQUENCE.md).
 
-Name each leaf you read on the `Applied:` line of `## Result`. A step that does not apply to this ticket gets a `skip: <step>: <reason>` line there instead of silent omission.
+Call a skill only when its condition holds:
+
+- Step 1 finds code you must change whose shape you do not understand (a guard, a retry, a flag, an odd boundary): `dev:explore-why`.
+- Before step 5, when the Impact rule in step 4 of [review-code](../review-code/SKILL.md) holds: `dev:review-impact` on the diff since `Base:`.
+
+Name each leaf you read and each skill you called on the `Applied:` line of `## Result`. A step that does not apply to this ticket gets a `skip: <step>: <reason>` line there instead of silent omission.
 
 ## Steps
 
@@ -72,7 +77,7 @@ Read `Review` in `workflow.md` (missing means `typed`).
 - **`typed`**: `/dev:review-code` is a skill you type, so you cannot call it. Write `Step: review` in the ticket file, then tell the user to run `/dev:review-code <ID>` (it reads the ticket's `Base:` line as the fixed point; they may choose another review instead, or skip it), and stop. When the user runs `/dev:implement-ticket` again, ask what the review found.
 - **`inline`**: read [the review-code skill](../review-code/SKILL.md) and run its process yourself, with the ticket's `Base:` commit as the fixed point and the ticket file as the spec. Show the aggregated report, then go on.
 
-Done when each finding is either fixed or written under `## Result` with the reason it stays, or the user says to skip the review. The review is input for the human reviewer, not an approval.
+Done when each Act on finding is either fixed or written under `## Result` with the reason it stays, or the user says to skip the review. The review is input for the human reviewer, not an approval.
 
 ### 6. Deliver
 

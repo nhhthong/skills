@@ -59,10 +59,15 @@ Every status in the report is quoted from a ticket file or the tracker. A fact w
 **Open points**
 - <id>: <the question>. Owed by <who> since <date>. Blocks <ticket or requirement>.
 
+**Waiting on you**
+- <a call only the user can make: a choice, an approval, a commit or merge to run, access the agent lacks>. Pick: <the agent's recommendation>. Risk: <what it changes, even when low>.
+
 **Looks wrong**
 - <the mismatch, and which two sources disagree>
 
 **Next:** <the command from step 4>
 ```
+
+Each ticket line in a table carries exactly one state, from its `Status:` line and git: `ready`, `blocked by <id>`, `in-progress <branch>`, `in-review`, `done <commit>` or `dropped`.
 
 Leave out a section that has nothing in it. The overview fits on one screen: about 30 lines. For a ticket target, replace **Breakdown** and the epic table with that ticket's acceptance criteria, test plan, decisions and notes.

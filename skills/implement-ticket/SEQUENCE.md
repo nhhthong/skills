@@ -4,7 +4,7 @@ Work in small units, each ending in a state you can check. Order the commits so 
 
 ## Baseline
 
-Tier `light` and `full` only. Before the first change, at the `Base:` commit, run the `Baseline:` command from the ticket's `## Test plan`. Write the result under the `Base:` line:
+Tier `light` and `full` only. A test plan with no `Baseline:` line, written before version 2.0.0, gets `skip: baseline: no Baseline line in the plan` in `## Result`. Before the first change, at the `Base:` commit, run the `Baseline:` command from the ticket's `## Test plan`. Write the result under the `Base:` line:
 
 - `**Baseline:** green`
 - `**Baseline:** red: <each failing test or check>`

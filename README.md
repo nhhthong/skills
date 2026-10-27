@@ -5,10 +5,10 @@
 **From an empty source, or a ticket in a big project, to delivery.**
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
-[![Version](https://img.shields.io/badge/version-0.2.0-blue)](.claude-plugin/plugin.json)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue)](.claude-plugin/plugin.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-32 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
+36 small skills for Claude Code that help you agree on what to build, cut it into tickets, prove it works, and remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
 
 
 ## Install
@@ -54,6 +54,9 @@ flowchart TD
 | Many independent tickets in a phase | `implement-spec` (parallel worktrees; you run the printed integration script) |
 | A ticket needs information only another person has | `clarify-ask` writes a questionnaire for them |
 | Choose between options (database, queue, library) | `explore-decide` researches and recommends; you choose |
+| Code you must change but do not understand | Ask why it is there; `explore-why` starts by itself |
+| A risky diff, or "what could this break" | `review-impact` starts by itself; `review-code` runs it for risky changes |
+| A UI or CLI app with no scripted way to prove a change | `setup-verify` once, then `implement-ticket` uses it as proof |
 | Not sure where to start | `ask-me <what you want to do>` names the skills to run; `help` lists them all |
 
 Run `clarify-grill-docs`, `plan-spec` and `plan-tickets` in one session, then start each `implement-ticket` in a fresh one. Anything the source leaves open stays an open point with a name and a date; skills never fill it with a guess.
@@ -63,10 +66,11 @@ Run `clarify-grill-docs`, `plan-spec` and `plan-tickets` in one session, then st
 Prefix every name with `/dev:`. **You type** skills run only when you call them. **Agent** skills the agent also reaches for on its own when the task fits. Open a group to see its skills.
 
 <details>
-<summary><b>Setup</b>: Prepare a repo and a machine (2)</summary>
+<summary><b>Setup</b>: Prepare a repo, a machine and a way to drive the app (3)</summary>
 
 - [`setup-repo`](skills/setup-repo/SKILL.md) (you type): Choose where memory lives (in the repo or private), how work is delivered, the issue tracker and domain docs.
 - [`setup-need-install`](skills/setup-need-install/SKILL.md) (you type): Check which helper tools are installed, look at the project, and recommend which to add.
+- [`setup-verify`](skills/setup-verify/SKILL.md) (you type): Generate a project skill that launches the real app, drives a feature like a user and keeps the evidence; `refresh` keeps it in line with the code.
 
 </details>
 
@@ -82,11 +86,12 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 </details>
 
 <details>
-<summary><b>Explore</b>: Answer a question before building (3)</summary>
+<summary><b>Explore</b>: Answer a question before building (4)</summary>
 
 - [`explore-decide`](skills/explore-decide/SKILL.md) (agent): Research a technical choice and recommend one option; also picks infrastructure one component at a time.
 - [`explore-research`](skills/explore-research/SKILL.md) (agent): Investigate a question against primary sources and save cited findings; uses Context7 first when present.
 - [`explore-prototype`](skills/explore-prototype/SKILL.md) (agent): Build a throwaway prototype to answer a design question.
+- [`explore-why`](skills/explore-why/SKILL.md) (agent): Find why existing code is shaped the way it is, from git history, pull requests, tickets and memory, keeping what is known apart from what is inferred.
 
 </details>
 
@@ -108,10 +113,11 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 </details>
 
 <details>
-<summary><b>Test</b>: Right-sized proof (2)</summary>
+<summary><b>Test</b>: Right-sized proof (3)</summary>
 
 - [`test-plan`](skills/test-plan/SKILL.md) (agent): Choose the minimum proof a ticket needs: an existing command, one test, or tests per risk.
 - [`test-tdd`](skills/test-tdd/SKILL.md) (agent): Red-green-refactor one slice at a time, at agreed seams.
+- [`test-benchmark`](skills/test-benchmark/SKILL.md) (agent): Vet a performance number before it is reported or acted on: limiter, tuning, errors, repeat runs, end-to-end share.
 
 </details>
 
@@ -123,9 +129,10 @@ Prefix every name with `/dev:`. **You type** skills run only when you call them.
 </details>
 
 <details>
-<summary><b>Review</b>: Check the work (3)</summary>
+<summary><b>Review</b>: Check the work (4)</summary>
 
-- [`review-code`](skills/review-code/SKILL.md) (you type): Review a diff on two axes, Standards and Spec, in parallel subagents.
+- [`review-code`](skills/review-code/SKILL.md) (you type): Review a diff on separate axes in parallel subagents: Standards, Spec, and Impact for risky changes; each finding sorted into act on, consider, noted or dismissed.
+- [`review-impact`](skills/review-impact/SKILL.md) (agent): Find what a change breaks outside its diff, and prove the one fact it is safe because of by running real code.
 - [`review-learn`](skills/review-learn/SKILL.md) (you type): Write a short learning note for a finished ticket or epic, with Mermaid diagrams, under `.work/learn/`.
 - [`review-pr`](skills/review-pr/SKILL.md) (agent): Shape a pull request body: a summary visual, before and after evidence, merge danger.
 
@@ -212,7 +219,7 @@ Only for editing this repo, never for using the plugin: `npm install` adds `@typ
 
 > **Based on [Matt Pocock's skills](https://github.com/mattpocock/skills)** (MIT). Most of the ideas and many of the files come from his work: grilling sessions, a shared domain language, tracer-bullet tickets, red-green-refactor, deep modules and two-axis code review. This repo is maintained on its own and no longer tracks his.
 >
-> **Ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack)** by Lauren Tan (MIT): the proof standard and proof levels, sequencing work into verifiable units, and small leaf files read only when a trigger holds.
+> **Ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack)** by Lauren Tan (MIT): the proof standard and proof levels, sequencing work into verifiable units, small leaf files read only when a trigger holds, and the skills `review-impact` (`blast-radius`), `explore-why` (`why`), `test-benchmark` (`benchmark-checklist`) and `setup-verify` (`create-verification-skill`), with lead judgment for reviews (`interrogate`) and premise and root-cause rules for debugging.
 
 ## License
 

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Review Impact"
+  short_description: "Find what a change breaks outside its diff"

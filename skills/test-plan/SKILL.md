@@ -11,7 +11,7 @@ The question that picks the amount: *would a mistake show itself the moment some
 
 ## Steps
 
-1. **Read the ground.** Read the ticket (acceptance criteria, `Requirements`, files it touches). Find the repo's test setup: commands in manifests, CI config and `.claude/rules/`, and two neighbouring test files for the local style. Done when you can name the repo's test command and a test file to imitate, or say that none exists.
+1. **Read the ground.** Read the ticket (acceptance criteria, `Requirements`, files it touches). Find the repo's test setup: commands in manifests, CI config and `.claude/rules/`, and two neighbouring test files for the local style. A project skill named `verify-<app>` (made by `/dev:setup-verify`) is a proof too: it drives the running app, for tickets that change what a user sees or does. Done when you can name the repo's test command and a test file to imitate, or say that none exists.
 
 2. **Pick the tier.** Answer three questions about the ticket:
    - **Seen**: does a mistake show the moment someone looks (a colour, a layout, a label, a config value that fails the build)?
@@ -32,7 +32,7 @@ The question that picks the amount: *would a mistake show itself the moment some
 
 4. **Keep the architecture rules proven.** When the project states a rule that breaks silently if misconfigured (a lint rule that blocks one service from importing another, a service reading only its own schema), the ticket that sets it up includes a check that the rule fires: a deliberate violation must fail. This holds even in the first phase.
 
-5. **Take expected values from outside the code.** A number from the spec, a worked example, a literal. A test that recomputes the expected value with the code's own logic passes by construction. When the spec gives no source for a value, the value is an open point: call the Skill tool with "dev:explore-decide" or ask the user, and write no test for it yet. A performance, load or stress test needs a number from the spec; with none, write no test and say what is missing.
+5. **Take expected values from outside the code.** A number from the spec, a worked example, a literal. A test that recomputes the expected value with the code's own logic passes by construction. When the spec gives no source for a value, the value is an open point: call the Skill tool with "dev:explore-decide" or ask the user, and write no test for it yet. A performance, load or stress test needs a number from the spec; with none, write no test and say what is missing. With one, the measurement follows `dev:test-benchmark`.
 
 6. **Respect what the repo has.** Use the framework, naming and layout the repo already uses. A ticket small enough to be proven by another ticket's test may declare `covered by <ID>` instead of adding its own. No new test beats a bad one: when the only test you could write would mostly check mocks, depend on timing, or need heavy setup for a small change, use the closest command that runs the real code instead (a script, a curl, a CLI call) and say why in the plan.
 

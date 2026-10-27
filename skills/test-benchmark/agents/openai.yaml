@@ -1,0 +1,3 @@
+interface:
+  display_name: "Test Benchmark"
+  short_description: "Vet a performance number before trusting it"

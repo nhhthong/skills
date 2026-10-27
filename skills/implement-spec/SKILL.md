@@ -18,7 +18,7 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 
 **Local tickets live in the main checkout.** `.work/` is not committed in `private` storage, so a worktree does not contain it. Give every subagent the **absolute path** to the main checkout's `.work/` (tickets, spec index, notes) and tell it to read and update ticket `Status:` lines there, never in its worktree.
 
-**Implementer subagents** should be run in the background where possible for maximum concurrency.
+**Implementer subagents** should be run in the background where possible for maximum concurrency. Read [WORKERS.md](WORKERS.md) before step 4: how to spawn them, the report each one returns, and the check you run before integration.
 
 ## Steps
 
@@ -31,11 +31,11 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 4. Use **implementer subagents** to implement each ticket on the current **frontier**, each in its own worktree on its own branch based on the integration branch. Each implementer subagent:
    - reads the ticket's test plan, or calls the Skill tool with `dev:test-plan` to write one, and runs the proof command directly when the ticket's tier is `check`;
    - calls the Skill tool with `dev:test-tdd` to build the ticket when the plan calls for tests;
-   - leaves its changes uncommitted, and reports the ticket id, the files changed and a commit message in the repo's convention.
+   - leaves its changes uncommitted, and ends with the report block from [WORKERS.md](WORKERS.md).
 
    Under `run`: each implementer commits in its worktree and merges the integration branch tip into its own branch before reporting done.
 
-5. **Hand off the integration.** Once the frontier's implementers are done, print one script for the user: for each worktree, `git -C <worktree> add -A` and `git -C <worktree> commit` with that ticket's message, then on the integration branch `git merge --no-ff <ticket branch>`. Save it to `.work/handoff/integration-<n>.sh` as well. Tickets blocked by this frontier need the merged code, so stop here and tell the user to run the script and then `/dev:implement-spec` again to start the next frontier.
+5. **Hand off the integration.** Once the frontier's implementers are done and checked as [WORKERS.md](WORKERS.md) says, print one script for the user that covers the verified tickets: for each worktree, `git -C <worktree> add -A` and `git -C <worktree> commit` with that ticket's message, then on the integration branch `git merge --no-ff <ticket branch>`. Save it to `.work/handoff/integration-<n>.sh` as well. Tickets blocked by this frontier need the merged code, so stop here and tell the user to run the script and then `/dev:implement-spec` again to start the next frontier.
 
    Under `run`: a **merger subagent** merges each completed ticket into the integration branch, and if that changes the frontier you kick off the next implementers straight away.
 
@@ -45,4 +45,4 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 
 8. Print the closing commands: `git push -u origin <integration branch>`, and for `pr` delivery the command that opens the pull request (one per ticket branch when the PR size cap applies), with the body from the Skill tool called with `dev:review-pr`. Under `run`, push and open a draft PR after the first merge, and mark it ready at the end.
 
-9. Print the `git worktree remove <path>` commands for every implementer worktree, and run them only after the user confirms.
+9. Print the worktree removals as [WORKERS.md](WORKERS.md) says, and run them only after the user confirms.

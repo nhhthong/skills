@@ -2,22 +2,31 @@
 
 All notable changes to the `dev` plugin. Versions follow [Semantic Versioning](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [2.0.0] - 2026-10-27
 
-Adds ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT). To be released as 1.0.0.
+Adds ideas from [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT): proof on the real artifact, rigor that follows the ticket's tier, and small leaf files read only when a trigger holds. Major version because `review-code` output and the ticket `## Result` format changed.
 
 ### Added
 
-- `test-plan/PROOF.md`: one proof standard. Check the real artifact, not a proxy; proof levels 1 to 5; verdicts `VERIFIED`, `NOT VERIFIED`, `INCONCLUSIVE`.
-- `implement-ticket/SEQUENCE.md`: baseline at `Base:`, one checked unit at a time, and commit order (red test before fix).
-- `**Baseline:**` ticket header line and a `Baseline:` line in `light` and `full` test plans.
+- `review-impact` (agent): what a change breaks outside its diff, with the one safety fact proven by running real code.
+- `explore-why` (agent): why existing code is shaped as it is, from history, pull requests, tickets and memory; ends with Preserve, Change freely, Avoid and Risk.
+- `test-benchmark` (agent): vets a performance number before it is reported or acted on.
+- `setup-verify` (you type): generates a project `verify-<app>` skill that drives the real app and keeps evidence; `refresh` updates it.
+- Leaf files: `test-plan/PROOF.md` (proof levels 1 to 5; verdicts `VERIFIED`, `NOT VERIFIED`, `INCONCLUSIVE`), `implement-ticket/SEQUENCE.md` (baseline, one checked unit at a time, commit order), `review-code/JUDGMENT.md` (finding format and lead judgment), `debug-diagnose/PREMISE.md` (attack the premise, fix the root cause), `implement-spec/WORKERS.md` (worker brief, report block, check before integration, worktree removal).
+- `**Baseline:**` ticket header line, and a `Baseline:` line in `light` and `full` test plans.
+- `Always pause` line in `workflow.md`.
 - `npm run check` fails on broken relative links, leaf files no `SKILL.md` reaches, and unknown `dev:<name>` references.
 
 ### Changed
 
-- `implement-ticket`: rigor follows the test-plan tier. Tier `check` runs no baseline, and reads a leaf only for a bug, a sweep or work delivered as more than one commit. `## Result` records the proof output, the verdict, an `Applied:` line and `skip:` lines.
-- `test-plan`: a "Contained" yes needs a `file:line` or an empty caller search. No new test beats a bad one.
+- `implement-ticket`: rigor follows the test-plan tier; tier `check` runs no baseline. Triggers call `explore-why`, `review-impact` and `test-benchmark` only when their condition holds. `## Result` records the proof output, the verdict, an `Applied:` line and `skip:` lines.
+- `review-code`: a third axis, Impact, runs for risky changes; the smell baseline gains five agent failure shapes; each finding is sorted into act on, consider, noted or dismissed.
+- `review-pr`: Merge Danger comes from the Impact reply; evidence is copied from the ticket's proof.
+- `implement-spec`: implementers report `PASS`, `ISSUES` or `BLOCKED` with head and proof; the lead reruns each proof before integration and checks worktrees before removal.
+- `test-plan`: a "Contained" yes needs a `file:line` or an empty caller search; no new test beats a bad one; `verify-<app>` counts as proof.
 - `test-tdd`: a new test must fail for the right reason; tests change only when the expected behaviour changed.
+- `debug-diagnose`: premise check after two failed attempts on one belief; perf numbers go through `test-benchmark`.
+- `explore-decide`, `plan-tickets`, `design-modules` (judge, rubric and graft in Design It Twice), `session-retro`, `session-handoff`, `session-progress` and `ask-me` take the same ideas where they apply.
 
 ## [0.2.0] - 2026-10-14
 

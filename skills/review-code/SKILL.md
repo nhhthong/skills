@@ -1,16 +1,17 @@
 ---
 name: review-code
-description: "Review the changes since a fixed point on two axes: Standards (this repo's documented coding standards) and Spec (what the originating ticket or spec asked for)."
+description: "Review the changes since a fixed point on separate axes: Standards (this repo's coding standards), Spec (what the ticket asked for) and, for risky changes, Impact (what the change breaks outside the diff)."
 argument-hint: "A commit, branch or tag to compare against, or a ticket id"
 disable-model-invocation: true
 ---
 
-Two-axis review of the changes since a fixed point the user supplies, uncommitted work included:
+Review of the changes since a fixed point the user supplies, uncommitted work included, on separate axes:
 
 - **Standards**: does the code conform to this repo's documented coding standards?
 - **Spec**: does the code faithfully implement the originating issue / spec?
+- **Impact** (risky changes only): what does the change break outside the diff, and is the fact it is safe because of proven?
 
-Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
+Each axis runs as a **parallel sub-agent** so they don't pollute each other's context, then this skill judges and aggregates their findings.
 
 Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
 
@@ -27,7 +28,7 @@ Capture the diff command once. The review usually runs before the commit, so it 
 - New files: `git ls-files --others --exclude-standard -- . ':(exclude).work'`. They are not in the diff; the sub-agents read them in full.
 - Commits: `git log <fixed-point>..HEAD --oneline` (may be empty when nothing is committed yet).
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and that the diff or the new-file list is non-empty. A bad ref or nothing to review should fail here, not inside two parallel sub-agents.
+Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and that the diff or the new-file list is non-empty. A bad ref or nothing to review should fail here, not inside parallel sub-agents.
 
 ### 2. Identify the spec source
 
@@ -42,7 +43,7 @@ Look for the originating spec, in this order:
 
 Search the repo for every file that documents how code should be written. When `CODING_STANDARDS.md` or `CONTRIBUTING.md` exists, it must be on the list, and so must the delivery rules in `workflow.md` (branch names, commit convention, PR size cap, PR template, reviewers).
 
-On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below: a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
+On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below: a fixed set of Fowler code smells (_Refactoring_, ch.3) plus a few failure shapes agents often produce. It applies even when a repo documents nothing. Two rules bind it:
 
 - **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
 - **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation. Like any standard here, skip anything tooling already enforces.
@@ -61,10 +62,24 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - **Message Chains**: long `a.b().c().d()` navigation the caller shouldn't depend on. → hide the walk behind one method on the first object.
 - **Middle Man**: a class or function that mostly just delegates onward. → cut it, call the real target direct.
 - **Refused Bequest**: a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
+- **Symptom Fix**: a guard, retry, cast or swallowed error that hides why a bad state happened. → fix where the state is produced, or show the state is legitimate.
+- **Half-done State**: an operation that leaves partial results when it runs twice or stops halfway. → make it converge to the same end state, or make the partial state impossible.
+- **Legacy Dual Path**: a new internal API added while the old one stays alive with no outside caller. → migrate the callers and delete the old one in the same change.
+- **Untraced Input**: outside input reaching a query, shell, file path, HTML or permission check with no validation where it enters. → validate at the boundary; name the path.
+- **Proxy Proof**: code or a test that checks a sign of the result (a file time, a cached value, a log line) instead of the result. → check the value itself.
 
-### 4. Spawn both sub-agents in parallel
+### 4. Decide whether Impact runs
 
-Issue both sub-agent calls together, in the foreground, and aggregate the reports they return.
+This is the one rule for when Impact runs; other skills point here. Run the **Impact** axis when the user asked for it, or when the ticket is not tier `check` and any of these holds:
+
+- the ticket's test plan is tier `full`, or the ticket is severe (money, auth, deletes, two writers on one record);
+- the diff changes data that leaves the process: a route's request or response, a schema or migration, a message, a file format, a public type.
+
+Skip it when the ticket's `Applied:` line already lists `dev:review-impact` for this diff, and reuse that reply. In every other case skip it and say so in the summary.
+
+### 5. Spawn the sub-agents in parallel
+
+Issue the sub-agent calls together, in the foreground, and collect the reports they return. The Standards and Spec prompts include the finding format from [JUDGMENT.md](JUDGMENT.md), pasted in full; the Impact sub-agent keeps the Reply format of `review-impact`.
 
 **Standards sub-agent prompt** should include:
 
@@ -78,19 +93,27 @@ Issue both sub-agent calls together, in the foreground, and aggregate the report
 - The path or fetched contents of the spec.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
 
+**Impact sub-agent prompt** (when step 4 says so) should include:
+
+- The diff command, the new-file list and the commit list.
+- The brief: "Call the Skill tool with `dev:review-impact` on this diff and return its reply."
+
 If the spec is missing, skip the Spec sub-agent and note this in the final report.
 
-### 5. Aggregate
+### 6. Judge and aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
+Sort each axis's findings as [JUDGMENT.md](JUDGMENT.md) says: Act on, Consider, Noted, Dismissed. Check a finding against the code before you dismiss it; a dismissal carries its reason.
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+Present each axis under its own heading (`## Standards`, `## Spec`, `## Impact`), with its findings in those four groups. Under `## Impact`, keep the `Safe because` and `Door` lines of the reply as they are, and sort only its Risks; `review-pr` copies those two lines. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_).
 
-## Why two axes
+End with a one-line summary: Act-on findings per axis, the worst issue _within each axis_ (if any), and whether Impact ran or was skipped. Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
-A change can pass one axis and fail the other:
+## Why separate axes
+
+A change can pass one axis and fail another:
 
 - Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
 - Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
+- Code that is clean and on spec but changes a response another service parses → **Standards and Spec pass, Impact fail.**
 
-Reporting them separately stops one axis from masking the other.
+Reporting them separately stops one axis from masking another.

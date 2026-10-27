@@ -1,0 +1,5 @@
+interface:
+  display_name: "Setup Verify"
+  short_description: "Generate a skill that drives the real app"
+policy:
+  allow_implicit_invocation: false

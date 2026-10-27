@@ -13,9 +13,9 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 2. **Look for an earlier answer.** call `memo_callback` (types `decision`, `note`) and check the ADR titles (`docs/adr/`) for the topic, and read the spec index's decisions. A decision that still binds ends the skill: report it and ask only whether to reopen it.
 
-3. **Research.** Library behaviour: use Context7 if the session has it, otherwise the library's official docs. Anything deeper: call the Skill tool with "dev:explore-research" and wait for the result, because the choice is blocking the work. Every claim carries its source. If the question concerns infrastructure, read [INFRA.md](INFRA.md) now.
+3. **Research.** Library behaviour: use Context7 if the session has it, otherwise the library's official docs. Anything deeper: call the Skill tool with "dev:explore-research" and wait for the result, because the choice is blocking the work. Every claim carries its source. If the question concerns infrastructure, read [INFRA.md](INFRA.md) now. When the choice changes existing code whose shape you do not understand (a guard, a retry, a flag, an odd boundary), call the Skill tool with "dev:explore-why" first: its constraints bind the options.
 
-4. **Compare 2 to 3 options** against the constraints in the spec, the ticket and the repo (existing stack, team skills, hosting). An option the constraints rule out is dropped with the reason.
+4. **Compare 2 to 3 options** against the constraints in the spec, the ticket and the repo (existing stack, team skills, hosting). An option the constraints rule out is dropped with the reason. When options are compared on speed or throughput, measure them and call the Skill tool with "dev:test-benchmark": a number from one untuned side decides nothing.
 
 5. **Recommend one.** Word it so that "yes" accepts it. Give the reason in a sentence, and the single biggest cost of the choice.
 

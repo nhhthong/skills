@@ -13,6 +13,7 @@ Before spawning sub-agents, write a user-facing explanation of the problem space
 - The constraints any new interface would need to satisfy
 - The dependencies it would rely on, and which category they fall into (see [DEEPENING.md](DEEPENING.md))
 - A rough illustrative code sketch to ground the constraints, not a proposal, just a way to make the constraints concrete
+- A **rubric** of 3 to 6 criteria you can grade each design against (for example: entry points callers must learn, what a test can reach through the interface, where a new requirement would land). The sub-agents never see it; it is your tool in Step 3.
 
 Show this to the user, then immediately proceed to Step 2. The user reads and thinks while the sub-agents work in parallel.
 
@@ -37,8 +38,14 @@ Each sub-agent outputs:
 4. Dependency strategy and adapters (see [DEEPENING.md](DEEPENING.md))
 5. Trade-offs: where leverage is high, where it's thin
 
-### 3. Present and compare
+### 3. Judge, present and compare
+
+When the designs are back, spawn one read-only **judge** sub-agent with the rubric and the designs, labelled by number only. It scores each design criterion by criterion and names a base. Meanwhile, read every design end to end and score it yourself. When you and the judge pick the same base, that confirms it; when you differ, read both rationales before deciding, since one of you is biased or the rubric is ambiguous.
 
 Present designs sequentially so the user can absorb each one, then compare them in prose. Contrast by **depth** (leverage at the interface), **locality** (where change concentrates), and **seam placement**.
 
-After comparing, give your own recommendation: which design you think is strongest and why. If elements from different designs would combine well, propose a hybrid. Be opinionated: the user wants a strong read, not a menu.
+After comparing, give your own recommendation: the base design and why. Then **graft**: walk each other design once for the one or two parts worth porting, and fold them into the base by hand so it stays one coherent design. Designs that converge on one shape are strong agreement: recommend that shape with no graft. Designs that diverge wildly mean Step 1 was under-specified: sharpen the constraints and run Step 2 again rather than averaging them. Be opinionated: the user wants a strong read, not a menu.
+
+Screen the base before recommending it: a change that looks right from one file should be right for the whole repo. Reject a design whose callers must know its internal rules, or whose types need casts or always-set optional fields to compile.
+
+The judge, rubric and graft steps are adapted from pstack (Lauren Tan, MIT): `arena`, `architect`.

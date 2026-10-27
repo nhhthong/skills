@@ -103,6 +103,8 @@ After each hypothesis is tested, record an `attempt` with `memo_post` (linked to
 
 If you cannot state the prediction, the hypothesis is a vibe: discard or sharpen it.
 
+When two attempts that share one belief have failed, read [PREMISE.md](PREMISE.md) before the next one.
+
 **Show the ranked list to the user before testing.** They often have domain knowledge that re-ranks instantly ("we just deployed a change to #3"), or know hypotheses they've already ruled out. Cheap checkpoint, big time saver. Don't block on it; proceed with your ranking if the user is AFK.
 
 ## Phase 4: Instrument
@@ -117,11 +119,11 @@ Tool preference:
 
 **Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
 
-**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
+**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second. Before you trust or report a number, call the Skill tool with `dev:test-benchmark`.
 
 ## Phase 5: Fix + regression test
 
-Write the regression test **before the fix**, but only if there is a **correct seam** for it.
+Write the regression test **before the fix**, but only if there is a **correct seam** for it. When the fix is a guard, a retry, a cast or a caught error, read the root-cause section of [PREMISE.md](PREMISE.md) first.
 
 A correct seam is one where the test exercises the **real bug pattern** as it occurs at the call site. If the only available seam is too shallow (single-caller test when the bug needs multiple callers, unit test that can't replicate the chain that triggered the bug), a regression test there gives false confidence.
 
