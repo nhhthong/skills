@@ -46,6 +46,8 @@ Pick the smallest view that makes the key point clear: pseudocode for logic, a c
 
 Concrete evidence that the change works. Show a before and after.
 
+A change that only adds files or behaviour has no failing "before": write `Before: absent`, show the check that finds it missing, then the same check passing after.
+
 Screenshots are S-tier - when the environment is set up for it and the change is visual.
 
 Execution-based evidence is A-tier. Test results, console output. Show the exact test that now fails and passes, using pseudocode.

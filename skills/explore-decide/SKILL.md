@@ -13,7 +13,7 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 2. **Look for an earlier answer.** Call `memo_callback` (types `decision`, `note`) and check the ADR titles (`docs/adr/`) for the topic, and read the spec index's decisions. A decision that still binds ends the skill: report it and ask only whether to reopen it.
 
-3. **Research.** Library behaviour: use Context7 if the session has it, otherwise the library's official docs. Anything deeper: call the Skill tool with "dev:explore-research" and wait for the result, because the choice is blocking the work. Every claim carries its source. If the question concerns infrastructure, read [INFRA.md](INFRA.md) now. When the choice changes existing code whose shape you do not understand (a guard, a retry, a flag, an odd boundary), call the Skill tool with "dev:explore-why" first: its constraints bind the options.
+3. **Research.** Library behaviour: use Context7 if the session has it, otherwise the library's official docs. Anything deeper: call the Skill tool with "dev:explore-research" and wait for the result, because the choice is blocking the work. Every claim carries its source. When documentation cannot answer because only a run can (does the library accept this input, how slow is this path), run it: a throwaway script, or call the Skill tool with "dev:explore-prototype", and keep the output as the evidence. If the question concerns infrastructure, read [INFRA.md](INFRA.md) now. When the choice changes existing code whose shape you do not understand (a guard, a retry, a flag, an odd boundary), call the Skill tool with "dev:explore-why" first: its constraints bind the options.
 
 4. **Compare 2 to 3 options** against the constraints in the spec, the ticket and the repo (existing stack, team skills, hosting). An option the constraints rule out is dropped with the reason. When options are compared on speed or throughput, measure them and call the Skill tool with "dev:test-benchmark": a number from one untuned side decides nothing.
 
@@ -26,5 +26,7 @@ Turn a choice into a recommendation the user can accept with one word. The user 
    - Change the spec index's open point to ✅ with the decision's id.
 
    Done when the decision exists in one place, and the spike and open point point to it.
+
+   When research and a run still cannot settle the question and the choice is reversible, record a provisional decision (its body starts with `provisional:` and names what is missing). Leave the spike at `Status: ready` and the open point at ⚠️, each pointing to the decision's id and to what would settle it, and say which ticket waits. Do not close what the evidence did not settle.
 
 Next step: say which ticket the decision unblocks, and `/dev:implement-ticket <ID>` to continue.

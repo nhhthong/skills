@@ -17,7 +17,7 @@ A write-up that sounds right proves nothing. Find the one fact the change's safe
 
 ## Steps
 
-1. **Read the change.** Use the diff command the caller gives (`review-code` passes its own), or `git diff <base>` plus the new files. List what the change adds, changes and deletes, and what it now does differently that the diff does not spell out: a default, an order, a timing, an error path. Done when you can say in two lines what behaves differently.
+1. **Read the change.** Use the diff command the caller gives (`review-code` passes its own), or `git diff <base> -- . ':(exclude).work'` plus the files `git ls-files --others --exclude-standard -- . ':(exclude).work'` lists. Work not yet committed has new files that `git diff` does not show; they belong to the change. List what the change adds, changes and deletes, and what it now does differently that the diff does not spell out: a default, an order, a timing, an error path. Done when you can say in two lines what behaves differently.
 
 2. **Find the safety fact.** Most changes that look risky are safe because of one fact, such as "this call only drops cache entries that have already expired". Name it in one sentence. If it holds, most risks clear at once, so spend your time here rather than on a long list of maybes. Done when the fact is one sentence.
 
