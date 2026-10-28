@@ -22,6 +22,13 @@ Characteristics:
 - Describes WHAT, not HOW
 - One logical assertion per test
 
+Two checks decide whether a test tests behaviour:
+
+- **Break the behaviour**: change what the code returns or does (flip a condition, drop a step). The test must go red.
+- **Change the inside**: restructure the code without changing what callers see (rename a private helper, inline it, swap a loop for a map). The test must stay green.
+
+A test that fails the first check proves nothing; a test that fails the second pins the implementation.
+
 ## Bad Tests
 
 **Implementation-detail tests**: Coupled to internal structure.

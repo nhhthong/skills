@@ -140,3 +140,28 @@ test('a --spec path that does not exist fails instead of skipping the checks', (
   assert.equal(cli.status, 1);
   assert.match(cli.stderr, /does not exist/);
 });
+
+test('space-separated codes, first status marker, outside blockers, tracker spikes', () => {
+  const { dir, spec } = repo([
+    { id: 'T-1', nn: '01', req: 'R1.1 R9.9 (partial), FR-1' },
+    { id: 'T-2', nn: '02', req: 'R2.1' },
+    { id: 'T-3', nn: '03', req: 'R3.1' },
+    { id: 'T-4', nn: '04', req: 'R3.1', blocked: 'T-1' },
+    { id: 'T-5', nn: '05', req: 'R1.2', blocked: '#12' },
+  ]);
+  writeFileSync(spec, `${SPEC}| R2.1 | Phase 2 | ✅ D-3 (was ⚠️ O-2) |\n| R3.1 | Phase 3 | ❌ vendor API |\n`);
+  assert.deepEqual(messages(checkTickets(dir, { spec })), [
+    'needs blocked requirement R3.1 (❌ vendor API) but nothing blocks it',
+    'requirement FR-1 is not in the spec index',
+    'requirement R9.9 is not in the spec index',
+  ]);
+});
+
+test('a duplicate number in one epic, and checkboxes in the test plan are not criteria', () => {
+  const { dir } = repo([{ id: 'T-1', nn: '01' }, { id: 'T-2', nn: '01' }]);
+  writeFileSync(join(dir, 'sync', '02-T-3-x.md'), ticket({ id: 'T-3', nn: '02', criteria: false }) + '\n## Test plan\n\n- [ ] unit test\n');
+  assert.deepEqual(messages(checkTickets(dir)), [
+    'no acceptance criterion (- [ ] line)',
+    'number 01 is also used by ' + join(dir, 'sync', '01-T-1-title.md'),
+  ]);
+});

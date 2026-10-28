@@ -24,9 +24,9 @@ Common routes:
 - Before committing: `review-code`. After delivery, to explain the work to the team: `review-learn`.
 - A ticket too big for one PR, or no longer needed: `plan-ticket-change`.
 - Unsure what was asked of you: `clarify-explain`. Question for someone else: `clarify-ask`.
-- Code you must change but do not understand: `explore-why` starts on its own; ask "why is this here".
+- Code you must change but do not understand: `explore-how` starts on its own for "how does X work", `explore-why` for "why is this here".
 - A risky diff, or "what could this break": `review-impact` starts on its own; `review-code` runs it for risky changes.
 - A UI or CLI app with no scripted way to prove a change: `setup-verify` once.
 - A speedup or slowdown to report: `test-benchmark` starts on its own.
 
-If nothing fits, say so and suggest `/dev:help` to browse.
+If nothing fits, say so and suggest `/dev:help` to browse. When the user asks whether to do something at all, answer with your real judgement first; "no" is an acceptable answer.

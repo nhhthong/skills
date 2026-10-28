@@ -38,7 +38,8 @@ export function auditMemo(m: Row): Finding[] {
     add('no-issue', 'warn', `${m.type} is not linked to an issue → post the issue and pass its code as issue`);
   }
 
-  if (!m.epic) add('no-epic', 'warn', 'no epic → set epic and epic_title when the work belongs to one');
+  // Info, not warn: much work belongs to no epic, and a warning pushes the agent to invent one.
+  if (!m.epic) add('no-epic', 'info', 'no epic → set epic and epic_title when the work belongs to one');
   if (m.epic && !m.epic_title) add('no-title', 'warn', `epic ${m.epic} has no title → pass epic_title`);
   if (m.ticket && !m.ticket_title) add('no-title', 'warn', `ticket ${m.ticket} has no title → pass ticket_title`);
   if (!m.tags?.length) add('no-tags', 'warn', 'no tags → add a few, reusing the top tags from memo_info');

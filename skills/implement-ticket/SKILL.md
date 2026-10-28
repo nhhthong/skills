@@ -9,7 +9,7 @@ Take **one ticket** to delivery. Read this repo's configuration first: `docs/age
 
 Every ticket worked has a **local ticket file** under `.work/tickets/`. The file holds the ticket's `Status`, `Step` and `Result`, so a session that dies can be resumed. `implement-ticket` creates whatever record it needs; a missing spec index or epic never blocks it.
 
-**Write the `Step:` line before starting each step**, naming the step you are about to do (`orient`, `fill gaps`, `plan proof`, `build`, `review`, `deliver`, `close`). The last `Step:` line says where a dead session stopped.
+**Write the `Step:` line before starting each step**, naming the step you are about to do (`identify`, `orient`, `fill gaps`, `plan proof`, `build`, `review`, `deliver`, `close`). The last `Step:` line says where a dead session stopped.
 
 ## Rigor follows the tier
 
@@ -31,11 +31,13 @@ Name each leaf you read and each skill you called on the `Applied:` line of `## 
 
 ### 0. Identify the ticket
 
-- **A ticket id.** Read its file in `.work/tickets/`. If the ticket exists only on the tracker, read it there and write a local file for it at `.work/tickets/tracked/<ID>-<slug>.md` in the ticket template of `plan-tickets`, with a `Tracker:` line holding its URL.
+- **A ticket id.** Read its file in `.work/tickets/`. If the ticket exists only on the tracker, read it there and write a local file for it at `.work/tickets/tracked/<ID>-<slug>.md` in the template of [TICKET.md](../plan-tickets/TICKET.md), with a `Tracker:` line holding its URL.
 - **Pasted ticket text** (from Jira or anywhere else). Write it as a ticket file at `.work/tickets/external/<ID>-<slug>.md`, using the id it already has. Fill `Type` (a guess you state), `Requirements: none`, `Blocked by: None`, the acceptance criteria from the text, and `Files:` and `Proof:` once step 1 has found them.
 - **Nothing.** Resume: find the ticket with `Status: in-progress` or `in-review` (`grep -rl` over `.work/tickets/`). With none, say so and suggest `/dev:session-progress`. With one, read its last `Step:` and `## Result`, compare with `git status` and `git log`, and **run the tests again before writing more code**: the file can be one step behind the working tree. The ticket file is the record: continue from it rather than redoing finished steps, and trust its claims only once the rerun proof agrees with them. A ticket waiting at `Step: review` goes on from step 5; one at `Status: in-review` whose commit now exists is closed as `done`.
 
-Set `Status: in-progress`. Done when you can state the ticket's id and title (and, when resuming, the step you will continue from).
+Set `Status: in-progress`. Then **restate the goal** in your first message, in three lines: what the user wants (the outcome, not the method), the problem in the code today, and the smallest change you expect. When what you find later rules out the request as written, stop and say so instead of building around it.
+
+Done when you can state the ticket's id, its title and the goal (and, when resuming, the step you will continue from).
 
 ### 1. Orient
 
@@ -47,6 +49,7 @@ Done when you can list: the decisions and notes that bind the ticket, the files 
 
 ### 2. Fill the gaps
 
+- A question that running something answers (does the library accept this input, which layout reads better, how fast is the slow path): find out by running it, with a throwaway script or `dev:explore-prototype`, instead of asking the user.
 - Acceptance criteria that are ambiguous: call the Skill tool with "dev:clarify-grill" on the missing part only.
 - A choice between options, or an open point or `spike` in `Blocked by`: call the Skill tool with "dev:explore-decide".
 - A question only an outside person can answer: tell the user to type `/dev:clarify-ask` for that person, and carry on with every part of the ticket that does not depend on the answer.
@@ -93,7 +96,7 @@ Done when the message and the commands are printed (or, under `Git writes: run`,
 ### 7. Close
 
 - Set `Status: in-review`: the work is complete and waits for the user to commit or merge it. Set `Status: done` when the user confirms the commit or the merge, or when a later `/dev:implement-ticket` or `/dev:session-progress` finds the commit on the branch.
-- Fill `## Result`: what changed; the proof command, the output lines that decide it, and the verdict (`VERIFIED`, `NOT VERIFIED` or `INCONCLUSIVE`); pre-existing failures from the baseline; the commit message and commands you printed (or the PR or commit); the decisions made; the follow-ups; the `Applied:` line and any `skip:` lines.
+- Fill `## Result`: the goal in one line, then what changed; the proof command, the output lines that decide it, and the verdict (`VERIFIED`, `NOT VERIFIED` or `INCONCLUSIVE`); pre-existing failures from the baseline; the commit message and commands you printed (or the PR or commit); the decisions made; the follow-ups; the `Applied:` line and any `skip:` lines.
 - Turn a `fix` note from `(unconfirmed)` to `(confirmed)` by appending a new line.
 - Add `note` lines for anything the next session would lose time without.
 - A tracker ticket: mirror the status on the tracker and close it only after delivery is confirmed. Print those commands for the user (`Tracker and pull request writes` in `workflow.md`).

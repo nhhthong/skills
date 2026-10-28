@@ -26,7 +26,7 @@ Done when you can name the ticket or tickets and the output file: `.work/learn/<
 - **Ticket file**: `What to build`, acceptance criteria (ticked or not), `Requirements`, `New infrastructure`, `## Test plan`, `## Result`, `Base:`.
 - **Spec index** (`.work/spec-index.md`): the line of each requirement code, and the open points and decisions that name the ticket.
 - **Memory**: `memo_callback` with the ticket id, then `memo_get` for each decision, issue and fix it returns.
-- **Code**: the changes since the ticket's `Base:` commit (`git diff <Base>`, plus new files), or the commit named in `## Result`. Read the changed files for the real names: routes, functions, tables, keys, topics, queues.
+- **Code**: the changes since the ticket's `Base:` commit (`git diff <Base>`, plus new files), or the commit named in `## Result`. Read the changed files for the real names: routes, functions, tables, keys, topics, queues. When the change sits inside a flow the note must explain and you have not traced it, call the Skill tool with "dev:explore-how" on that flow.
 
 Done when each section of the template below has a source, or you know it has none.
 

@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, realpathSync } from 'node:fs';
+import { existsSync, readdirSync, realpathSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 
@@ -55,6 +55,19 @@ export function resolveProject(dir?: string): Project {
   const commit = root === start || existsSync(join(root, '.git')) ? rootCommit(root) : null;
   const id = (commit || createHash('sha1').update(root).digest('hex')).slice(0, 12);
   const slug = basename(root).replace(/[^A-Za-z0-9._-]/g, '-').slice(0, 40) || 'project';
-  const dbPath = process.env.MEMO_DB || join(memoHome(), `${slug}-${id}.db`);
+  const dbPath = process.env.MEMO_DB || findDb(memoHome(), slug, id);
   return { id, slug, root, dbPath, identity: commit ? 'git-root-commit' : 'path' };
+}
+
+/** The id names the project; the slug is only for people. A clone under another folder name keeps its DB. */
+function findDb(home: string, slug: string, id: string): string {
+  const named = join(home, `${slug}-${id}.db`);
+  if (existsSync(named)) return named;
+  try {
+    const hit = readdirSync(home).filter((f) => f.endsWith(`-${id}.db`)).sort()[0];
+    if (hit) return join(home, hit);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e; // no memo home yet is fine
+  }
+  return named;
 }

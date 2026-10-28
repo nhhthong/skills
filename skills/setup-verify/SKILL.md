@@ -20,7 +20,7 @@ Read the repo's storage setting first (`docs/agents/workflow.md`, or `.work/conf
 - Write to `.claude/skills/verify-<app>/` in the repo.
 - `private`: also add `.claude/skills/verify-<app>/` to `.git/info/exclude`, so nothing new reaches teammates.
 
-With the argument `refresh`, skip to step 5.
+With the argument `refresh`, read [REFRESH.md](REFRESH.md) and follow it instead of the steps below.
 
 ## Steps
 
@@ -37,15 +37,16 @@ With the argument `refresh`, skip to step 5.
    - **Launch**: the command, the sign that the app is usable (not only that a process answers), and how to stop it. It reaches a usable state from an empty data directory, migrations and seed data included.
    - **Doctor**: one read-only check that the running instance is worth driving: process up, the right build, the port owned by this run, login valid.
    - **Drive**: the harness recipe with the repo's real selectors, routes or commands. Prefer stable handles (labels, `data-` attributes, route paths, prompt strings) over coordinates.
-   - **Evidence**: what to capture and where it goes. The real user path, not test-only endpoints; the action and the resulting state; side effects (files, rows, messages) next to what is visible.
+   - **Evidence**: what to capture and where it goes. The real user path, not test-only endpoints; the action and the resulting state; side effects (files, rows, messages) next to what is visible; mocks only where a production boundary already isolates the outside system. When the safe path is a dry-run or test mode, observe what it really skips (files, network, git refs) instead of trusting its name.
    - **Cleanup**: stop only what this run started, never by process name. Evidence survives cleanup, in the place the skill names.
+   - **Helpers**: every script the skill ships is executable, and the skill body shows how to call it. A helper the reader must reverse-engineer is not a helper.
+
+   For a short-lived CLI, Launch means a fresh isolated session per drive, not one long-lived instance.
 
    Done when every section names real commands from this repo.
 
-3. **Seed the feature map.** A `features/` folder beside the skill: a `README.md` index and one file per user-facing feature, three to five to start, found from routes, commands, menus or docs. Each file has four sections: `Sub-features`, `How to get to it`, `Driving it`, `Gotchas`. When the seed data lacks what a journey needs, the journey reports the failure and the reason goes in `Gotchas`; never weaken the journey to make it pass. Done when each feature file names an end state that proves the feature works.
+3. **Seed the feature map.** A `features/` folder beside the skill: a `README.md` index and one file per user-facing feature, three to five to start, found from routes, commands, menus or docs. Each file has four sections: `Sub-features`, `How to get to it`, `Driving it`, `Gotchas`. When the seed data lacks what a journey needs, the journey reports the failure and the reason goes in `Gotchas`; never weaken the journey to make it pass. The map is the repo's source of truth for verification: a proof that drives one convenient entry point is incomplete when the map lists others. Done when each feature file names an end state that proves the feature works.
 
-4. **Prove the skill.** Run its own instructions once, end to end: launch, doctor, drive one mapped feature, capture evidence, clean up, then confirm the evidence still exists. Fix what fails, and run cleanup after every failed try. A skill never run is a draft. Done when one feature was driven and its evidence survived cleanup.
-
-5. **Refresh** (argument `refresh`). List the commits since the skill last changed that touched routes, commands, selectors or the start command. For each feature file they touch, read the source and drive the feature once; correct only what the drive proved wrong. Add a feature file for a new user-facing feature. Done when every changed feature was driven, and each correction names the drive that proved it.
+4. **Prove the skill.** Run its own instructions once, end to end: launch, doctor, drive one mapped feature, capture evidence, clean up, then confirm the evidence still exists. Fix what fails, and run cleanup after every failed try. A skill never run is a draft. When you proved it in a stand-in for the real target (a container instead of a fresh machine, a local stack instead of a remote one), list every setup step the stand-in did that the target will not: those steps stay unverified until a run on the real target covers them. Done when one feature was driven and its evidence survived cleanup.
 
 Reply with the skill's path, the feature driven in step 4 and where its evidence is.

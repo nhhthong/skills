@@ -11,5 +11,9 @@ A red flag is a reason to revise or reject the shape, not a rule to apply blindl
 - **Importable internals.** A caller can import what should be private, so the shortest path that compiles makes it part of the interface. Make it unreachable from outside, so such an import fails the build.
 - **Hand-synced lists.** The same items are listed in two or more places, and adding one means editing each. Keep one list and derive the rest; when a list cannot be derived, make the build fail when they disagree.
 - **Callers must know the rules.** Using the interface correctly needs knowledge of its internals (call order, a flag to set first), or its types need casts or always-set optional fields to compile.
+- **Added before subtracting.** The design adds a layer, a flag or a new path next to code that should have been removed or simplified first. Delete what the new requirement makes dead, then see what is left to build.
+- **Patched instead of redesigned.** The shape only makes sense as history: each requirement bolted onto the last. Ask what you would build if every current requirement had been known on day one; when that answer is much smaller, propose it.
+- **A temporary shim with no end.** A compatibility path, adapter or flag is kept "for now" with no ticket or date to remove it. Aim at the end state; a shim needs its removal planned in the same breakdown.
+- **Too much to hold.** A reader cannot say in 30 seconds what a function does: count the layers to trace and the state to keep in mind. When a change makes the count go up, it needs a reason that outweighs it.
 
-Adapted from pstack (Lauren Tan, MIT): `architect/references/design-red-flags.md`.
+Adapted from pstack (Lauren Tan, MIT): `architect/references/design-red-flags.md`, and the principles `subtract-before-you-add`, `redesign-from-first-principles`, `outcome-oriented-execution` and `minimize-reader-load`.

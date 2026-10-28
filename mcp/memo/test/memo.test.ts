@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { openStore } from '../store.ts';
+import { auditMemo } from '../audit.ts';
 import type { Store } from '../store.ts';
 
 const mk = (): Store =>  openStore({ id: 'test', slug: 'test', root: '/tmp/x', identity: 'path', dbPath: join(mkdtempSync(join(tmpdir(), 'memo-')), 't.db') });
@@ -156,4 +157,42 @@ test('B4: refs on update are merged, refs_remove deletes', () => {
   assert.deepEqual(s.get('N-1').refs.map((r: { value: string }) => r.value), ['a.go', 'b.go']);
   s.post({ code: 'N-1', refs_remove: [{ kind: 'file', value: 'a.go' }] });
   assert.deepEqual(s.get('N-1').refs.map((r: { value: string }) => r.value), ['b.go']);
+});
+
+test('a repeated issue keeps the tags, refs and epic of the new sighting', () => {
+  const s = mk();
+  s.post({ type: 'issue', title: 'x', signature: 'sig', tags: ['auth'] });
+  s.post({ type: 'issue', title: 'x', signature: 'sig', tags: ['login'], refs: [{ kind: 'file', value: 'src/login.ts' }], epic: 'auth', epic_title: 'Auth' });
+  const g = s.get('I-1');
+  assert.deepEqual(g.tags, ['auth', 'login']);
+  assert.deepEqual(g.refs.map((r: { kind: string; value: string }) => `${r.kind}:${r.value}`), ['file:src/login.ts']);
+  assert.equal(g.epic, 'auth');
+  assert.equal(s.callback({ file: 'login.ts' }).count, 1);
+});
+
+test('demoting a confirmed fix reopens its issue unless another confirmed fix holds', () => {
+  const s = mk();
+  s.post({ type: 'issue', title: 'x' });
+  s.post({ type: 'fix', title: 'a', issue: 'I-1', status: 'confirmed' });
+  s.post({ code: 'F-1', status: 'stale' });
+  assert.equal(s.get('I-1').status, 'open');
+  s.post({ code: 'F-1', status: 'confirmed' });
+  s.post({ type: 'fix', title: 'b', issue: 'I-1', status: 'confirmed' });
+  s.post({ code: 'F-1', status: 'stale' });
+  assert.equal(s.get('I-1').status, 'resolved');
+});
+
+test('status filters attempts by outcome, and status on an attempt points at outcome', () => {
+  const s = mk();
+  s.post({ type: 'attempt', title: 'try one', outcome: 'failed' });
+  s.post({ type: 'attempt', title: 'try two', outcome: 'worked' });
+  assert.deepEqual(s.callback({ status: 'worked' }).results.map((r) => r.code), ['A-2']);
+  assert.throws(() => s.post({ type: 'attempt', title: 'z', status: 'worked' }), /status does not apply to attempt; use outcome/);
+});
+
+test('no epic is an info finding, not a warning', () => {
+  const s = mk();
+  const r = s.post({ type: 'note', title: 'x', tags: ['a'] });
+  assert.ok(!(r.warnings ?? []).some((w: string) => w.startsWith('no-epic')));
+  assert.equal(auditMemo(s.get('N-1')).find((f) => f.check === 'no-epic')?.severity, 'info');
 });

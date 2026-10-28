@@ -186,8 +186,13 @@ export class Store {
       if (dup) {
         const t = now();
         this.db.prepare('UPDATE issues SET occurrences=occurrences+1, last_seen_at=?, status=CASE WHEN status=\'resolved\' THEN \'open\' ELSE status END WHERE memo_id=?').run(t, dup.id);
-        this.db.prepare('UPDATE memos SET updated_at=? WHERE id=?').run(t, dup.id);
-        this.event(dup.id, 'seen-again', str(a.body)?.slice(0, 200) ?? '');
+        // Keep what the new sighting adds: epic and ticket when the issue has none, tags and refs merged.
+        const cur = this.db.prepare('SELECT epic_id, ticket_id FROM memos WHERE id=?').get(dup.id);
+        const epic = cur.epic_id ?? this.epicId(a.epic, a.epic_title);
+        const ticket = cur.ticket_id ?? this.ticketId(a.ticket, epic, a.ticket_title);
+        this.db.prepare('UPDATE memos SET updated_at=?, epic_id=?, ticket_id=? WHERE id=?').run(t, epic, ticket, dup.id);
+        this.#attach(dup.id, { refs: a.refs, tags: a.tags ? [...this.tagsOf(dup.id), ...a.tags] : undefined });
+        this.event(dup.id, 'seen-again', str(a.body) ?? '');
         return { code: dup.code, deduped: true, reopened: dup.status === 'resolved' };
       }
     }
@@ -264,11 +269,16 @@ export class Store {
     }
     if (a.status != null && STATUS[type]) {
       const table = TABLE[type];
+      const was = type === 'fix' ? this.db.prepare('SELECT status FROM fixes WHERE memo_id=?').get(id).status : null;
       this.db.prepare(`UPDATE ${table} SET status=? WHERE memo_id=?`).run(a.status, id);
       if (type === 'fix') {
         this.db.prepare('UPDATE fixes SET verified_at=? WHERE memo_id=?').run(a.status === 'confirmed' ? t : null, id);
         if (a.status === 'confirmed') {
           this.db.prepare("UPDATE issues SET status='resolved' WHERE memo_id=(SELECT issue_id FROM fixes WHERE memo_id=?)").run(id);
+        } else if (was === 'confirmed') {
+          // The fix no longer holds: reopen its issue unless another confirmed fix still resolves it.
+          this.db.prepare(`UPDATE issues SET status='open' WHERE status='resolved' AND memo_id=(SELECT issue_id FROM fixes WHERE memo_id=?)
+            AND NOT EXISTS (SELECT 1 FROM fixes f WHERE f.issue_id=issues.memo_id AND f.status='confirmed')`).run(id);
         }
       }
       if (type === 'note') this.db.prepare('UPDATE notes SET verified_at=? WHERE memo_id=?').run(a.status === 'active' ? t : null, id);
@@ -290,6 +300,7 @@ export class Store {
     const arg = a as Row;
     const oneOf = (v: unknown, list: string[], name: string): void => { if (v != null && !list.includes(v as string)) fail(`${name} must be one of ${list.join(', ')}`); };
     for (const [k, types] of Object.entries(ONLY_FOR)) if (arg[k] != null && !types.includes(type)) fail(`${k} applies to ${types.join(' and ')} only`);
+    if (a.status != null && !STATUS[type]) fail(`status does not apply to ${type}; use outcome`);
     oneOf(a.status, STATUS[type] ?? [], 'status');
     oneOf(a.outcome, OUTCOMES, 'outcome');
     oneOf(a.kind, NOTE_KINDS, 'kind');
@@ -298,7 +309,8 @@ export class Store {
     if (str(a.epic_title) && !str(a.epic)) fail('epic_title needs epic (the epic key)');
     if (str(a.ticket_title) && !str(a.ticket)) fail('ticket_title needs ticket (the ticket key)');
     for (const f of TEXT_FIELDS) if (hasCallMarkup(f, arg[f])) fail(`${f} contains tool-call markup; send the value again without it`);
-    for (const v of [...(a.alternatives ?? []), ...(a.tags ?? [])]) if (hasCallMarkup('alternatives', v)) fail(`alternatives or tags contain tool-call markup; send the value again without it`);
+    for (const v of a.alternatives ?? []) if (hasCallMarkup('alternatives', v)) fail('alternatives contain tool-call markup; send the value again without it');
+    for (const v of a.tags ?? []) if (hasCallMarkup('tags', v)) fail('tags contain tool-call markup; send the value again without it');
     if (!update && type === 'fix' && !str(a.issue) && !str(a.title)) fail('fix needs an issue code or a title');
   }
 
@@ -333,7 +345,7 @@ export class Store {
     if (str(q.ticket)) eq('t.key', String(q.ticket));
     if (q.since) { where.push('m.updated_at >= ?'); args.push(String(q.since)); }
     if (str(q.status)) {
-      where.push(`COALESCE(i.status, f.status, d.status, n.status) = ?`); args.push(String(q.status));
+      where.push(`COALESCE(i.status, f.status, d.status, n.status, a.outcome) = ?`); args.push(String(q.status));
     } else if (!q.include_inactive) {
       where.push(`COALESCE(f.status, d.status, n.status, 'ok') NOT IN ('stale','superseded')`);
     }
@@ -346,9 +358,10 @@ export class Store {
     const from = `FROM memos m
       LEFT JOIN epics e ON e.id=m.epic_id LEFT JOIN tickets t ON t.id=m.ticket_id
       LEFT JOIN issues i ON i.memo_id=m.id LEFT JOIN fixes f ON f.memo_id=m.id
-      LEFT JOIN decisions d ON d.memo_id=m.id LEFT JOIN notes n ON n.memo_id=m.id`;
+      LEFT JOIN decisions d ON d.memo_id=m.id LEFT JOIN notes n ON n.memo_id=m.id
+      LEFT JOIN attempts a ON a.memo_id=m.id`;
     const cols = `m.id, m.code, m.type, m.title, m.updated_at, e.key AS epic, t.key AS ticket,
-      COALESCE(i.status, f.status, d.status, n.status, (SELECT outcome FROM attempts WHERE memo_id=m.id)) AS status`;
+      COALESCE(i.status, f.status, d.status, n.status, a.outcome) AS status`;
     const w = where.length ? ` AND ${where.join(' AND ')}` : '';
 
     const text = str(q.query);
