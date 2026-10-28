@@ -32,7 +32,7 @@ A write-up that sounds right proves nothing. Find the one fact the change's safe
 
 4. **Rate each risk.** For each one: how it breaks, the `file:line`, its chance and its cost (low, medium, high), and the proof level it reached. Never invent a caller or an API. A risk you checked and found fine moves to Cleared with the reason. Done when every place from step 3 is a risk or cleared.
 
-5. **Prove the safety fact.** Write the smallest script or test that calls the real code and fails loudly if the fact is false, run it, and keep the lines of output that decide it. A script that only proves goes to `.work/proof/`. When you cannot get past level 3, the fact is `unproven`; say so. Done when the fact has a level and its evidence.
+5. **Prove the safety fact.** Write the smallest script or test that calls the real code and fails loudly if the fact is false, run it, and keep the lines of output that decide it. Then break the fact on purpose (for example, let the call drop an entry that has not expired) and see the script go red, as "able to fail" in [PROOF.md](../test-plan/PROOF.md) requires; revert the break. A script that only proves goes to `.work/proof/`. When you cannot get past level 3, the fact is `unproven`; say so. Done when the fact has a level and its evidence.
 
 ## Reply
 

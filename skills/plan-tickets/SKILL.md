@@ -92,39 +92,9 @@ Then go on to step 6 without waiting. Ask the user only when a requirement is am
 
 Publish the tickets. **How** depends on the tracker `/dev:setup-repo` configured; the tickets are the same either way, only the shape of the blocking edges changes:
 
-- **Local files** → write one file per ticket under `.work/tickets/<epic-slug>/<NN>-<ID>-<slug>.md`, numbered from `01` in dependency order (blockers first). Get each ID by the "Next id" rule in the tracker doc. Use the per-ticket file template below: one ticket per file, never a single combined file. Then run [check-tickets.mts](check-tickets.mts) from this skill's folder: `node <skill folder>/check-tickets.mts .work/tickets --epic <epic-slug> --covers <the epic's requirement codes, comma-separated>`. Fix every line it prints and run it again until it exits 0.
+- **Local files** → write one file per ticket under `.work/tickets/<epic-slug>/<NN>-<ID>-<slug>.md`, numbered from `01` in dependency order (blockers first). Get each ID by the "Next id" rule in the tracker doc. Use the template in [TICKET.md](TICKET.md): one ticket per file, never a single combined file. Then run [check-tickets.mts](check-tickets.mts) from this skill's folder: `node <skill folder>/check-tickets.mts .work/tickets --epic <epic-slug> --covers <the epic's requirement codes, comma-separated>`. Fix every line it prints and run it again until it exits 0.
 - **A real issue tracker (GitHub, GitLab, Linear, ...)** → lint the drafts, then print a script for the user, as [REAL-TRACKER.md](REAL-TRACKER.md) says.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
 Do NOT close or modify any parent issue.
-
-<local-ticket-template>
-
-# <ID>: <Ticket title>
-
-**Type:** <feature | task | bug | spike>
-**Parent:** <epic id>
-**Requirements:** <codes from the spec index, or "none">
-**Blocked by:** <ticket ids, or "None (can start immediately)">
-**Status:** ready
-**New infrastructure:** <component, or "none">
-**Files:** <paths this ticket expects to edit, create or delete, comma-separated>
-**Proof:** <what shows it done: a command and its output, a request and its response, a screen state>
-**Step:** <added by /dev:implement-ticket; leave empty>
-**Base:** <added by /dev:implement-ticket; leave empty>
-**Baseline:** <added by /dev:implement-ticket; leave empty>
-
-**What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
-
-- [ ] Acceptance criterion 1
-- [ ] Acceptance criterion 2
-
-## Test plan (added by /dev:implement-ticket)
-
-## Result
-
-</local-ticket-template>
-
-
-Outside the `Files:` line, avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.

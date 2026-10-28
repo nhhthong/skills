@@ -21,6 +21,10 @@ How work is delivered in this repo, and where memory lives. Skills read this fil
 - **Other rules**: `<for example an ADR is required when a service boundary changes>`
 - **Always pause**: deleting data, a migration on a shared database, a force-push, a deploy, a message to a customer. A skill stops and asks before any of these, even under `Git writes: run`. Add the repo's own items here.
 
+## Models
+
+- **Models**: `explore: sonnet; review: sonnet; adversary: opus, sonnet; design: opus, sonnet; implement: inherit`. The model each kind of subagent runs on, as the Agent tool's `model` value (`opus`, `sonnet`, `haiku`, or `inherit` for the session's own). A list means "spread the subagents across these, in turn". Skills read the entry for their kind: `explore` (`explore-how`, `explore-why` searchers, wide searches), `review` (`review-code` Standards, Spec and Impact), `adversary` (`review-code` Adversary), `design` (design-it-twice designers), `implement` (`implement-spec` implementers). A missing entry means `inherit`, except `adversary` and `design`, which spread across `opus` and `sonnet` because their point is to differ. Give the hardest work a stronger model, and spread checkers across models so a verifier does not share its author's blind spots.
+
 Where the repo already states a rule (CONTRIBUTING, a PR template, the project's own spec), the repo's rule wins over any default in a skill. Name the source here and keep it as the single copy.
 
 ## Memory

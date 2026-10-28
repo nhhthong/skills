@@ -16,7 +16,8 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 
 ## explore
 - `/dev:explore-decide` (auto): research a technical choice and recommend one option. Use when stuck between options.
-- `/dev:explore-research` (auto): investigate a question in primary sources, save cited findings. Use for "how does X work".
+- `/dev:explore-how` (auto): explain how a part of this codebase works: flow, pieces, where they live, traps. Use for "how does X work".
+- `/dev:explore-research` (auto): investigate a question in primary sources, save cited findings. Use for library, API or docs questions.
 - `/dev:explore-prototype` (auto): build a throwaway prototype to answer a design question.
 - `/dev:explore-why` (auto): find why existing code is shaped the way it is, from history, tickets and memory. Use before changing code you do not understand.
 
@@ -38,7 +39,7 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 - `/dev:debug-diagnose` (auto): build a loop that fails on the bug, then find and fix the cause. Use for a bug you cannot explain.
 
 ## review
-- `/dev:review-code` (type): review a diff on Standards and Spec, plus Impact for risky changes, in parallel. Use before you commit.
+- `/dev:review-code` (type): review a diff on Standards and Spec, plus Impact and Adversary for risky changes, in parallel. Use before you commit.
 - `/dev:review-impact` (auto): find what a change breaks outside its diff and prove why it is safe. Use for a risky diff or "what could this break".
 - `/dev:review-learn` (type): write a learning note with Mermaid diagrams for a finished ticket or epic. Use after delivery, to share what was built.
 - `/dev:review-pr` (auto): shape a pull request body with evidence. Use when opening a PR.
@@ -46,6 +47,7 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 ## design
 - `/dev:design-improve` (type): scan the code for modules to deepen. Use when the code feels tangled.
 - `/dev:design-modules` (auto): the vocabulary for deep modules and seams.
+- `/dev:design-types` (auto): type discipline for TypeScript; loads when you work on `.ts` files.
 
 ## session
 - `/dev:session-progress` (type): where the work stands, what is open, what to do next. Use when you come back.

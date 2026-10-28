@@ -15,7 +15,8 @@ If the user passed an argument, treat it as the target: an epic or a ticket id.
    - Tickets: `grep -rEH '^\*\*(Type|Parent|Blocked by|Status|Step):\*\*' .work/tickets` gives every ticket's header lines. With a real tracker, add its open issues (`gh issue list` or `glab issue list`) for tickets that have no local file yet.
    - Open points: the `Open points` and `Infrastructure` sections of `.work/spec-index.md`, and every ticket of type `spike` whose `Status` is not `done`.
    - Git: the current branch, `git status --short`, and `git log -1 --format='%h %s'`. Read the branch name pattern from `workflow.md` to match branches to tickets.
-   - `memo_callback` with the ticket in progress: open issues and recent decisions. For a question about what was learned or decided, tell the user to run `/dev:memo-callback <question>`.
+   - `memo_callback` with the ticket in progress: open issues and recent decisions. Then `memo_callback` with `types: ["issue","fix","attempt"]` for what did not hold: an issue seen again after its fix, a fix now `stale`, an approach that failed twice.
+   - Reverts: `git log --oneline --grep='[Rr]evert' -n 10` on the current branch and its base. For a question about what was learned or decided, tell the user to run `/dev:memo-callback <question>`.
 
    If `.work/` is missing, say the repo has no recorded work and stop. Done when every epic and every ticket of the epic in progress has a status you can quote from a file.
 
@@ -28,13 +29,16 @@ If the user passed an argument, treat it as the target: an epic or a ticket id.
    - a ticket `in-progress` with no matching branch, or with no commit or note in the last 3 days;
    - a ticket `done` while a ticket in its `Blocked by` is still open;
    - an open point that blocks a ticket which is already `ready` or `in-progress`;
-   - a ticket `in-review` while `git status` is clean and the branch has commits: it may have been delivered and never closed.
+   - a ticket `in-review` while `git status` is clean and the branch has commits: it may have been delivered and never closed;
+   - a ticket `done` whose commit was reverted, or whose `## Result` verdict is not `VERIFIED`.
 
    Report each one. Leave the repair to the skill that owns it.
 
 4. **Choose the next step.** The first of these that applies: resume the ticket that is `in-progress` (`/dev:implement-ticket <ID>`); the lowest-numbered `ready` ticket whose blockers are all `done` (`/dev:implement-ticket <ID>`); an open point to settle (`explore-decide`); the next epic to cut (`/dev:plan-tickets`).
 
-5. **Write the report** in the format below.
+5. **Check the numbers.** Before writing, count the tickets per status again from the files and compare with your tables. A count you cannot reproduce is not reported.
+
+6. **Write the report** in the format below.
 
 ## Report format
 
@@ -62,12 +66,15 @@ Every status in the report is quoted from a ticket file or the tracker. A fact w
 **Waiting on you**
 - <a call only the user can make: a choice, an approval, a commit or merge to run, access the agent lacks>. Pick: <the agent's recommendation>. Risk: <what it changes, even when low>.
 
+**Problems** (at most 5, worst first)
+- <what did not hold: a reverted fix, an issue back after its fix, an approach that failed twice>. Source: <memo code or commit>
+
 **Looks wrong**
 - <the mismatch, and which two sources disagree>
 
 **Next:** <the command from step 4>
 ```
 
-Each ticket line in a table carries exactly one state, from its `Status:` line and git: `ready`, `blocked by <id>`, `in-progress <branch>`, `in-review`, `done <commit>` or `dropped`.
+Each ticket line in a table carries exactly one state, from its `Status:` line and git: `ready`, `blocked by <id>`, `in-progress <branch>`, `verified, uncommitted`, `in-review`, `done <commit>`, `reverted <commit>` or `dropped`.
 
 Leave out a section that has nothing in it. The overview fits on one screen: about 30 lines. For a ticket target, replace **Breakdown** and the epic table with that ticket's acceptance criteria, test plan, decisions and notes.

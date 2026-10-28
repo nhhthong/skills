@@ -73,33 +73,7 @@ Let them edit before writing.
 
 ### 4. Write
 
-**In-repo.**
-
-Pick the file to edit: if `CLAUDE.md` exists, edit it; else if `AGENTS.md` exists, edit it; if neither exists, ask which to create. Never create `AGENTS.md` when `CLAUDE.md` exists (or vice versa). If an `## Agent skills` block already exists, update it in place and don't overwrite the user's edits around it.
-
-```markdown
-## Agent skills
-
-### Issue tracker
-
-[one-line summary of where issues are tracked]. See `docs/agents/issue-tracker.md`.
-
-### Domain docs
-
-[one-line summary of layout: "single-context" or "multi-context"]. See `docs/agents/domain.md`.
-
-### Workflow
-
-[one-line summary: delivery mode and where notes live]. See `docs/agents/workflow.md`.
-```
-
-Write the docs files from the seed templates in this skill folder:
-
-- [issue-tracker-github.md](./issue-tracker-github.md), [issue-tracker-gitlab.md](./issue-tracker-gitlab.md), [issue-tracker-local.md](./issue-tracker-local.md) (replace `<PREFIX>` with the chosen prefix)
-- [domain.md](./domain.md)
-- [workflow.md](./workflow.md) (fill `Storage`, `Delivery` and the delivery rules)
-
-For an "other" tracker, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+**In-repo.** Read [IN-REPO.md](IN-REPO.md) and write what it says: the `## Agent skills` block in `CLAUDE.md` or `AGENTS.md`, and `docs/agents/issue-tracker.md`, `domain.md` and `workflow.md` from the seed templates.
 
 **Private.** Write one file, `.work/config.md`, with three sections (`## Issue tracker`, `## Domain docs`, `## Workflow`) taken from the same templates, with `Storage: private`. Append `.work/` to `.git/info/exclude`. Touch nothing else: no `CLAUDE.md`, no `GLOSSARY.md`, no ADRs, no `docs/agents/`.
 

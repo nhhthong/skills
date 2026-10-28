@@ -19,7 +19,7 @@ Show this to the user, then immediately proceed to Step 2. The user reads and th
 
 ### 2. Spawn sub-agents
 
-Spawn 3+ sub-agents in parallel. Each must produce a **radically different** interface for the deepened module.
+Spawn 3+ sub-agents in parallel. Each must produce a **radically different** interface for the deepened module. Spread them across models (the `design` entry of the `Models:` line in `workflow.md`, or `opus` and `sonnet` in turn when none is named): the same model tends to reach for the same shape.
 
 Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](DEEPENING.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Tell each agent to make the best design it can under its constraint and not to hedge toward a middle: the differences are what the comparison uses. Give each agent a different design constraint:
 
@@ -40,7 +40,7 @@ Each sub-agent outputs:
 
 ### 3. Judge, present and compare
 
-When the designs are back, spawn one read-only **judge** sub-agent with the rubric and the designs, labelled by number only. It scores each design criterion by criterion and names a base. Meanwhile, read every design end to end and score it yourself. When you and the judge pick the same base, that confirms it; when you differ, read both rationales before deciding, since one of you is biased or the rubric is ambiguous.
+When the designs are back, spawn one read-only **judge** sub-agent with the rubric and the designs, labelled by number only. Run the judge on a different model from your own (you on `opus`, the judge on `sonnet`, or the reverse), so it does not share your bias; when no other model is available, say so. It scores each design criterion by criterion and names a base. Meanwhile, read every design end to end and score it yourself. When you and the judge pick the same base, that confirms it; when you differ, read both rationales before deciding, since one of you is biased or the rubric is ambiguous.
 
 Present designs sequentially so the user can absorb each one, then compare them in prose. Contrast by **depth** (leverage at the interface), **locality** (where change concentrates), and **seam placement**.
 

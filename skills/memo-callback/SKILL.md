@@ -13,7 +13,7 @@ If the `memo_callback` tool does not exist, memory is not installed: `grep -i` `
 1. **Pick the filters.** A question becomes `query` (key words, not a sentence). A ticket id becomes `ticket`, an epic directory becomes `epic`, a path becomes `file`. Use `types` to narrow: `["decision"]` for "why did we...", `["issue","fix"]` for "have we seen this error".
 2. **Search.** Call `memo_callback`. If nothing comes back, try fewer or broader words once, then say there is nothing.
 3. **Read what matters.** Rows are short. Call `memo_get` with the code for any row you will act on: it returns the body, linked attempts and fixes, refs and history.
-4. **Answer in a few lines.** Name each memo by code and title. For an issue, say which attempts failed and whether a fix is `confirmed`. Skip approaches marked `failed` unless the user asks. Flag a memo that looks out of date against the code.
+4. **Answer in a few lines.** Name each memo by code and title. For an issue, say which attempts failed and whether a fix is `confirmed`. When resuming work on a topic, also say what was tried and did not hold: a fix now `stale`, an issue seen again after its fix (`occurrences` above 1), an approach that failed more than once. Do not suggest an approach marked `failed` again unless the user asks or something it depended on has changed; name that change. Flag a memo that looks out of date against the code.
 
 With no argument, call `memo_info` for the overview (open issues, epics, tickets) and show the last updated memos.
 

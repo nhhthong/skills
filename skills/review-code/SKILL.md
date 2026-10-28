@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: "Review the changes since a fixed point on separate axes: Standards (this repo's coding standards), Spec (what the ticket asked for) and, for risky changes, Impact (what the change breaks outside the diff)."
+description: "Review the changes since a fixed point on separate axes: Standards, Spec and, for risky changes, Impact (what breaks outside the diff) and Adversary (attempts to break it, kept only when a run proves them)."
 argument-hint: "A commit, branch or tag to compare against, or a ticket id"
 disable-model-invocation: true
 ---
@@ -10,8 +10,9 @@ Review of the changes since a fixed point the user supplies, uncommitted work in
 - **Standards**: does the code conform to this repo's documented coding standards?
 - **Spec**: does the code faithfully implement the originating issue / spec?
 - **Impact** (risky changes only): what does the change break outside the diff, and is the fact it is safe because of proven?
+- **Adversary** (risky changes only): what input or timing breaks the change? Only findings a command proves are kept.
 
-Each axis runs as a **parallel sub-agent** so they don't pollute each other's context, then this skill judges and aggregates their findings.
+Each axis runs as a **parallel sub-agent** (Adversary as 2 or 3 of them) so they don't pollute each other's context, then this skill judges and aggregates their findings.
 
 Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
 
@@ -43,48 +44,30 @@ Look for the originating spec, in this order:
 
 Search the repo for every file that documents how code should be written. When `CODING_STANDARDS.md` or `CONTRIBUTING.md` exists, it must be on the list, and so must the delivery rules in `workflow.md` (branch names, commit convention, PR size cap, PR template, reviewers).
 
-On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below: a fixed set of Fowler code smells (_Refactoring_, ch.3) plus a few failure shapes agents often produce. It applies even when a repo documents nothing. Two rules bind it:
+On top of whatever the repo documents, the Standards axis always carries the **smell baseline** ([SMELLS.md](SMELLS.md)): a fixed set of Fowler code smells (_Refactoring_, ch.3) plus a few failure shapes agents often produce. It applies even when a repo documents nothing. Two rules bind it:
 
 - **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
 - **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation. Like any standard here, skip anything tooling already enforces.
 
-Each smell reads *what it is* → *how to fix*; match it against the diff:
+Read [SMELLS.md](SMELLS.md) now: step 5 pastes it into the Standards prompt.
 
-- **Mysterious Name**: a function, variable, or type whose name doesn't reveal what it does or holds. → rename it; if no honest name comes, the design's murky.
-- **Duplicated Code**: the same logic shape appears in more than one hunk or file in the change. → extract the shared shape, call it from both.
-- **Feature Envy**: a method that reaches into another object's data more than its own. → move the method onto the data it envies.
-- **Data Clumps**: the same few fields or params keep travelling together (a type wanting to be born). → bundle them into one type, pass that.
-- **Primitive Obsession**: a primitive or string standing in for a domain concept that deserves its own type. → give the concept its own small type.
-- **Repeated Switches**: the same `switch`/`if`-cascade on the same type recurs across the change. → replace with polymorphism, or one map both sites share.
-- **Shotgun Surgery**: one logical change forces scattered edits across many files in the diff. → gather what changes together into one module.
-- **Divergent Change**: one file or module is edited for several unrelated reasons. → split so each module changes for one reason.
-- **Speculative Generality**: abstraction, parameters, or hooks added for needs the spec doesn't have. → delete it; inline back until a real need shows.
-- **Message Chains**: long `a.b().c().d()` navigation the caller shouldn't depend on. → hide the walk behind one method on the first object.
-- **Middle Man**: a class or function that mostly just delegates onward. → cut it, call the real target direct.
-- **Refused Bequest**: a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
-- **Symptom Fix**: a guard, retry, cast or swallowed error that hides why a bad state happened. → fix where the state is produced, or show the state is legitimate.
-- **Half-done State**: an operation that leaves partial results when it runs twice or stops halfway. → make it converge to the same end state, or make the partial state impossible.
-- **Legacy Dual Path**: a new internal API added while the old one stays alive with no outside caller. → migrate the callers and delete the old one in the same change.
-- **Untraced Input**: outside input reaching a query, shell, file path, HTML or permission check with no validation where it enters. → validate at the boundary; name the path.
-- **Proxy Proof**: code or a test that checks a sign of the result (a file time, a cached value, a log line) instead of the result. → check the value itself.
+### 4. Decide whether Impact and Adversary run
 
-### 4. Decide whether Impact runs
-
-This is the one rule for when Impact runs; other skills point here. Run the **Impact** axis when the user asked for it, or when the ticket is not tier `check` and any of these holds:
+This is the one rule for when Impact and Adversary run; other skills point here. Run the **Impact** and **Adversary** axes when the user asked for them, or when the ticket is not tier `check` and any of these holds:
 
 - the ticket's test plan is tier `full`, or the ticket is severe (money, auth, deletes, two writers on one record);
 - the diff changes data that leaves the process: a route's request or response, a schema or migration, a message, a file format, a public type.
 
-Skip it when the ticket's `Applied:` line already lists `dev:review-impact` for this diff, and reuse that reply. In every other case skip it and say so in the summary.
+Skip Impact when the ticket's `Applied:` line already lists `dev:review-impact` for this diff, and reuse that reply. When neither condition holds, skip both and say so in the summary.
 
 ### 5. Spawn the sub-agents in parallel
 
-Issue the sub-agent calls together, in the foreground, and collect the reports they return. The Standards and Spec prompts include the finding format from [JUDGMENT.md](JUDGMENT.md), pasted in full; the Impact sub-agent keeps the Reply format of `review-impact`.
+Issue the sub-agent calls together, in the foreground, and collect the reports they return. Spawn the Standards, Spec and Impact sub-agents on the `review` entry of the `Models:` line in `workflow.md`. The Standards and Spec prompts include the finding format from [JUDGMENT.md](JUDGMENT.md), pasted in full; the Impact sub-agent keeps the Reply format of `review-impact`.
 
 **Standards sub-agent prompt** should include:
 
 - The full diff command, the new-file list and the commit list.
-- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full (the sub-agent has no other access to it).
+- The list of standards-source files you found in step 3, **plus [SMELLS.md](SMELLS.md)** pasted in full (the sub-agent has no other access to it).
 - The brief: "Report, per file/hunk where relevant, (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls: documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
 
 **Spec sub-agent prompt** should include:
@@ -98,15 +81,19 @@ Issue the sub-agent calls together, in the foreground, and collect the reports t
 - The diff command, the new-file list and the commit list.
 - The brief: "Call the Skill tool with `dev:review-impact` on this diff and return its reply."
 
+**Adversary sub-agents** (when step 4 says so): read [ADVERSARY.md](ADVERSARY.md) and spawn them as it says, with the same diff command, new-file list and commit list.
+
 If the spec is missing, skip the Spec sub-agent and note this in the final report.
 
 ### 6. Judge and aggregate
 
 Sort each axis's findings as [JUDGMENT.md](JUDGMENT.md) says: Act on, Consider, Noted, Dismissed. Check a finding against the code before you dismiss it; a dismissal carries its reason.
 
-Present each axis under its own heading (`## Standards`, `## Spec`, `## Impact`), with its findings in those four groups. Under `## Impact`, keep the `Safe because` and `Door` lines of the reply as they are, and sort only its Risks; `review-pr` copies those two lines. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_).
+Judge the Adversary findings as [ADVERSARY.md](ADVERSARY.md) says first: rerun each command, and drop what does not reproduce.
 
-End with a one-line summary: Act-on findings per axis, the worst issue _within each axis_ (if any), and whether Impact ran or was skipped. Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+Present each axis under its own heading (`## Standards`, `## Spec`, `## Impact`, `## Adversary`), with its findings in those four groups. Under `## Impact`, keep the `Safe because` and `Door` lines of the reply as they are, and sort only its Risks; `review-pr` copies those two lines. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_).
+
+End with a one-line summary: Act-on findings per axis, the worst issue _within each axis_ (if any), and whether Impact and Adversary ran or were skipped. Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
 ## Why separate axes
 
@@ -115,5 +102,6 @@ A change can pass one axis and fail another:
 - Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
 - Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
 - Code that is clean and on spec but changes a response another service parses → **Standards and Spec pass, Impact fail.**
+- Code that is safe for every caller but returns the wrong total for an empty cart → **Impact pass, Adversary fail.**
 
 Reporting them separately stops one axis from masking another.

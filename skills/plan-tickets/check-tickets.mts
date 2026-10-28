@@ -36,8 +36,13 @@ const NONE = /^none\b/i;
 const header = (text: string, name: string): string | undefined =>
   text.match(new RegExp(`^\\*\\*${name}:\\*\\*[ \\t]*(.*)$`, 'm'))?.[1].trim();
 
+// Codes split on commas or spaces; a parenthesised note like "(partial)" is dropped. Every other token is
+// kept, so a mistyped code is reported as not in the spec index instead of vanishing.
 const codes = (value: string | undefined): string[] =>
-  !value || NONE.test(value) ? [] : value.split(',').map((c) => c.trim().split(/\s+/)[0]).filter(Boolean);
+  !value || NONE.test(value) ? [] : value.replace(/\([^)]*\)/g, ' ').split(/[,\s]+/).filter(Boolean);
+
+// The first marker in a status cell decides it, so "✅ D-3 (was ⚠️)" counts as decided.
+const marker = (status: string): string | undefined => status.match(/✅|⚠️|❌/)?.[0];
 
 // Requirement code to its status cell, from every table row of the spec index whose first cell is a code.
 export const readSpec = (text: string): Map<string, string> => {
@@ -84,7 +89,8 @@ export const readTickets = (dir: string, inScope: (relDir: string) => boolean = 
       status: (header(text, 'Status') ?? '').split(/\s+/)[0],
       requirements: codes(header(text, 'Requirements')),
       blockedBy: NONE.test(blockedBy) ? [] : blockedBy.match(IDS) ?? [],
-      criteria: (text.match(/^\s*- \[[ xX]\]/gm) ?? []).length,
+      // Acceptance criteria sit above the first `## ` section; checkboxes in `## Test plan` do not count.
+      criteria: (text.split(/^## /m)[0].match(/^\s*- \[[ xX]\]/gm) ?? []).length,
     };
     tickets.push(t);
     if (!report) continue;
@@ -109,6 +115,13 @@ export const checkTickets = (dir: string, opts: Options = {}): string[] => {
     const seen = byId.get(t.id);
     if (seen && (inScope(t) || inScope(seen))) problems.push(`${t.file}: id ${t.id} is also used by ${seen.file}`);
     else if (!seen) byId.set(t.id, t);
+  }
+  const byNn = new Map<string, Ticket>();
+  for (const t of tickets.filter((t) => t.nn !== undefined && scopeDir(t.epic))) {
+    const key = `${t.epic}/${t.nn}`;
+    const seen = byNn.get(key);
+    if (seen) problems.push(`${t.file}: number ${String(t.nn).padStart(2, '0')} is also used by ${seen.file}`);
+    else byNn.set(key, t);
   }
   const spec = opts.spec && existsSync(opts.spec) ? readSpec(readFileSync(opts.spec, 'utf8')) : undefined;
   const live = (t: Ticket): boolean => t.status !== 'dropped';
@@ -138,9 +151,13 @@ export const checkTickets = (dir: string, opts: Options = {}): string[] => {
     for (const c of t.requirements) {
       const status = spec.get(c);
       if (status === undefined) problems.push(`${t.file}: requirement ${c} is not in the spec index`);
-      else if (t.type !== 'spike' && /⚠️|❌/.test(status)) {
-        const spike = [...blockers(t)].some((b) => byId.get(b)?.type === 'spike');
+      else if (t.type !== 'spike' && marker(status) === '⚠️') {
+        // A `#n` blocker lives on another tracker; it may be the spike, so it is not reported.
+        const spike = [...blockers(t)].some((b) => b.startsWith('#') || byId.get(b)?.type === 'spike');
         if (!spike) problems.push(`${t.file}: needs open requirement ${c} (${status}) but no spike blocks it`);
+      } else if (t.type !== 'spike' && marker(status) === '❌' && !t.blockedBy.length) {
+        // An outside party cannot be answered by a spike, but the wait must still show as a blocker.
+        problems.push(`${t.file}: needs blocked requirement ${c} (${status}) but nothing blocks it`);
       }
     }
   }

@@ -4,8 +4,9 @@ How to spawn implementer subagents, what they report, and how to check them befo
 
 ## Spawning
 
+- **Model.** Spawn each implementer on the `implement` entry of the `Models:` line in `workflow.md`. A ticket that is severe or tier `full` may go one model stronger; say so in the report.
 - **One writer per worktree.** Create each implementer's worktree from the integration branch with an explicit base: `git worktree add -b <ticket-branch> <path> <integration-branch>`. Two implementers never share a worktree or a branch.
-- **The whole brief, every time.** Each spawn carries the ticket path, the absolute path of the main checkout's `.work/`, the test plan, the delivery rules from `workflow.md`, and for a retry the earlier report and branch. Give a retry or a follow-up to a fresh subagent with this brief instead of resuming an old one: chained resumes drop instructions.
+- **The whole brief, every time.** Each brief opens with the goal in one line: what the ticket makes true for the user. Then it carries the ticket path, the ticket's tier, an instruction to follow the steps of [implement-ticket](../implement-ticket/SKILL.md) from orient to build (its `Step:`, `Base:` and `## Result` lines included), the absolute path of the main checkout's `.work/`, the test plan, the delivery rules from `workflow.md`, and for a retry the earlier report and branch. Give a retry or a follow-up to a fresh subagent with this brief instead of resuming an old one: chained resumes drop instructions.
 
 ## Report
 

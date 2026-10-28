@@ -22,6 +22,8 @@ Each claim the work depends on reaches one of these levels. State the level.
 
 An acceptance criterion needs level 4 or 5.
 
+**Able to fail.** A level 4 proof counts only once you have seen it go red: on the code before the fix, or on a copy of the code broken on purpose (flip the condition, drop the call, return the old value). A check that passes on broken code proves nothing; it stays at level 3 until it fails where it should. Revert the deliberate break, and write in `## Result` how you saw it fail. Tier `check` is exempt: its proof is an existing command, not a new one.
+
 ## Verdict
 
 - **VERIFIED**: every criterion has its proof at the required level, run on the current code, with output shown.
@@ -32,4 +34,4 @@ An acceptance criterion needs level 4 or 5.
 
 Write the exact command and the lines of output that decide the verdict into `## Result`, with secrets redacted. A reviewer reruns the command instead of trusting the sentence. A script written only to prove something goes to `.work/proof/` and is named in `## Result`; it becomes a committed test only when the test plan asks for one.
 
-Adapted from pstack (Lauren Tan, MIT): `principle-prove-it-works`, `blast-radius`.
+Adapted from pstack (Lauren Tan, MIT): `principle-prove-it-works`, `blast-radius`, and the "able to fail" bar of `create-formal-verification-skill`.

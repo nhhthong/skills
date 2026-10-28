@@ -31,7 +31,7 @@ Show the change as a list of `before → after` lines, one per ticket file, trac
 
 **Local tracker:**
 
-- **split**: rewrite the original's title and criteria (ticked criteria stay ticked), and add under `## Result`: `Split on <date>: <reason>. Moved to <new ID>.` Write the new ticket from the ticket template of `plan-tickets` with `Status: ready`, in the same epic folder, numbered right after the original. If the original's file name no longer matches its title, rename it.
+- **split**: rewrite the original's title and criteria (ticked criteria stay ticked), and add under `## Result`: `Split on <date>: <reason>. Moved to <new ID>.` Write the new ticket from the template in [TICKET.md](../plan-tickets/TICKET.md) with `Status: ready`, in the same epic folder, numbered right after the original. If the original's file name no longer matches its title, rename it.
 - **cancel**: `Status: dropped`, and the reason under `## Result`.
 - **reopen**: `Status: ready`, and a line under `## Result` with the date and the reason.
 - Update the `Blocked by` lines and the spec index lines as listed.
