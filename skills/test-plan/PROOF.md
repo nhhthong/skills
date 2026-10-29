@@ -17,7 +17,7 @@ Each claim the work depends on reaches one of these levels. State the level.
 1. **Said.** A claim with nothing behind it.
 2. **Pointed.** A real `file:line`, the library's own source at its pinned version, or a search that returns nothing.
 3. **Reasoned.** The failing case walked step by step, and shown not to reach.
-4. **Ran.** A command or test that calls the real code, fails loudly when the claim is wrong, and was run on the current code. Its output is shown.
+4. **Ran.** A command or test that calls the real code, fails loudly when the claim is wrong, and was run on the current code. Its output is shown. A test skipped (`t.Skip`, a disabled case, a missing fixture that short-circuits to green) ran nothing: its criterion stays at level 3, not 4, however the suite's exit code reads.
 5. **Reproduced.** The running app driven along the user's path, with the evidence kept.
 
 An acceptance criterion needs level 4 or 5.

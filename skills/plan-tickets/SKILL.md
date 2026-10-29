@@ -17,7 +17,7 @@ Every item is an **issue** with a `type`: `epic` (a parent that groups a region 
 
 ### 1. Gather context
 
-Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments. Read `.work/spec-index.md` if it exists.
+Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments. Read `.work/spec-index.md` if it exists, else `.work/spec.md` (a full spec's `R<n>.<n>` codes work the same way for `Requirements:` and `--covers`).
 
 ### 2. Cut epics only when the source lacks them
 

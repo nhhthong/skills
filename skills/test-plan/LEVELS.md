@@ -2,6 +2,8 @@
 
 Read "Choosing" in full. Read a kind's section only when the kind was chosen. Sources: Microsoft ISE Engineering Playbook (automated testing, consumer-driven contracts, fault injection, performance), OWASP Web Security Testing Guide (security, business logic), Pact documentation (when contract testing fits).
 
+Whatever kind reads or writes a real store: it owns its own copy, a fresh schema, container or file, never the one the running app uses. A test that truncates or seeds the app's own database is wrong even when it passes.
+
 ## Choosing
 
 Answer each question against what the ticket's code and the spec show. A ticket usually answers yes to several.

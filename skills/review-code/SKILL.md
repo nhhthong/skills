@@ -38,7 +38,7 @@ Look for the originating spec, in this order:
 
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in the tracker doc.
 2. A path the user passed as an argument.
-3. The ticket file under `.work/tickets/` that matches the branch name (its `Requirements` line points into `.work/spec-index.md`), or a spec file under `docs/` or `specs/` matching the branch name or feature.
+3. The ticket file under `.work/tickets/` that matches the branch name (its `Requirements` line points into `.work/spec-index.md`), or a full spec at `.work/spec.md` / `.work/spec-*.md` (local tracker), or a spec file under `docs/` or `specs/` matching the branch name or feature.
 4. If nothing is found, the **Spec** sub-agent skips and reports "no spec found"; the user can run the review again with the spec's path.
 
 ### 3. Identify the standards sources
@@ -89,6 +89,8 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 ### 6. Judge and aggregate
 
 Sort each axis's findings as [JUDGMENT.md](JUDGMENT.md) says: Act on, Consider, Noted, Dismissed. Check a finding against the code before you dismiss it; a dismissal carries its reason.
+
+An axis that returns nothing, a placeholder, or a reply that does not match its expected format is not a clean report: spawn it again, once, with the same brief. Still broken the second time, write that axis's heading with one line, `no report: <what came back>`, instead of an empty section or invented findings.
 
 Judge the Adversary findings as [ADVERSARY.md](ADVERSARY.md) says first: rerun each command, and drop what does not reproduce.
 

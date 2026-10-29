@@ -19,7 +19,7 @@ How work is delivered in this repo, how much the agent decides alone, and where 
 - **PR template**: `<path or the sections it needs>`
 - **Reviewers**: `<for example 2 for internal/inventory, internal/booking and migrations>`
 - **Other rules**: `<for example an ADR is required when a service boundary changes>`
-- **Always pause**: deleting data, a migration on a shared database, a force-push, a deploy, a message to a customer. A skill stops and asks before any of these, even under `empowerment`. Add the repo's own items here.
+- **Always pause**: deleting data, a migration on a shared database, a force-push, a deploy, a merge into the default or production branch, a message to a customer. A skill stops and asks before any of these, even under `empowerment`. Add the repo's own items here.
 
 ## Models
 
