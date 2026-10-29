@@ -1,9 +1,10 @@
 ---
 name: review-learn
-description: Write a short learning note for a finished ticket or epic (summary, spec, outcome, case study, install, implementation with Mermaid diagrams), saved under .work/learn/.
+description: "Write a short learning note for a finished ticket or epic (summary, spec, outcome, case study, install, implementation with Mermaid diagrams), saved under .work/learn/. Starts on request, or on its own under empowerment mode."
 argument-hint: "A ticket id, an epic, or nothing for the last finished ticket"
-disable-model-invocation: true
 ---
+
+**Who starts this.** The user asks for it (types it or names it), or `Mode` in `workflow.md` is `empowerment` and the work has reached this step. In any other case, tell the user which command to type, and stop.
 
 Turn finished work into a **learning note**: one Markdown file a developer new to this code reads in five minutes and then knows what was built, why it is shaped that way, and where it lives. Write it in professional English, short sentences, present tense.
 
@@ -25,7 +26,7 @@ Done when you can name the ticket or tickets and the output file: `.work/learn/<
 
 - **Ticket file**: `What to build`, acceptance criteria (ticked or not), `Requirements`, `New infrastructure`, `## Test plan`, `## Result`, `Base:`.
 - **Spec index** (`.work/spec-index.md`): the line of each requirement code, and the open points and decisions that name the ticket.
-- **Memory**: `memo_callback` with the ticket id, then `memo_get` for each decision, issue and fix it returns.
+- **Notes**: `grep` `.work/notes.md` for the ticket id, then for each decision, issue and fix code those lines name.
 - **Code**: the changes since the ticket's `Base:` commit (`git diff <Base>`, plus new files), or the commit named in `## Result`. Read the changed files for the real names: routes, functions, tables, keys, topics, queues. When the change sits inside a flow the note must explain and you have not traced it, call the Skill tool with "dev:explore-how" on that flow.
 
 Done when each section of the template below has a source, or you know it has none.

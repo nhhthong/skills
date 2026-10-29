@@ -1,5 +1,3 @@
 interface:
   display_name: "Change Ticket"
   short_description: "Split, cancel or reopen a ticket"
-policy:
-  allow_implicit_invocation: false

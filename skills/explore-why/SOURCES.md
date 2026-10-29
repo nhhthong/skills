@@ -32,9 +32,9 @@ rg -l '<symbol>' --glob '*test*'               # tests often encode the edge cas
 
 Look also at files changed in the same commits, ADRs (`docs/adr/`), `CHANGELOG.md`, and a revert followed by a "re-apply with …" commit.
 
-## Memory
+## Notes
 
-`memo_callback` with the module, the symbols and the error text, for `decision`, `issue`, `fix` and `note` memos; `memo_get` on each one used. `.work/spec-index.md` decisions. A `stale` or superseded decision is history, not a binding reason: report it as such.
+`grep -i` the module, the symbols and the error text in `.work/notes.md`, for `D-`, `I-`, `F-` and `N-` lines; read the last line of each ID used. `.work/spec-index.md` decisions. A superseded decision is history, not a binding reason: report it as such.
 
 ## Issue tracker
 

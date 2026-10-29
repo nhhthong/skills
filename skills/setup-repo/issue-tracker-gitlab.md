@@ -1,6 +1,6 @@
 # Issue tracker: GitLab
 
-Issues and specs for this repo live as GitLab issues. Use the [`glab`](https://gitlab.com/gitlab-org/cli) CLI for all operations. Commands that write are printed for you to run, never run by a skill: see `Tracker and pull request writes` in `workflow.md`.
+Issues and specs for this repo live as GitLab issues. Use the [`glab`](https://gitlab.com/gitlab-org/cli) CLI for all operations. Commands that write are printed for you to run under `micromanagement` and run by the skill under `empowerment`: see `Tracker and pull request writes` in `workflow.md`.
 
 ## Conventions
 

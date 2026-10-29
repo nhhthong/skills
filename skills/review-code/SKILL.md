@@ -1,9 +1,10 @@
 ---
 name: review-code
-description: "Review the changes since a fixed point on separate axes: Standards, Spec and, for risky changes, Impact (what breaks outside the diff) and Adversary (attempts to break it, kept only when a run proves them)."
+description: "Review changes since a fixed point on separate axes: Standards, Spec and, for risky changes, Impact and Adversary (attempts to break it, kept only when a run proves them). On request, or under empowerment mode."
 argument-hint: "A commit, branch or tag to compare against, or a ticket id"
-disable-model-invocation: true
 ---
+
+**Who starts this.** The user asks for it (types it or names it), or `Mode` in `workflow.md` is `empowerment` and the work has reached this step. In any other case, tell the user which command to type, and stop.
 
 Review of the changes since a fixed point the user supplies, uncommitted work included, on separate axes:
 
@@ -20,7 +21,7 @@ Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/
 
 ### 1. Pin the fixed point
 
-Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). A ticket id (`EC-7`) is accepted too: find its file under `.work/tickets/` and use its `**Base:**` line; that ticket file is then also the spec for step 2. If they didn't specify one, or the ticket has no `Base:` line, ask for it.
+Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). A ticket id (`EC-7`) is accepted too: find its file under `.work/tickets/` and use its `**Base:**` line; that ticket file is then also the spec for step 2. If they didn't specify one, or the ticket has no `Base:` line, ask for it (under `Mode: empowerment`, use the `Base:` of the ticket most recently set to `in-review`, else the merge-base with the default branch, and write an `ASK:` line).
 
 Capture the diff command once. The review usually runs before the commit, so it compares the **working tree**, not just commits:
 

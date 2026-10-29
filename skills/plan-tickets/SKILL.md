@@ -1,10 +1,11 @@
 ---
 name: plan-tickets
-description: Break a plan, spec, or the current conversation into epics and tracer-bullet tickets, each with its type, requirements and blocking edges, published to the configured tracker.
-disable-model-invocation: true
+description: "Break a plan, spec, or the current conversation into epics and tracer-bullet tickets, each with its type, requirements and blocking edges, published to the configured tracker. Starts on request, or on its own under empowerment mode."
 ---
 
 # To Tickets
+
+**Who starts this.** The user asks for it (types it or names it), or `Mode` in `workflow.md` is `empowerment` and the work has reached this step. In any other case, tell the user which command to type, and stop.
 
 Break a plan, spec, or conversation into **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it. When the source has no structure yet, cut **epics** first.
 
@@ -27,7 +28,7 @@ Cut tickets only for the epic about to be worked. Later epics stay as lines in t
 
 ### 3. Explore the codebase (optional)
 
-If the repo has code and you have not explored it, do so to understand the current state. Ticket titles and descriptions should use the project's domain glossary vocabulary (or the `glossary` notes in memory: `memo_callback` with type `note`), and respect ADRs in the area you're touching.
+If the repo has code and you have not explored it, do so to understand the current state. Ticket titles and descriptions should use the project's domain glossary vocabulary (or the `glossary` notes in `.work/notes.md`), and respect ADRs in the area you're touching.
 
 Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
 
@@ -86,7 +87,7 @@ Check it yourself before publishing:
 - The blocking edges: each ticket depends only on tickets that genuinely gate it.
 - What should be merged or split further.
 
-Then go on to step 6 without waiting. Ask the user only when a requirement is ambiguous or two breakdowns fit equally well. A good ticket crosses the layers, can be verified on its own, and fits one session.
+Then go on to step 6 without waiting. Ask the user only when a requirement is ambiguous or two breakdowns fit equally well; under `Mode: empowerment` in `workflow.md`, take the breakdown you recommend and write an `ASK:` line for it. A good ticket crosses the layers, can be verified on its own, and fits one session.
 
 ### 6. Publish the tickets to the configured tracker
 

@@ -9,7 +9,7 @@ Tier `light` and `full` only. A test plan with no `Baseline:` line, written befo
 - `**Baseline:** green`
 - `**Baseline:** red: <each failing test or check>`
 
-A check that is red at `Base:` was broken before this ticket. List it under `## Result` as pre-existing and leave it as it is, unless the ticket is about it. When a pre-existing failure hides the proof this ticket needs, tell the user before you build.
+A check that is red at `Base:` was broken before this ticket. List it under `## Result` as pre-existing and leave it as it is, unless the ticket is about it. When a pre-existing failure hides the proof this ticket needs, tell the user before you build (under `empowerment`: list it under `## Result` and build on; when it hides the proof, mark the ticket blocked with an `OPEN:` line and take the next ready one).
 
 ## One unit at a time
 

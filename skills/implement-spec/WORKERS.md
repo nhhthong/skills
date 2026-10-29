@@ -6,7 +6,8 @@ How to spawn implementer subagents, what they report, and how to check them befo
 
 - **Model.** Spawn each implementer on the `implement` entry of the `Models:` line in `workflow.md`. A ticket that is severe or tier `full` may go one model stronger; say so in the report.
 - **One writer per worktree.** Create each implementer's worktree from the integration branch with an explicit base: `git worktree add -b <ticket-branch> <path> <integration-branch>`. Two implementers never share a worktree or a branch.
-- **The whole brief, every time.** Each brief opens with the goal in one line: what the ticket makes true for the user. Then it carries the ticket path, the ticket's tier, an instruction to follow the steps of [implement-ticket](../implement-ticket/SKILL.md) from orient to build (its `Step:`, `Base:` and `## Result` lines included), the absolute path of the main checkout's `.work/`, the test plan, the delivery rules from `workflow.md`, and for a retry the earlier report and branch. Give a retry or a follow-up to a fresh subagent with this brief instead of resuming an old one: chained resumes drop instructions.
+- **Notes.** Implementers never write `.work/notes.md`: parallel writers compute the same next ID. Each puts the decisions, problems and facts it would record in the `Notes:` line of its report, and the lead appends them one at a time.
+- **The whole brief, every time.** Each brief opens with the goal in one line: what the ticket makes true for the user. Then it carries the ticket path, the ticket's tier, an instruction to follow the steps of [implement-ticket](../implement-ticket/SKILL.md) from orient to build (its `Step:`, `Base:` and `## Result` lines included; the one exception is `.work/notes.md`, see Notes below), the absolute path of the main checkout's `.work/`, the test plan, the delivery rules from `workflow.md`, and for a retry the earlier report and branch. Give a retry or a follow-up to a fresh subagent with this brief instead of resuming an old one: chained resumes drop instructions.
 
 ## Report
 
@@ -19,6 +20,7 @@ Proof: <command> -> <the output lines that decide it>
 Files: <changed files>
 Commit message: <message in the repo's convention>
 Issues: <each problem it can prove, or "none">
+Notes: <lines to append to .work/notes.md, in the format of workflow.md, or "none">
 ```
 
 A report without `Head` or `Proof` gets one respawn with the same brief. A second miss is a gap, and a gap is not a pass.

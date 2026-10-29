@@ -44,7 +44,7 @@ The question that picks the amount: *would a mistake show itself the moment some
    - each yes in step 2 has its evidence: a `Contained` yes cites `file:line` or an empty caller search;
    - every kind chosen in step 3 points to the code or spec line that triggered it.
 
-   Fix what fails yourself. Ask the user only when a criterion is ambiguous or two plans fit equally well. Put the plan in the ticket file under `## Test plan` (for a tracker ticket, in its local working file) and show it; the user may stop you. Done when the plan is written and every check holds.
+   Fix what fails yourself. Ask the user only when a criterion is ambiguous or two plans fit equally well; under `Mode: empowerment`, pick the plan you recommend and write an `ASK:` line. Put the plan in the ticket file under `## Test plan` (for a tracker ticket, in its local working file) and show it; the user may stop you. Done when the plan is written and every check holds.
 
 ## Plan format
 

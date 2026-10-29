@@ -7,7 +7,7 @@
 **From an empty source, or a ticket in a big project, to delivery.**
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
-[![Version](https://img.shields.io/badge/version-2.1.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.2.0-blue)](CHANGELOG.md)
 [![Node.js](https://img.shields.io/badge/node-%E2%89%A522.18-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -17,15 +17,16 @@
 
 ---
 
-38 small skills for Claude Code: agree on what to build, cut it into tickets, prove it works, remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
+35 small skills for Claude Code: agree on what to build, cut it into tickets, prove it works, remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
 
 ## Why this plugin
 
 - **Proof, not claims.** A ticket is done when a command on the real code says `VERIFIED`.
 - **Process sized to risk.** A one-line change runs the existing build. Stored data, outside callers and money get tests per risk and an Impact review.
 - **Plans checked before code.** Larger epics are drafted two ways and compared; every breakdown is linted.
-- **You stay in control.** Skills print commit, push and tracker commands for you to run.
-- **Memory across sessions.** Issues, attempts, fixes and decisions live in a local SQLite store.
+- **You stay in control.** In `micromanagement`, skills print commit, push and tracker commands for you to run.
+- **Notes across sessions.** Decisions, problems, tries and fixes live in one plain file, `.work/notes.md`, with stable ids.
+- **Your pace.** `setup-repo` asks once: `micromanagement` (the agent asks at every real choice) or `empowerment` (it decides with the recommended answers, logs each as `ASK:`, commits, pushes and opens pull requests itself, and keeps going).
 
 ## Quick start
 
@@ -42,7 +43,7 @@ Then, inside your project:
 /dev:ask-me <what you want to do>    not sure? get the skills to run, in order
 ```
 
-> **Requires** [Node.js](https://nodejs.org) 22.18+ for the memory server. Without it, skills still work and memory falls back to `.work/notes.md`.
+> **Requires** [Node.js](https://nodejs.org) 22.18+ only to run the ticket checker and `npm test`; the skills themselves need nothing installed.
 
 ## How it works
 
@@ -72,7 +73,7 @@ The proof tier decides how much runs:
 
 ## Skills
 
-Prefix every name with `/dev:`. **You type** skills run only when called. **Agent** skills also start on their own.
+Prefix every name with `/dev:`. **You type** skills run only when called. **Agent** skills also start on their own; the planning, implementing and review skills do so only under `empowerment`.
 
 <details>
 <summary><b>Setup</b>: prepare a repo, a machine and a way to drive the app (3)</summary>
@@ -108,17 +109,17 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 <details>
 <summary><b>Plan</b>: from source to tickets (3)</summary>
 
-- [`plan-spec`](skills/plan-spec/SKILL.md) (you type): Spec index or full spec; open points stay open.
-- [`plan-tickets`](skills/plan-tickets/SKILL.md) (you type): Epics and tracer-bullet tickets, drafted two ways and linted.
-- [`plan-ticket-change`](skills/plan-ticket-change/SKILL.md) (you type): Split, cancel or reopen a ticket.
+- [`plan-spec`](skills/plan-spec/SKILL.md) (agent): Spec index or full spec; open points stay open.
+- [`plan-tickets`](skills/plan-tickets/SKILL.md) (agent): Epics and tracer-bullet tickets, drafted two ways and linted.
+- [`plan-ticket-change`](skills/plan-ticket-change/SKILL.md) (agent): Split, cancel or reopen a ticket.
 
 </details>
 
 <details>
 <summary><b>Implement</b>: build (2)</summary>
 
-- [`implement-ticket`](skills/implement-ticket/SKILL.md) (you type): One ticket to a printed commit; resumes.
-- [`implement-spec`](skills/implement-spec/SKILL.md) (you type): A whole spec with parallel subagents.
+- [`implement-ticket`](skills/implement-ticket/SKILL.md) (agent): One ticket to a printed commit; resumes.
+- [`implement-spec`](skills/implement-spec/SKILL.md) (agent): A whole spec with parallel subagents.
 
 </details>
 
@@ -141,9 +142,9 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 <details>
 <summary><b>Review</b>: check the work (4)</summary>
 
-- [`review-code`](skills/review-code/SKILL.md) (you type): Standards and Spec, plus Impact and Adversary for risky changes, in parallel subagents.
+- [`review-code`](skills/review-code/SKILL.md) (agent): Standards and Spec, plus Impact and Adversary for risky changes, in parallel subagents.
 - [`review-impact`](skills/review-impact/SKILL.md) (agent): What a change breaks outside its diff, proven by running code.
-- [`review-learn`](skills/review-learn/SKILL.md) (you type): Learning note for a finished ticket or epic.
+- [`review-learn`](skills/review-learn/SKILL.md) (agent): Learning note for a finished ticket or epic.
 - [`review-pr`](skills/review-pr/SKILL.md) (agent): PR body: summary visual, evidence, merge danger.
 
 </details>
@@ -160,24 +161,15 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 <details>
 <summary><b>Session</b>: status, handoff, retrospective (3)</summary>
 
-- [`session-progress`](skills/session-progress/SKILL.md) (you type): Where the work stands and what is next.
-- [`session-handoff`](skills/session-handoff/SKILL.md) (you type): A document another agent can continue from.
+- [`session-progress`](skills/session-progress/SKILL.md) (agent): Where the work stands and what is next.
+- [`session-handoff`](skills/session-handoff/SKILL.md) (agent): A document another agent can continue from.
 - [`session-retro`](skills/session-retro/SKILL.md) (you type): Improve the agent's environment, most severe first.
 
 </details>
 
 <details>
-<summary><b>Memo</b>: remember and recall across sessions (2)</summary>
+<summary><b>Other</b>: navigation, manual steps, writing for agents (3)</summary>
 
-- [`memo-post`](skills/memo-post/SKILL.md) (agent): Record an issue, attempt, fix, decision or lesson.
-- [`memo-callback`](skills/memo-callback/SKILL.md) (agent): Search earlier ones by question, ticket, epic or file.
-
-</details>
-
-<details>
-<summary><b>Other</b>: navigation, manual steps, writing for agents (4)</summary>
-
-- [`help`](skills/help/SKILL.md) (you type): One line per skill, for all or one group.
 - [`ask-me`](skills/ask-me/SKILL.md) (you type): Say what you want, get the skills to run.
 - [`wizard`](skills/wizard/SKILL.md) (you type): A script for steps only a human can do.
 - [`agent-docs`](skills/agent-docs/SKILL.md) (agent): Write skills, `CLAUDE.md` and other agent documents.
@@ -188,19 +180,29 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 
 | | |
 |---|---|
-| **Skills ask you** | for an ambiguous requirement, a real choice, `setup-repo`, `setup-need-install`, `session-retro`, and the `Always pause` list: deleting data, shared-database migration, force-push, deploy, customer message |
-| **Skills print, you run** | `git commit`, `git push` (set `Git writes: run` in `workflow.md` to change), and every `gh` or `glab` write |
+| **Skills ask you** (in `micromanagement` mode) | for an ambiguous requirement, a real choice, `setup-repo`, `setup-need-install`, `session-retro`, and the `Always pause` list: deleting data, shared-database migration, force-push, deploy, customer message |
+| **Skills print, you run** (`micromanagement`) | `git commit`, `git push`, and every `gh` or `glab` write |
+| **Skills run it themselves** (`empowerment`) | commits, non-force pushes, pull requests, issues and the review; they still stop at `Always pause` |
 | **Skills just do** | read code and history, write under `.work/`, run tests and builds, create branches and worktrees |
 
 ## Files the skills write
 
 Tickets, spec index, plans, proof scripts and notes go under `.work/`. Under `private` storage `.work/` stays out of git and nothing else is touched.
 
-## Memory
+## Notes
 
-The local MCP server `memo` keeps issues, attempts, fixes and decisions in SQLite at `~/.claude/memo/`, one file per project. No network. Back up with `node mcp/memo/cli.ts export`.
+Decisions, problems, tries, fixes and facts go in `.work/notes.md`: one line each, with ids (`D-1`, `I-2`, `F-3`...), appended, never edited. With `in-repo` storage the team shares it; with `private` it stays local.
 
 ## Changelog
+
+<details>
+<summary><b>2.2.0</b> (2026-10-29): a notes file instead of a server, two working modes</summary>
+
+- `memo-post`, `memo-callback` and `help` removed; decisions, problems and fixes live in `.work/notes.md`.
+- `setup-repo` asks `micromanagement` or `empowerment`; under `empowerment` the agent runs on its own and logs `ASK:` lines.
+- `clarify-grill` hands its list back to the calling skill.
+
+</details>
 
 <details>
 <summary><b>2.1.0</b> (2026-10-28): sharper proof, how and why, adversarial review</summary>
@@ -238,7 +240,7 @@ Full history: [CHANGELOG.md](CHANGELOG.md).
 npm install && npm test   # skill consistency check, then the script tests
 ```
 
-`npm test` names whatever a new skill is missing: `SKILL.md`, `agents/openai.yaml`, or its line in `plugin.json`, `skills/help/SKILLS.md` and this README.
+`npm test` names whatever a new skill is missing: `SKILL.md`, `agents/openai.yaml`, or its line in `plugin.json`, `skills/ask-me/SKILLS.md` and this README.
 
 ## Credits
 

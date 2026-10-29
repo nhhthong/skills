@@ -58,4 +58,4 @@ After each, re-run the matching detection from step 1. A failure is reported wit
 
 ### 6. Report
 
-One block: installed (and verified), handed to the user, skipped with the reason, and what needs a restart of the Claude Code session. If the `memo_post` tool exists, record a `note` tagged `tooling` listing what was installed. Next step: `/dev:setup-repo` if the repo has not been set up.
+One block: installed (and verified), handed to the user, skipped with the reason, and what needs a restart of the Claude Code session. If `.work/notes.md` exists, append a `note` line tagged `tooling` listing what was installed. Next step: `/dev:setup-repo` if the repo has not been set up.

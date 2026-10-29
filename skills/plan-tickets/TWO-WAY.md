@@ -14,7 +14,7 @@ Work in `.work/plans/<epic-slug>/`: `brief.md`, `forward.md`, `backward.md`, `co
 Write `brief.md`, the only input both subagents get:
 
 - the epic's goal in two lines, and its requirement codes with their spec index line and status;
-- the decisions and notes that bind it (`memo_callback` with the epic and the module names);
+- the decisions and notes that bind it (`grep -i` of the epic and the module names in `.work/notes.md`);
 - the code map from step 3: modules, entry points, test commands, what already exists for this epic;
 - the constraints: the vertical-slice rules in step 4 of [SKILL.md](SKILL.md), the PR size cap, the spec index's `Infrastructure` table.
 

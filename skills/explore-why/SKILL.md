@@ -1,6 +1,6 @@
 ---
 name: explore-why
-description: "Find why existing code is shaped the way it is, from git history, pull requests, tickets, memory and the other sources the session can reach, with what is known kept apart from what is inferred. Use before changing code you do not understand."
+description: "Find why existing code is shaped the way it is, from git history, pull requests, tickets, notes and the other sources the session can reach, with what is known kept apart from what is inferred. Use before changing code you do not understand."
 metadata:
   credits:
     skill: why
@@ -28,8 +28,8 @@ Be a careful investigator: keep what a source says apart from what you infer fro
 
    Done when the anchor lists the commits, pull requests and tickets that touched the target.
 
-3. **Search each source.** Search memory and source control yourself. When more than two other sources are reachable, give each its own subagent, in parallel, on the `explore` entry of the `Models:` line in `workflow.md`, with the investigator brief from [SOURCES.md](SOURCES.md): one source per subagent, links into other sources come back as leads, every query is written down.
-   - **Memory**: `memo_callback` with the module and the symbols, for `decision`, `issue` and `fix` memos; ADR titles in `docs/adr/`; `.work/spec-index.md` decisions.
+3. **Search each source.** Search the notes and source control yourself. When more than two other sources are reachable, give each its own subagent, in parallel, on the `explore` entry of the `Models:` line in `workflow.md`, with the investigator brief from [SOURCES.md](SOURCES.md): one source per subagent, links into other sources come back as leads, every query is written down.
+   - **Notes**: `grep -i` the module and the symbols in `.work/notes.md`, for `D-`, `I-` and `F-` lines; ADR titles in `docs/adr/`; `.work/spec-index.md` decisions.
    - **Source control**: the pull requests and commit messages from step 2, read in full. Trace back past the latest commit: the current shape is often the sum of older decisions.
    - **Every other source the session can reach**: an issue tracker (Jira, Linear, GitHub Issues), long-form docs (Confluence, Notion), team chat, error tracking (Sentry), observability. Read the session's tool list to find them. A source with no tool is a gap, not a skip: name it.
 
@@ -69,4 +69,4 @@ When the question comes before a change, end with the constraints the change mus
 - **Avoid**: an approach a past attempt or decision already ruled out.
 - **Risk**: what could break if the reason was misread.
 
-Record a reason that took real digging as a `note` with `memo_post` (kind `lesson` or `structure`), so the next session finds it in step 3.
+Record a reason that took real digging as a `note` line in `.work/notes.md` (tag `lesson` or `structure`), so the next session finds it in step 3.

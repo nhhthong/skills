@@ -11,7 +11,7 @@ Epics, tickets and the spec index for this repo live as Markdown files in `.work
 ├── plans/<epic-slug>/                 # two-way planning drafts and their comparison, from /dev:plan-tickets
 ├── research/                          # cited research notes
 ├── learn/                             # learning notes from /dev:review-learn
-└── notes.md                           # only when memory is not installed (see workflow.md)
+└── notes.md                           # decisions, problems, tries, fixes and facts (see workflow.md)
 ```
 
 ## Conventions

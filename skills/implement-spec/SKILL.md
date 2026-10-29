@@ -1,8 +1,9 @@
 ---
 name: implement-spec
-description: "Implement the result of /dev:plan-spec and /dev:plan-tickets in code."
-disable-model-invocation: true
+description: "Implement the result of /dev:plan-spec and /dev:plan-tickets in code. Starts on request, or on its own under empowerment mode."
 ---
+
+**Who starts this.** The user asks for it (types it or names it), or `Mode` in `workflow.md` is `empowerment` and the work has reached this step. In any other case, tell the user which command to type, and stop.
 
 You have been provided a spec. This spec should have tickets associated with it, describing how to implement the spec.
 
@@ -10,7 +11,9 @@ Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/
 
 The goal is the entire spec implemented on a single **integration branch**, with every ticket resolved the way the issue tracker closes work.
 
-**Skills do not run `git commit`, `git push` or open a pull request.** Creating branches and worktrees is fine. Everything that commits, merges or pushes is printed as a script for the user to run, unless `workflow.md` says `Git writes: run` or the user asks you in this session to run it. The steps below say what changes under `run`. Pull request commands are always printed (`Tracker and pull request writes` in `workflow.md`).
+**Git writes follow `Mode`** (`Tracker and pull request writes` in `workflow.md`). Creating branches and worktrees is always fine. Under `micromanagement`, everything that commits, merges or pushes is printed as a script for the user to run, and so are the pull request commands. Under `empowerment` (`Git writes: run`) you run them. The steps below say what changes under `run`.
+
+Under `Mode: empowerment`, the merger subagent merges each frontier, so the loop runs to the end of the spec.
 
 The tickets are not a list of steps. They are a **task graph** with blocking relationships between them. This means there is always a **frontier** of tickets which are ready to be grabbed.
 
@@ -41,7 +44,7 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 
 6. Repeat steps 4 and 5 until every ticket is done.
 
-7. Once all tickets are merged, review the integration branch against the commit it was created from. With `Review: typed` (or no `Review` line) in `workflow.md`, tell the user to run `/dev:review-code <that commit>` (it is a skill you type, so you cannot call it). With `Review: inline`, read [the review-code skill](../review-code/SKILL.md) and run its process yourself. With the findings in hand, fix them in a single **implementer subagent** and hand off that change the same way.
+7. Once all tickets are merged, review the integration branch against the commit it was created from. Under `micromanagement` (`Review: typed`), tell the user to run `/dev:review-code <that commit>`. Under `empowerment` (`Review: inline`), call the Skill tool with "dev:review-code" and that commit. With the findings in hand, fix them in a single **implementer subagent** and hand off that change the same way.
 
 8. Print the closing commands: `git push -u origin <integration branch>`, and for `pr` delivery the command that opens the pull request (one per ticket branch when the PR size cap applies), with the body from the Skill tool called with `dev:review-pr`. Under `run`, push after the first merge; the pull request commands are still printed.
 

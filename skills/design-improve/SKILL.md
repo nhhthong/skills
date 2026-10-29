@@ -11,7 +11,7 @@ Surface architectural friction and propose **deepening opportunities**: refactor
 This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 
 - Call the Skill tool with "dev:design-modules" for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion, and don't drift into "component," "service," "API," or "boundary."
-- The domain language in `GLOSSARY.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate. When the repo's configuration says `Storage: private` (`.work/config.md`), read the `glossary` notes and `decision` memos (`memo_callback`) instead, and record new terms and rejected candidates there (`memo_post`) rather than in `GLOSSARY.md` or an ADR.
+- The domain language in `GLOSSARY.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate. When the repo's configuration says `Storage: private` (`.work/config.md`), read the `glossary` notes and `D-n` lines in `.work/notes.md` instead, and record new terms and rejected candidates there rather than in `GLOSSARY.md` or an ADR.
 
 ## Process
 

@@ -5,7 +5,7 @@ argument-hint: "What you want to do, in your own words"
 disable-model-invocation: true
 ---
 
-Pick the skills for the user's situation from [the skill catalog](../help/SKILLS.md). Do not run them: skills the user types cannot be started from here, so give the commands.
+Pick the skills for the user's situation from [the skill catalog](SKILLS.md). Do not run them: skills the user types cannot be started from here, so give the commands.
 
 1. **Read the situation.** If the argument leaves out something that changes the answer, ask one question, not a list. The usual unknowns: is there code already, is there a ticket or only an idea, is this a first session or a return.
 2. **Choose 1 to 3 skills**, in the order to run them. Prefer `type` skills; they are the entry points. Mention an `auto` skill only when it is the real answer (for example `debug-diagnose` for a bug), because the agent starts it on its own.
@@ -29,4 +29,4 @@ Common routes:
 - A UI or CLI app with no scripted way to prove a change: `setup-verify` once.
 - A speedup or slowdown to report: `test-benchmark` starts on its own.
 
-If nothing fits, say so and suggest `/dev:help` to browse. When the user asks whether to do something at all, answer with your real judgement first; "no" is an acceptable answer.
+If nothing fits, say so and name the closest skills from the catalog. When the user asks whether to do something at all, answer with your real judgement first; "no" is an acceptable answer.

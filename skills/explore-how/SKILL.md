@@ -27,4 +27,4 @@ All exploration is read-only. Each subagent gets the model the `Models:` line in
 
 3. **Explain.** Merge the reports into one explanation in the shape [EXPLAINER.md](EXPLAINER.md) gives. Where two reports disagree, read the code and settle it. Keep the explorers' open questions visible. Done when every claim about the flow names its `file:symbol`, and nothing in the reply contradicts the code.
 
-Record a fact that took real tracing (where a flow starts, a hidden dependency, a trap) as a `note` with `memo_post` (kind `structure` or `gotcha`), so the next session finds it.
+Record a fact that took real tracing (where a flow starts, a hidden dependency, a trap) as a `note` line in `.work/notes.md` (tag `structure` or `gotcha`), so the next session finds it.

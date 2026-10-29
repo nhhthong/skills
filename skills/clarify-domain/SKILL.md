@@ -39,7 +39,7 @@ If a `GLOSSARY-MAP.md` exists at the root, the repo has multiple contexts. The m
 
 Create files lazily: only when you have something to write. If no `GLOSSARY.md` exists, create one when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
 
-**Private storage.** When the repo's configuration says `Storage: private` (`.work/config.md`), create neither `GLOSSARY.md` nor `docs/adr/`. Record a resolved term as a `note` of kind `glossary` and a decision as a `decision`, with `memo_post`. The rules below about what deserves a term or a decision still apply.
+**Private storage.** When the repo's configuration says `Storage: private` (`.work/config.md`), create neither `GLOSSARY.md` nor `docs/adr/`. Record a resolved term as a `note` line tagged `glossary` and a decision as a `D-n` line, in `.work/notes.md`. The rules below about what deserves a term or a decision still apply.
 
 ## During the session
 
@@ -79,6 +79,6 @@ If any of the three is missing, skip the ADR. The project's own documents can ov
 
 ### Record every decision once
 
-Every decision that is settled in the session gets a `decision` memo (`memo_post`), whether or not it also gets an ADR. The full text lives in exactly one place: the ADR if there is one, else the memo. Everywhere else (spec index, tickets) write only the decision's id and one line.
+Every decision that is settled in the session gets a `D-n` line in `.work/notes.md`, whether or not it also gets an ADR. The full text lives in exactly one place: the ADR if there is one, else the notes line. Everywhere else (spec index, tickets) write only the decision's id and one line.
 
-Before recording a decision, `grep -i` the notes and the ADR titles for the same topic. If an earlier decision contradicts the new one, show the user both and let them choose. Never decide that the newer one wins. Record the outcome as a new line that starts with `supersedes <date> <first words of the old line>:`; the old line stays as history, and the ADR (if any) gets a status note pointing to the new one.
+Before recording a decision, `grep -i` the notes and the ADR titles for the same topic. If an earlier decision contradicts the new one, show the user both and let them choose. Never decide that the newer one wins. Record the outcome as a new `D-n` line whose text starts with `supersedes D-<old>:` (the old line's ID); the old line stays as history, and the ADR (if any) gets a status note pointing to the new one.

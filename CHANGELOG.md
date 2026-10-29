@@ -2,6 +2,18 @@
 
 Built on [Matt Pocock's skills](https://github.com/mattpocock/skills); v2 ideas from [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack). [Semantic Versioning](https://semver.org/).
 
+## [2.2.0] - 2026-10-29
+
+Simpler: one notes file, no server, two working modes. Breaking: `memo-post`, `memo-callback` and `help` are removed. Old memory is not read: export it first with the previous version (`node mcp/memo/cli.ts export`) and paste what you need into `.work/notes.md`. A repo set up before `Mode` existed runs as `micromanagement` until you run `/dev:setup-repo`.
+
+- `setup-repo`: asks `Mode` once. `micromanagement` prints every git, issue and pull request command and asks at each real choice. `empowerment` takes recommended answers (logged as `ASK:`), runs those commands (never a force-push) and the review itself; `Always pause` still stops it. Stays typed so the agent cannot grant itself the mode.
+- `implement-ticket`: under `empowerment`, works one ticket, or `epic <slug>` / `all` as a loop; sets `done` once committed.
+- `plan-spec`, `plan-tickets`, `plan-ticket-change`, `implement-spec`, `review-code`, `review-learn`: the agent can start them under `empowerment` only; `session-progress`, `session-handoff` any time.
+- `clarify-grill`: hands its list back to the calling skill instead of ending the task.
+- `implement-spec`: implementers return their notes in the report; the lead appends them, so parallel workers cannot take the same ID.
+- Every skill that used the `memo` server (`debug-diagnose`, `explore-decide`, `explore-why`, `implement-ticket`, `plan-spec`, `session-progress`...) reads and appends `.work/notes.md`, with ids (`D-1`, `I-2`, `F-3`).
+- `help` removed; the catalog moved next to `ask-me`. Node 22.18+ is needed only for the ticket checker.
+
 ## [2.1.1] - 2026-10-28
 
 Ideas from Lauren Tan: stricter proof, deeper understanding and review, shorter instructions.

@@ -1,9 +1,10 @@
 ---
 name: plan-ticket-change
-description: Split a ticket in two, cancel it, or reopen a cancelled one, keeping ids, blocking edges, the spec index and memory in step.
+description: "Split a ticket in two, cancel it, or reopen a cancelled one, keeping ids, blocking edges, the spec index and notes in step. Starts on request, or on its own under empowerment mode."
 argument-hint: "split <ID>, cancel <ID> or reopen <ID>"
-disable-model-invocation: true
 ---
+
+**Who starts this.** The user asks for it (types it or names it), or `Mode` in `workflow.md` is `empowerment` and the work has reached this step. In any other case, tell the user which command to type, and stop.
 
 Change one ticket that already exists: **split** it, **cancel** it, or **reopen** a cancelled one. Nothing is deleted: a ticket that goes away is `dropped`, never removed, so its id is never reused.
 
@@ -36,9 +37,9 @@ Show the change as a list of `before → after` lines, one per ticket file, trac
 - **reopen**: `Status: ready`, and a line under `## Result` with the date and the reason.
 - Update the `Blocked by` lines and the spec index lines as listed.
 
-**Real tracker:** write the same changes as commands from the tracker doc (create the new issue as a sub-issue of the same epic, edit the original's body, comment the reason, close as dropped, or reopen) in one script, `.work/handoff/ticket-change-<ID>.sh`. Print its path and contents for the user to run (`Tracker and pull request writes` in `workflow.md`).
+**Real tracker:** write the same changes as commands from the tracker doc (create the new issue as a sub-issue of the same epic, edit the original's body, comment the reason, close as dropped, or reopen) in one script, `.work/handoff/ticket-change-<ID>.sh`. Print its path and contents for the user to run, or run it yourself under `Mode: empowerment` (`Tracker and pull request writes` in `workflow.md`).
 
-**Memory:** one `decision` with `memo_post`: the reason as `rationale`, the option not taken as `alternatives` (for example "keep one PR over the cap"), `ticket` and `ticket_title` of the original, and `epic` with `epic_title`.
+**Notes:** one `D-n` decision line in `.work/notes.md`: the reason, the option not taken (for example "keep one PR over the cap"), and the original ticket and its epic as tags.
 
 Done when every listed line is applied and `grep -rn "<ID>" .work/` shows no line that disagrees with the change.
 

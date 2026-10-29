@@ -1,8 +1,9 @@
 ---
 name: plan-spec
-description: "Turn a source (a requirement document, a roadmap, or the current conversation) into a spec: an index of requirement codes for a structured document, or a full spec for a conversation. No interview, just synthesis."
-disable-model-invocation: true
+description: "Turn a source (a requirement document, a roadmap, or the current conversation) into a spec: an index of requirement codes, or a full spec. No interview. Starts on request, or on its own under empowerment mode."
 ---
+
+**Who starts this.** The user asks for it (types it or names it), or `Mode` in `workflow.md` is `empowerment` and the work has reached this step. In any other case, tell the user which command to type, and stop.
 
 This skill takes the source and codebase understanding and produces a spec. Do NOT interview the user; just synthesize what you already know.
 
@@ -36,6 +37,6 @@ Rules:
 - Every item in the source gets exactly one code, and every code gets one status. This is the completion criterion.
 - A value the source does not state is an **open point**, not a default. A default looks decided and nobody asks again. Write: the question, who owes it, since when, and which requirement or ticket needs it first.
 - Where the source contradicts itself (a name used two ways, a decision recorded as open in one place and settled in another), list both readings as an open point and ask. Never pick the newer.
-- Decisions made in conversation get one line in `## Decisions`. Record the decision with `memo_post` first, then start the line with the code it returns (`D-n`); never number decisions in the index. When a decision is superseded, change its line to the new code. The full text lives in one place only: the ADR if there is one, else the memo.
+- Decisions made in conversation get one line in `## Decisions`. Record the decision in `.work/notes.md` first (a `D-n` line), then start the index line with that code; never number decisions in the index. When a decision is superseded, change its line to the new code. The full text lives in one place only: the ADR if there is one, else the notes line.
 - List what the source puts out of scope.
 - List the infrastructure the source names, in the order it is first needed, as a table of component, first needed by, and status. Do not decide anything new here; `explore-decide` does that when a ticket first needs a component.

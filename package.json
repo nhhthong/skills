@@ -5,7 +5,7 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "check": "node scripts/check-skills.mts",
-    "test": "node scripts/check-skills.mts && node --test mcp/memo/test/*.test.ts scripts/*.test.mts"
+    "test": "node scripts/check-skills.mts && node --test scripts/*.test.mts"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

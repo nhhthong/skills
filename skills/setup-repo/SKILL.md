@@ -1,6 +1,6 @@
 ---
 name: setup-repo
-description: "Configure this repo for the engineering skills: where memory lives (in the repo or private), how work is delivered (commit or PR), the issue tracker, and the domain doc layout. Run once per repo before the other engineering skills."
+description: "Configure this repo once: private or in-repo working files, delivery (commit or PR), mode (micromanagement or empowerment), issue tracker and domain docs. Run before the other skills."
 disable-model-invocation: true
 ---
 
@@ -9,7 +9,7 @@ disable-model-invocation: true
 Scaffold the per-repo configuration that the engineering skills assume:
 
 - **Storage**: whether the skills' files live in the repo (`in-repo`) or stay out of git (`private`)
-- **Delivery**: whether finished work goes onto the current branch (`commit`) or through a branch and pull request (`pr`), and the repo's own rules for it. Skills hand the git writes to you by default: they print the commit message and the commands, and never commit or push themselves
+- **Delivery**: whether finished work goes onto the current branch (`commit`) or through a branch and pull request (`pr`), and the repo's own rules for it. Whether skills print the git writes for you or run them follows the Mode below
 - **Issue tracker**: where issues live (GitHub, GitLab, local Markdown under `.work/`, or anything else you describe)
 - **Domain docs**: where `GLOSSARY.md` and ADRs live (`in-repo` only)
 
@@ -43,7 +43,7 @@ Recommend `private` when other people commit to the repo or it has a `CONTRIBUTI
 
 **Section B: Delivery.**
 
-> Explainer: `commit` puts the work on the current branch. `pr` works on a branch and ends in a pull request. Either way the skills print the commit message and the commands for you to run; they do not run `git commit` or `git push`.
+> Explainer: `commit` puts the work on the current branch. `pr` works on a branch and ends in a pull request. Whether skills print the commit commands for you or run them follows the Mode (section E).
 
 Recommend `pr` when exploration found a PR template, `CODEOWNERS`, protected-branch hints or a written branch rule; otherwise `commit`. For `pr`, collect the repo's own rules and copy them into `workflow.md` with their source: branch naming, commit convention, PR size cap, PR template, reviewers, anything that must accompany a PR (an ADR, a rollback plan). Ask only for what the repo does not state. These rules always win over a skill's default.
 
@@ -60,7 +60,13 @@ Default posture: if a `git remote` points at GitHub, propose GitHub; at GitLab, 
 
 For local markdown, also ask for the ticket id prefix. Recommend the prefix the requirement document already uses (for example `EC`), else `T`.
 
-**Section D: Domain docs.** Skip when storage is `private`: terms and decisions go to memory instead (`glossary` notes and `decision` memos). When `in-repo`, default to **single-context** (one `GLOSSARY.md` and `docs/adr/` at the repo root) and write it without asking. Offer **multi-context** (a root `GLOSSARY-MAP.md`) only when exploration found monorepo signals.
+**Section D: Domain docs.** Skip when storage is `private`: terms and decisions go to `.work/notes.md` instead (`glossary` notes and `D-n` lines). When `in-repo`, default to **single-context** (one `GLOSSARY.md` and `docs/adr/` at the repo root) and write it without asking. Offer **multi-context** (a root `GLOSSARY-MAP.md`) only when exploration found monorepo signals.
+
+**Section E: Mode.**
+
+> Explainer: `micromanagement` keeps you in the loop: skills ask at every real choice and wait, and every git commit, push, issue and pull request write is printed as a command for you to run. `empowerment` lets the agent handle everything itself: it takes the recommended answers (logging each as `ASK: ...`), commits, pushes (never forced), opens pull requests, creates and closes issues, and runs the review. The `Always pause` list (deleting data, a migration on a shared database, a force-push, a deploy, a message to a customer) stops it in both modes.
+
+Recommend `micromanagement`; write `Mode:` in `workflow.md` with the answer. Ask once, and say plainly that `empowerment` lets the agent commit, push, open pull requests and issues, and run without you, and that only you change `Mode` later. `setup-repo` is the one entry point that stays typed, so the agent cannot grant itself the mode.
 
 ### 3. Confirm and edit
 
@@ -77,7 +83,7 @@ Let them edit before writing.
 
 **Private.** Write one file, `.work/config.md`, with three sections (`## Issue tracker`, `## Domain docs`, `## Workflow`) taken from the same templates, with `Storage: private`. Append `.work/` to `.git/info/exclude`. Touch nothing else: no `CLAUDE.md`, no `GLOSSARY.md`, no ADRs, no `docs/agents/`.
 
-**Both.** Create `.work/`. For `local` tracker also create `.work/tickets/`. Call `memo_info` to check that memory works: it names the project and the database file under `~/.claude/memo/`. If the tool is missing, the `memo` server did not start (it needs Node 22.18 or newer); create `.work/notes.md` with the first line `# Notes (format: see workflow.md)` as the fallback and say so.
+**Both.** Create `.work/`. For `local` tracker also create `.work/tickets/`. Create `.work/notes.md` with the first line `# Notes (format: see workflow.md)`.
 
 ### 5. Verify and point to the next step
 

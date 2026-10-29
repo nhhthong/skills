@@ -2,7 +2,7 @@
 
 The branch of [SKILL.md](SKILL.md) for a conversation or loose documents: sketch the seams, then fill this template.
 
-Sketch the seams at which you will test the feature. Existing seams are preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better; the ideal number is one. Check with the user that these seams match their expectations.
+Sketch the seams at which you will test the feature. Existing seams are preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better; the ideal number is one. Check with the user that these seams match their expectations (under `Mode: empowerment`, take them as proposed and write an `ASK:` line).
 
 ```markdown
 ## Problem Statement

@@ -9,7 +9,7 @@ Each failed attempt is evidence against the belief it assumed. A third attempt o
 1. **Write the premise down**: the one sentence every failed attempt assumed ("the cache is stale", "the request reaches the handler").
 2. **Test it before the next fix.** Find an observation that would come out differently if the premise were false, and make it. Look at how the failures are spread (which inputs, which runs, which machines), not only how large they are. Make the check rerunnable.
 3. **Follow the evidence.** If it contradicts the premise, the cause is elsewhere: look for what the failures share that the premise did not predict. If it confirms the premise, ask the next "why": the earlier attempts may have treated a consequence.
-4. **Record it**: an `attempt` memo whose body starts with `premise: <sentence>` and the outcome of the test.
+4. **Record it**: an `A-n` line in `.work/notes.md` whose text starts with `premise: <sentence>` and ends with the outcome of the test.
 
 Start no new fix before the premise is written down and tested.
 
