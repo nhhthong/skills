@@ -94,8 +94,8 @@ test('bad headers, type, status, criteria and file name', () => {
   writeFileSync(join(dir, 'sync', 'notes.md'), 'scratch');
   writeFileSync(join(dir, 'sync', '02-T-2-x.md'), '# T-2: No headers\n\n- [ ] one');
   assert.deepEqual(messages(checkTickets(dir)), [
-    'Status "" is not ready, in-progress, in-review, done or dropped',
-    'Status "wip" is not ready, in-progress, in-review, done or dropped',
+    'Status "" is not ready, in-progress, in-review, waiting, done or dropped',
+    'Status "wip" is not ready, in-progress, in-review, waiting, done or dropped',
     'Type "" is not feature, task, bug or spike',
     'Type "story" is not feature, task, bug or spike',
     'file name is not <NN>-<ID>-<slug>.md',

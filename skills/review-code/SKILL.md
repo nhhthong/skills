@@ -13,7 +13,7 @@ Review of the changes since a fixed point the user supplies, uncommitted work in
 - **Impact** (risky changes only): what does the change break outside the diff, and is the fact it is safe because of proven?
 - **Adversary** (risky changes only): what input or timing breaks the change? Only findings a command proves are kept.
 
-Each axis runs as a **parallel sub-agent** (Adversary as 2 or 3 of them) so they don't pollute each other's context, then this skill judges and aggregates their findings.
+Each axis runs as a **parallel sub-agent** (Adversary as 2 or 3 of them) so they don't pollute each other's context, then this skill judges and aggregates their findings. With no way to spawn sub-agents, run the axes yourself, one after another, each from its brief in step 5 and under its own heading, with one Adversary lens; say so in the summary.
 
 Read this repo's configuration: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
 
@@ -57,7 +57,7 @@ Read [SMELLS.md](SMELLS.md) now: step 5 pastes it into the Standards prompt.
 This is the one rule for when Impact and Adversary run; other skills point here. Run the **Impact** and **Adversary** axes when the user asked for them, or when the ticket is not tier `check` and any of these holds:
 
 - the ticket's test plan is tier `full`, or the ticket is severe (money, auth, deletes, two writers on one record);
-- the diff changes data that leaves the process: a route's request or response, a schema or migration, a message, a file format, a public type.
+- the diff changes data that something already reads: the request or response of an existing route, a schema or stored format with rows in it, a message a consumer parses, a public type with callers. A new route, table or type that nothing uses yet does not count.
 
 Skip Impact when the ticket's `Applied:` line already lists `dev:review-impact` for this diff, and reuse that reply. When neither condition holds, skip both and say so in the summary.
 

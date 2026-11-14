@@ -24,6 +24,6 @@ Write the docs files from the seed templates in this skill folder:
 
 - [issue-tracker-github.md](./issue-tracker-github.md), [issue-tracker-gitlab.md](./issue-tracker-gitlab.md), [issue-tracker-local.md](./issue-tracker-local.md) (replace `<PREFIX>` with the chosen prefix)
 - [domain.md](./domain.md)
-- [workflow.md](./workflow.md) (fill `Storage`, `Delivery` and the delivery rules; keep the default `Models` line unless the user names other models)
+- [workflow.md](./workflow.md) (fill `Mode`, `Storage`, `Delivery` and the commit convention; for delivery `commit`, delete the `pr`-only lines; keep the default `Models` line unless the user names other models; keep the two reference sections as they are)
 
 For an "other" tracker, write `docs/agents/issue-tracker.md` from scratch using the user's description.

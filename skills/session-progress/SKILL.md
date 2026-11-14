@@ -10,34 +10,25 @@ If the user passed an argument, treat it as the target: an epic or a ticket id.
 
 ## Steps
 
-1. **Gather the state.**
-   - Tickets: `grep -rEH '^\*\*(Type|Parent|Blocked by|Status|Step):\*\*' .work/tickets` gives every ticket's header lines. With a real tracker, add its open issues (`gh issue list` or `glab issue list`) for tickets that have no local file yet.
-   - Open points: the `Open points` and `Infrastructure` sections of `.work/spec-index.md`, and every ticket of type `spike` whose `Status` is not `done`.
-   - Git: the current branch, `git status --short`, and `git log -1 --format='%h %s'`. Read the branch name pattern from `workflow.md` to match branches to tickets.
-   - `.work/notes.md` for the ticket in progress: open issues (`I-n` lines with no `(confirmed)` fix) and recent decisions. Then what did not hold: an issue seen again after its fix, an approach that failed twice (`grep -w 'I-<n>' .work/notes.md`).
-   - Reverts: `git log --oneline --grep='[Rr]evert' -n 10` on the current branch and its base. For a question about what was learned or decided, search `.work/notes.md` with `grep -i`.
+1. **Load the state with one command.** `node <skills folder>/session-progress/state.mts` (`<skills folder>` is the parent of the folder this file was loaded from) prints the config, git, the epics, every ticket's status, the frontier, open points, open issues, the last notes, what looks wrong and the next command. For a ticket target, add `--ticket <ID>`: the ticket's header, open criteria, requirement lines and the notes that bind it. Its output is the report's source; do not re-read the files it summarises.
+   - With a real tracker, add its open issues (`gh issue list` or `glab issue list`) for tickets with no local file yet.
+   - Without Node: `grep -rEH '^\*\*(Type|Parent|Blocked by|Status|Step):\*\*' .work/tickets`, the `Epics` and `Open points` sections of `.work/spec-index.md`, `git status --short`, `git log -1 --format='%h %s'`, and the last lines of `.work/notes.md`.
 
-   If `.work/` is missing, say the repo has no recorded work and stop. Done when every epic and every ticket of the epic in progress has a status you can quote from a file.
+   If `.work/` is missing, say the repo has no recorded work and stop.
 
-2. **Pick the depth from the target.**
-   - No target: the overview.
-   - An epic: its tickets, each with status and what it waits on.
-   - A ticket id: read that ticket's file too, then report its acceptance criteria (met and unmet), its test plan, and the decisions and notes recorded against it.
+2. **Pick the depth from the target.** No target: the overview. An epic: its tickets, each with status and what it waits on. A ticket id: its acceptance criteria (met and unmet), its test plan, and the decisions and notes recorded against it.
 
-3. **Look for what looks wrong.** Compare the sources against each other and list every mismatch:
-   - a ticket `in-progress` with no matching branch, or with no commit or note in the last 3 days;
-   - a ticket `done` while a ticket in its `Blocked by` is still open;
-   - an open point that blocks a ticket which is already `ready` or `in-progress`;
+3. **Add what the command cannot see.** Only when the target or a `Looks wrong` line calls for it:
+   - what did not hold: an issue seen again after its fix, an approach that failed twice (`grep -w 'I-<n>' .work/notes.md`), a revert (`git log --oneline --grep='[Rr]evert' -n 10`);
+   - a ticket `in-progress` with no commit or note in the last 3 days;
    - a ticket `in-review` while `git status` is clean and the branch has commits: it may have been delivered and never closed;
-   - a ticket `done` whose commit was reverted, or whose `## Result` verdict is not `VERIFIED`.
+   - an open point an outside person owes, which goes under `Waiting on you` with the requirement it holds back.
 
-   Report each one. Leave the repair to the skill that owns it.
+   Report each mismatch. Leave the repair to the skill that owns it.
 
-4. **Choose the next step.** The first of these that applies: resume the ticket that is `in-progress` (`/dev:implement-ticket <ID>`); the lowest-numbered `ready` ticket whose blockers are all `done` (`/dev:implement-ticket <ID>`); an open point to settle (`explore-decide`); the next epic to cut (`/dev:plan-tickets`).
+4. **Choose the next step.** The command's `Next:` line, unless step 3 found something that must come first.
 
-5. **Check the numbers.** Before writing, count the tickets per status again from the files and compare with your tables. A count you cannot reproduce is not reported.
-
-6. **Write the report** in the format below.
+5. **Write the report** in the format below. Counts come from the command's `Tickets:` line, not from memory.
 
 ## Report format
 

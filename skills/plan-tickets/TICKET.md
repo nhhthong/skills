@@ -6,7 +6,7 @@ The file template for one ticket. `plan-tickets` writes it, `implement-ticket` w
 # <ID>: <Ticket title>
 
 **Type:** <feature | task | bug | spike>
-**Parent:** <epic id>
+**Parent:** <epic slug, the ticket's folder name>
 **Requirements:** <codes from the spec index, or "none">
 **Blocked by:** <ticket ids, or "None (can start immediately)">
 **Status:** ready
@@ -26,5 +26,7 @@ The file template for one ticket. `plan-tickets` writes it, `implement-ticket` w
 
 ## Result
 ```
+
+`Status` takes `ready`, `in-progress`, `in-review`, `waiting` (a spike whose answer an outside person owes), `done` or `dropped`. `Proof:` names a command that exists when this ticket is worked, or that this ticket creates.
 
 Outside the `Files:` line, avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
