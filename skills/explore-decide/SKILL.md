@@ -22,7 +22,7 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 6. **Get the choice.** When the constraints leave only one option, record it and go on.
    - `Mode: micromanagement`: wait for the user. A choice that is hard to reverse (a data store, a public API shape, a service boundary, an auth model, how money is handled) is never made without them: set the spike to `Status: waiting`, keep the question open in the spec index, and say which ticket waits.
    - `Mode: empowerment`: there is no person to wait for. Take your recommendation, hard to reverse or not, write it with an `ASK:` line and the rejected options, and go on; the `Always pause` list still stops you.
-   - A value the source says an outside person owes (a limit "to be confirmed", a policy "not decided yet") is not yours to choose in either mode: set the spike to `Status: waiting` and leave its requirement open. Nothing else waits on it.
+   - A value the source says an outside person owes (a limit "to be confirmed", a policy "not decided yet") is not yours to choose in either mode: leave its requirement open and, when a spike was cut for it, set the spike to `Status: waiting`. Nothing else waits on it.
 
 7. **Record it once.** Call the Skill tool with "dev:clarify-domain" for the recording rules: one `D-n` decision line in `.work/notes.md` (with the reason and the rejected options); an ADR when the three ADR conditions hold or the project's documents require one; the full text in exactly one of them. Then:
    - Close the `spike` ticket that carried the question (`Status: done`, with the decision's id in `## Result`).

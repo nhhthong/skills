@@ -36,6 +36,7 @@ Rules:
 
 - Every item in the source gets exactly one code, and every code gets one status. This is the completion criterion. Unnumbered constraints get the group `R0`.
 - A value the source says is undecided, or that a requirement cannot be built without, is an **open point**, not a default. A detail the source is merely silent on (the order of two checks, an id format) is not an open point: the ticket that meets it settles it in its own step 2 (asks under `micromanagement`, decides under `empowerment`) and records a `D-n` line. A default looks decided and nobody asks again. Write: the question, who owes it, since when, and which requirement or ticket needs it first.
+- An open point marks only the requirement that states the missing value (`R3.1` "a limit will apply, number not confirmed"), never the other requirements that touch the same field.
 - Where the source contradicts itself (a name used two ways, a decision recorded as open in one place and settled in another), list both readings as an open point and ask. Never pick the newer.
 - Decisions made in conversation get one line in `## Decisions`. Record the decision in `.work/notes.md` first (a `D-n` line), then start the index line with that code; never number decisions in the index. When a decision is superseded, change its line to the new code. The full text lives in one place only: the ADR if there is one, else the notes line.
 - List what the source puts out of scope.

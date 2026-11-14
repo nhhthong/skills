@@ -109,4 +109,4 @@ A tracker ticket: mirror the status on the tracker after delivery (`Tracker and 
 
 End with one line naming the next command: `/dev:implement-ticket <ID>` for the next ready ticket, else `/dev:session-progress`.
 
-Given `epic <slug>` or `all`: run the state command again and take the next ready ticket. When none is ready but the output lists `Decided, no ticket yet`, call the Skill tool with "dev:plan-tickets" for the next epic and go on. Stop when nothing is ready and nothing decided is left to cut: what remains waits on an open point. Report with the state output, not a new summary.
+Given `epic <slug>` or `all`: run the state command again and take the next ready ticket. When none is ready but the output lists `Decided, no ticket yet`, call the Skill tool with "dev:plan-tickets" for the next epic and go on. Stop when nothing is ready and nothing decided is left to cut: what remains waits on an open point an outside person owes. An open point nobody outside owes is settled by `plan-tickets` step 4, not waited on. Report with the state output, not a new summary.

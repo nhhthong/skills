@@ -64,7 +64,8 @@ Number the tickets **riskiest unknown first**: a spike, a ticket that brings new
 
 **Open points.** An open point holds back only the requirement it names; every decided requirement of the epic is cut as usual and never waits on it. Sort each requirement of this epic still marked ⚠️ or ❌:
 
-- **An outside person owes the answer** (the source says "not decided yet", "X owes it"): cut no ticket and no spike for it, and never invent the value. The requirement stays open in the spec index, its epic line says `waits on O-n`, and `session-progress` reports it under `Waiting on you`.
+- **The source is only silent** (nobody the source names owes an answer; the question is your own, such as the reply for a case the source does not list): it does not hold anything back. Mark it ✅ in the spec index and cut the ticket; the ticket settles it in its step 2 and records a `D-n` line (an `ASK:` under `empowerment`).
+- **An outside person owes the answer** (the source says "not decided yet", "X owes it"): cut no ticket and no spike for it, and never invent the value. Only the requirement that states the missing value is open: a requirement that merely touches the same field is cut without that rule. The requirement stays open in the spec index, its epic line says `waits on O-n`, and `session-progress` reports it under `Waiting on you`.
 - **Its answer changes the breakdown**: which tickets exist, what blocks what, or which component is built (webhook or polling, one service or two). Settle it now: call the Skill tool with "dev:explore-decide", or with "dev:explore-prototype" when only a run can tell.
 - **Its answer only changes a value inside one ticket** (a timeout, a label): only the ticket that implements that requirement lists a `spike` for it in `Blocked by`. `implement-ticket` closes the spike through `explore-decide` before any code is written.
 
