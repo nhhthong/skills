@@ -68,7 +68,7 @@ Call the Skill tool with "dev:test-plan". Done when the plan is in the ticket fi
 
 ### 4. Build
 
-- **Base.** `Base:` must be a commit that holds everything but this ticket's work. Planning files not yet committed (setup, spec index, tickets) are committed first under `empowerment` (`chore: plan <epic>`), or printed as a commit for the user. Then write `**Base:** <git rev-parse --short HEAD>` and, for tier `light` or `full`, `**Baseline:**` with the result of the plan's baseline command (`green`, `red: <failing checks>`, or `none: no code at Base`). A check red at `Base:` is pre-existing: list it under `## Result` and leave it, unless it hides this ticket's proof; then say so before building.
+- **Base.** `Base:` must be a commit that holds everything but this ticket's work (the ticket file's own header edits ride with the ticket's commit). Planning files not yet committed (setup, spec index, tickets) are committed first under `empowerment` (`chore: plan <epic>`), or printed as a commit for the user. Then write `**Base:** <git rev-parse --short HEAD>` and, for tier `light` or `full`, `**Baseline:**` with the result of the plan's baseline command (`green`, `red: <failing checks>`, or `none: no code at Base`). A check red at `Base:` is pre-existing: list it under `## Result` and leave it, unless it hides this ticket's proof; then say so before building.
 - **Branch.** With delivery `pr`, work on a branch named by the repo's pattern. With `commit`, stay on the current branch.
 - **Bug ticket.** Call the Skill tool with "dev:debug-diagnose" and let it lead.
 - **Tier `check`.** Make the change, run the plan's command.

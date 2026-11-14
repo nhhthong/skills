@@ -146,7 +146,7 @@ export const overview = (work: string): string => {
   const next = active[0] ? `/dev:implement-ticket ${active[0].id} (resume at Step: ${header(readFileSync(active[0].file, 'utf8'), 'Step') || 'none'})`
     : frontier[0] ? `/dev:implement-ticket ${frontier[0].id}`
     : uncut.length ? '/dev:plan-tickets (decided requirements have no ticket)'
-    : points.length ? 'an open point needs an answer (dev:explore-decide, or the person who owes it)'
+    : points.length ? 'nothing left to work: what remains waits on the open points above, each owed by the person it names'
     : tickets.length ? 'nothing left to work' : '/dev:plan-spec or /dev:plan-tickets';
   out.push('', `Next: ${next}`);
   return out.join('\n');
