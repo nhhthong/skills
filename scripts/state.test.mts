@@ -82,6 +82,9 @@ test('notes: the last line with an id is its state, and a confirmed fix closes i
   assert.equal(notes.filter((n) => n.id === 'F-1').length, 1);
   assert.match(notes.find((n) => n.id === 'F-1')!.text, /\(confirmed\)/);
   assert.deepEqual(openIssues(notes).map((n) => n.id), ['I-2']);
+  const loose = readNotes('I-7 | 2026-01-01 | issue | T-3 :: four cells only\nF-7 | 2026-01-02 | fix | T-3 | for I-7: retry (confirmed: reran twice)\n');
+  assert.equal(loose.length, 2);
+  assert.deepEqual(openIssues(loose), []);
 });
 
 test('requirements come from the requirement table only, and a section stops at the next heading', () => {

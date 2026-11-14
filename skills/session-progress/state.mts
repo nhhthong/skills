@@ -37,9 +37,11 @@ export const readNotes = (text: string): Note[] => {
   const byId = new Map<string, Note>();
   for (const line of text.split('\n')) {
     const cells = line.split('|').map((c) => c.trim());
-    if (cells.length < 5 || !/^[A-Z]-\d+$/.test(cells[0])) continue;
+    if (cells.length < 4 || !/^[A-Z]-\d+$/.test(cells[0])) continue;
     byId.delete(cells[0]);
-    byId.set(cells[0], { id: cells[0], date: cells[1], kind: cells[2], tags: cells[3], text: cells.slice(4).join(' | ') });
+    // A line one cell short (tags and text run together) is kept rather than hidden.
+    const [tags, text] = cells.length === 4 ? ['', cells[3]] : [cells[3], cells.slice(4).join(' | ')];
+    byId.set(cells[0], { id: cells[0], date: cells[1], kind: cells[2], tags, text });
   }
   return [...byId.values()];
 };
@@ -48,7 +50,7 @@ const noteLine = (n: Note): string => clip(`${n.id} | ${n.kind} | ${n.tags} | ${
 
 // An issue is open until a fix for it is confirmed.
 export const openIssues = (notes: Note[]): Note[] =>
-  notes.filter((n) => n.kind === 'issue' && !notes.some((f) => f.kind === 'fix' && word(n.id).test(f.text) && /\(confirmed\)/.test(f.text)));
+  notes.filter((n) => n.kind === 'issue' && !notes.some((f) => f.kind === 'fix' && word(n.id).test(f.text) && /\(confirmed\b/.test(f.text)));
 
 type Row = { code: string; where: string; status: string };
 export const readRequirements = (spec: string): Row[] => {
