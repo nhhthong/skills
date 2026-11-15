@@ -26,6 +26,8 @@ The question that picks the amount: *would a mistake show itself the moment some
 
    A ticket can need no test at all (a rename, documentation, dependency-free config). Say so in one line with the reason, and stop.
 
+   A ticket that only scaffolds a new project (toolchain, start and test commands) is `light`: one smoke test, as [LEVELS.md](LEVELS.md) describes under `smoke`. The proof command must exist when the ticket is worked, or be created by it; a `Proof:` that names a later ticket's command is a planning error, reported as `implement-ticket` step 4 says.
+
    A ticket is **severe** when a bug in it would corrupt shared data, grant access it should not, or destroy something. Money, auth, deletes and two writers on one record are the usual shapes. Severe tickets are always `full`, and each test must be seen failing before it passes (the `test-tdd` loop does this: test first).
 
 3. **For `full`, choose kinds by risk.** Run through the questions in [LEVELS.md](LEVELS.md) under "Choosing", against what step 1 found in the code and the spec. Each yes is a kind of test. Read only the sections of LEVELS.md for the kinds you chose. A kind with no trigger in the code or spec is left out silently; a kind whose trigger exists but is not needed goes in `Not applicable` with the reason.
@@ -60,7 +62,7 @@ Proof: <command> exits 0
 ```
 Tier: <light | full>
 Seams: <the public boundaries the tests observe, one line each>
-Baseline: <command run at Base before the first change: the touched area's tests for light, the whole suite for full>
+Baseline: <command run at Base before the first change: the touched area's tests for light, the whole suite for full; `none` when there is no code at Base>
 
 | What | Kind | Proof | Expected value comes from |
 |---|---|---|---|

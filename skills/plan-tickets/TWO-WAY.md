@@ -1,6 +1,6 @@
 # Two-way planning
 
-Two subagents cut the same epic from opposite ends, and you compare. Each direction misses a different thing:
+Two subagents cut the same epic from opposite ends, and you compare. This leaf needs subagents: without them, go back to [SKILL.md](SKILL.md) and write one draft. Each direction misses a different thing:
 
 - **Forward** (from the code as it is to the goal) orders work well and reuses what exists, but finds a missing prerequisite (a contract, a component, data to backfill, an access right) only when it reaches it.
 - **Backward** (from the proof that each requirement is done, back to the code) finds what must exist first, but tends to rebuild what the code already has.

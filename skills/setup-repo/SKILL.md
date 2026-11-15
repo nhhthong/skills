@@ -66,7 +66,7 @@ For local markdown, also ask for the ticket id prefix. Recommend the prefix the 
 
 > Explainer: `micromanagement` keeps you in the loop: skills ask at every real choice and wait, and every git commit, push, issue and pull request write is printed as a command for you to run. `empowerment` lets the agent handle everything itself: it takes the recommended answers (logging each as `ASK: ...`), commits, pushes (never forced), opens pull requests, creates and closes issues, and runs the review. The `Always pause` list (deleting data, a migration on a shared database, a force-push, a deploy, a message to a customer) stops it in both modes.
 
-Recommend `micromanagement`; write `Mode:` in `workflow.md` with the answer. Ask once, and say plainly that `empowerment` lets the agent commit, push, open pull requests and issues, and run without you, and that only you change `Mode` later. `setup-repo` is the one entry point that stays typed, so the agent cannot grant itself the mode.
+Recommend `micromanagement`; write the `Mode` line in `workflow.md` with the answer. Ask once, and say plainly that `empowerment` lets the agent commit, push, open pull requests and issues, and run without you, and that only you change `Mode` later. `setup-repo` is the one entry point that stays typed, so the agent cannot grant itself the mode.
 
 ### 3. Confirm and edit
 
@@ -89,6 +89,8 @@ Let them edit before writing.
 
 - `private`: run `git status --short`. It must show no file created by this skill. If it does, fix the exclude rule.
 - `in-repo`: run `git status --short`. It must show only the files this skill meant to write.
+
+Under `Mode: empowerment` with `in-repo` storage, commit what this skill wrote (`chore: set up agent skills`); otherwise print that commit for the user.
 
 Tell the user setup is complete. Skills find their configuration in `docs/agents/*.md` (reached from `CLAUDE.md`) or in `.work/config.md`. They can edit those files directly later; re-run this skill only to switch settings or start over.
 

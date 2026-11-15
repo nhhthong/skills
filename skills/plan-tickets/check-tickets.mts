@@ -27,7 +27,7 @@ const HEADERS = ['Type', 'Parent', 'Requirements', 'Blocked by', 'Status', 'New 
 // Every ticket that builds something says where it lands and what shows it done.
 const WORK_HEADERS = ['Files', 'Proof'];
 const TYPES = new Set(['feature', 'task', 'bug', 'spike']);
-const STATUSES = new Set(['ready', 'in-progress', 'in-review', 'done', 'dropped']);
+const STATUSES = new Set(['ready', 'in-progress', 'in-review', 'waiting', 'done', 'dropped']);
 const ID = /[A-Za-z][A-Za-z0-9]*-\d+/;
 const FILE = new RegExp(`^(?:(\\d{2})-)?(${ID.source})-[a-z0-9-]+\\.md$`);
 const IDS = new RegExp(`${ID.source}|#\\d+`, 'g');
@@ -100,7 +100,7 @@ export const readTickets = (dir: string, inScope: (relDir: string) => boolean = 
     if (t.type !== 'spike')
       for (const h of WORK_HEADERS) if (!header(text, h)) problems.push(`${file}: missing or empty **${h}:** line`);
     if (!TYPES.has(t.type)) problems.push(`${file}: Type "${t.type}" is not feature, task, bug or spike`);
-    if (!STATUSES.has(t.status)) problems.push(`${file}: Status "${t.status}" is not ready, in-progress, in-review, done or dropped`);
+    if (!STATUSES.has(t.status)) problems.push(`${file}: Status "${t.status}" is not ready, in-progress, in-review, waiting, done or dropped`);
     if (t.type !== 'spike' && t.criteria === 0) problems.push(`${file}: no acceptance criterion (- [ ] line)`);
   }
   return { tickets, problems };

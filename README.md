@@ -7,7 +7,7 @@
 **From an empty source, or a ticket in a big project, to delivery.**
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
-[![Version](https://img.shields.io/badge/version-2.2.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue)](CHANGELOG.md)
 [![Node.js](https://img.shields.io/badge/node-%E2%89%A522.18-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -43,7 +43,7 @@ Then, inside your project:
 /dev:ask-me <what you want to do>    not sure? get the skills to run, in order
 ```
 
-> **Requires** [Node.js](https://nodejs.org) 22.18+ only to run the ticket checker and `npm test`; the skills themselves need nothing installed.
+> **Requires** [Node.js](https://nodejs.org) 22.18+ only to run the ticket checker, the state command and `npm test`; without it the skills fall back to reading the files.
 
 ## How it works
 
@@ -61,15 +61,22 @@ flowchart TD
     N -- "phase done" --> T
 ```
 
-`/dev:implement-ticket` runs eight steps (identify, orient, fill the gaps, plan the proof, build, review, deliver, close) and writes a `Step:` line before each, so a dead session resumes with the same command.
+`/dev:implement-ticket` runs eight steps (identify, orient, fill the gaps, plan the proof, build, review, deliver, close) and keeps a `Step:` line current, so a dead session resumes with the same command.
+
+A new session loads the old work with one command instead of re-reading the spec, the tickets and the notes:
+
+```bash
+node skills/session-progress/state.mts               # config, git, epics, tickets, open points, next command
+node skills/session-progress/state.mts --ticket T-4  # one ticket, its requirement lines, the notes that bind it
+```
 
 The proof tier decides how much runs:
 
 | Tier | When | What runs |
 |---|---|---|
 | `check` | A mistake shows at a glance; a revert undoes it | The repo's existing command |
-| `light` | As above, one behaviour worth keeping | One test, a baseline of the touched area |
-| `full` | Data stored or sent, outside caller, money, auth | Tests per risk, full-suite baseline, Impact and Adversary review |
+| `light` | As above, one behaviour worth keeping | One test, a baseline of the touched area, one review pass by the agent |
+| `full` | Data stored or sent, outside caller, money, auth | Tests per risk, full-suite baseline, `review-code` (Impact and Adversary when something already reads the changed data) |
 
 ## Skills
 
@@ -194,6 +201,17 @@ Tickets, spec index, plans, proof scripts and notes go under `.work/`. Under `pr
 Decisions, problems, tries, fixes and facts go in `.work/notes.md`: one line each, with ids (`D-1`, `I-2`, `F-3`...), appended, never edited. With `in-repo` storage the team shares it; with `private` it stays local.
 
 ## Changelog
+
+<details>
+<summary><b>2.3.0</b> (2026-11-14): fewer tokens per ticket, one-command session start, no dead ends</summary>
+
+- `session-progress/state.mts`: one command prints the state of the work, or the brief for one ticket.
+- `workflow.md` template cut in half; `implement-ticket` shorter, one commit per ticket.
+- An open point holds back only its own requirement; a worked spike ends `done` or `waiting`.
+- Two-way planning and the Impact and Adversary review run only where they pay; without subagents they degrade instead of doubling the work.
+- Small specs are one epic; the scaffold rides with the first real ticket.
+
+</details>
 
 <details>
 <summary><b>2.2.0</b> (2026-10-29): a notes file instead of a server, two working modes</summary>

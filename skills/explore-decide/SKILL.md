@@ -19,7 +19,10 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
 5. **Recommend one.** Word it so that "yes" accepts it. Give the reason in a sentence, and the single biggest cost of the choice. "None of these" and "do not build it" are acceptable recommendations: give your real judgement, not the answer the question leans towards.
 
-6. **Wait for the user's choice.** When the constraints leave only one option, record it and go on without waiting. A choice that is hard to reverse (a data store, a public API shape, a service boundary, an auth model, how money is handled) is never made without the user, even when they are away: leave the dependent work blocked, keep the question open in the spec index, and say which ticket waits. Under `Mode: empowerment` in `workflow.md` there is no person to wait for: take your recommendation, write it with an `ASK:` line and the rejected options, and go on; the `Always pause` list still stops you.
+6. **Get the choice.** When the constraints leave only one option, record it and go on.
+   - `Mode: micromanagement`: wait for the user. A choice that is hard to reverse (a data store, a public API shape, a service boundary, an auth model, how money is handled) is never made without them: set the spike to `Status: waiting`, keep the question open in the spec index, and say which ticket waits.
+   - `Mode: empowerment`: there is no person to wait for. Take your recommendation, hard to reverse or not, write it with an `ASK:` line and the rejected options, and go on; the `Always pause` list still stops you.
+   - A value the source says an outside person owes (a limit "to be confirmed", a policy "not decided yet") is not yours to choose in either mode: leave its requirement open and, when a spike was cut for it, set the spike to `Status: waiting`. Nothing else waits on it.
 
 7. **Record it once.** Call the Skill tool with "dev:clarify-domain" for the recording rules: one `D-n` decision line in `.work/notes.md` (with the reason and the rejected options); an ADR when the three ADR conditions hold or the project's documents require one; the full text in exactly one of them. Then:
    - Close the `spike` ticket that carried the question (`Status: done`, with the decision's id in `## Result`).
@@ -27,6 +30,6 @@ Turn a choice into a recommendation the user can accept with one word. The user 
 
    Done when the decision exists in one place, and the spike and open point point to it.
 
-   When research and a run still cannot settle the question and the choice is reversible, record a provisional decision (its body starts with `provisional:` and names what is missing). Leave the spike at `Status: ready` and the open point at ⚠️, each pointing to the decision's id and to what would settle it, and say which ticket waits. Do not close what the evidence did not settle.
+   When research and a run still cannot settle the question and the choice is reversible, record a provisional decision (its body starts with `provisional:` and names what is missing) and build on it: close the spike as `done`, and leave the open point at ⚠️ pointing to the decision's id and to what would settle it. A spike is never left at `ready` once worked: it ends `done` or `waiting`.
 
 Next step: say which ticket the decision unblocks, and `/dev:implement-ticket <ID>` to continue.

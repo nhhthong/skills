@@ -6,105 +6,107 @@ argument-hint: "A ticket id, the pasted text of a ticket, `epic <slug>` or `all`
 
 **Who starts this.** The user asks for it (types it or names it), or `Mode` in `workflow.md` is `empowerment` and the work has reached this step. In any other case, tell the user which command to type, and stop.
 
-Take **one ticket** to delivery. Read this repo's configuration first: `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
+Take **one ticket** to delivery. The repo's configuration is `docs/agents/issue-tracker.md` and `docs/agents/workflow.md` (reached from `CLAUDE.md`), or `.work/config.md` when storage is private. If neither exists, tell the user to run `/dev:setup-repo`.
 
-Every ticket worked has a **local ticket file** under `.work/tickets/`. The file holds the ticket's `Status`, `Step` and `Result`, so a session that dies can be resumed. `implement-ticket` creates whatever record it needs; a missing spec index or epic never blocks it.
+**Load the state with one command**, before reading anything else:
 
-**Write the `Step:` line before starting each step**, naming the step you are about to do (`identify`, `orient`, `fill gaps`, `plan proof`, `build`, `review`, `deliver`, `close`). The last `Step:` line says where a dead session stopped.
+```
+node <skills folder>/session-progress/state.mts               # config, git, tickets, open points, next ticket
+node <skills folder>/session-progress/state.mts --ticket <ID>  # this ticket, its requirement lines, the notes that bind it
+```
 
-Read `Mode` in `workflow.md` too. Under `empowerment`, where a step below says to ask or wait, take the recommended answer and write `ASK: <question> -> <answer>` in `## Result`; the `Always pause` list still stops you.
+`<skills folder>` is the parent of the folder this file was loaded from.
+
+Its output replaces reading the spec index, the notes file and the other tickets. Open one of those files only for a line the output cut short. Without Node, read `workflow.md`, the ticket file, `.work/spec-index.md` and `grep -i` the notes for the ticket id, its epic and its requirement codes.
+
+Every ticket worked has a **local ticket file** under `.work/tickets/`, holding its `Status`, `Step` and `Result`, so a dead session can be resumed. `implement-ticket` creates whatever record it needs; a missing spec index or epic never blocks it.
+
+**Keep the `Step:` line current**: before each step, replace its value with the step you are about to do (`identify`, `orient`, `fill gaps`, `plan proof`, `build`, `review`, `deliver`, `close`).
+
+Under `Mode: empowerment`, where a step says to ask or wait, take the recommended answer and write `ASK: <question> -> <answer>` in `## Result`; the `Always pause` list still stops you.
 
 ## Rigor follows the tier
 
-The tier that `test-plan` picks in step 3 (`check`, `light`, `full`) decides how much of the process below runs. A small change gets a small process: tier `check` runs no baseline, its proof is the plan's existing command, and its verdict is `VERIFIED` when that command exits 0 on the current code, `NOT VERIFIED` when it fails, and `INCONCLUSIVE` when it could not run.
+The tier `test-plan` picks in step 3 decides how much runs:
 
-Read a leaf only when its condition holds:
+| | `check` | `light` | `full` |
+|---|---|---|---|
+| Baseline at `Base:` | none | the touched area's tests | the whole suite |
+| Build | make the change, run the existing command | `dev:test-tdd` | `dev:test-tdd` |
+| Verdict | the command exits 0 | [PROOF.md](../test-plan/PROOF.md) | [PROOF.md](../test-plan/PROOF.md) |
+| Review (step 5) | none | one pass by you | `dev:review-code` |
 
-- Tier `light` or `full`, or a subagent reports work as done: [PROOF.md](../test-plan/PROOF.md).
-- Tier `light` or `full`, a sweep or migration, a bug ticket, or work you will deliver as more than one commit: [SEQUENCE.md](SEQUENCE.md).
-
-Call a skill only when its condition holds:
-
-- Step 1 finds code you must change whose shape you do not understand (a guard, a retry, a flag, an odd boundary): `dev:explore-why`.
-- Before step 5, when the Impact rule in step 4 of [review-code](../review-code/SKILL.md) holds: `dev:review-impact` on the diff since `Base:`.
-
-Name each leaf you read and each skill you called on the `Applied:` line of `## Result`. A step that does not apply to this ticket gets a `skip: <step>: <reason>` line there instead of silent omission.
+Read [SEQUENCE.md](SEQUENCE.md) only for a sweep or migration, a bug ticket, or work delivered as more than one commit. Call `dev:explore-why` only when step 1 finds code you must change whose shape you do not understand. Name each leaf read and skill called on the `Applied:` line of `## Result`; a step that does not apply gets `skip: <step>: <reason>` there.
 
 ## Steps
 
 ### 0. Identify the ticket
 
-- **A ticket id.** Read its file in `.work/tickets/`. If the ticket exists only on the tracker, read it there and write a local file for it at `.work/tickets/tracked/<ID>-<slug>.md` in the template of [TICKET.md](../plan-tickets/TICKET.md), with a `Tracker:` line holding its URL.
-- **Pasted ticket text** (from Jira or anywhere else). Write it as a ticket file at `.work/tickets/external/<ID>-<slug>.md`, using the id it already has. Fill `Type` (a guess you state), `Requirements: none`, `Blocked by: None`, the acceptance criteria from the text, and `Files:` and `Proof:` once step 1 has found them.
-- **Nothing.** Resume: find the ticket with `Status: in-progress` or `in-review` (`grep -rl` over `.work/tickets/`). With none, say so and suggest `/dev:session-progress`. With one, read its last `Step:` and `## Result`, compare with `git status` and `git log`, and **run the tests again before writing more code**: the file can be one step behind the working tree. The ticket file is the record: continue from it rather than redoing finished steps, and trust its claims only once the rerun proof agrees with them. A ticket waiting at `Step: review` goes on from step 5; one at `Status: in-review` whose commit now exists is closed as `done`.
-- **`epic <slug>` or `all`** (only under `empowerment`). The set of tickets to work: the ready ones in dependency order, each taken through steps 0 to 7 before the next. A single ticket id works that ticket only.
+- **A ticket id.** Read its file (the `--ticket` output names it). A ticket that exists only on the tracker: read it there and write `.work/tickets/tracked/<ID>-<slug>.md` in the template of [TICKET.md](../plan-tickets/TICKET.md), with a `Tracker:` line holding its URL.
+- **Pasted ticket text.** Write it as `.work/tickets/external/<ID>-<slug>.md`, with the id it already has: `Type` (a guess you state), `Requirements: none`, `Blocked by: None`, the acceptance criteria from the text, and `Files:` and `Proof:` once step 1 has found them.
+- **Nothing.** Resume the ticket the state output lists under `In progress`. With none, say so and suggest `/dev:session-progress`. Read its last `Step:` and `## Result`, compare with `git status` and `git diff --stat`, and **run the tests before writing more code**: the file can be one step behind the working tree. Continue from the recorded step instead of redoing finished ones, and trust a recorded claim only once the rerun proof agrees with it. A ticket at `Status: in-review` whose commit exists is closed as `done`.
+- **`epic <slug>` or `all`** (only under `empowerment`). Work the ready tickets one after another (the state output's `Ready` list, lowest number first), each through steps 0 to 7. An in-progress ticket is resumed first. Skip a ticket at `Status: waiting`.
 
-Set `Status: in-progress`. Then **restate the goal** in your first message, in three lines: what the user wants (the outcome, not the method), the problem in the code today, and the smallest change you expect. When what you find later rules out the request as written, stop and say so instead of building around it.
-
-Done when you can state the ticket's id, its title and the goal (and, when resuming, the step you will continue from).
+Set `Status: in-progress`. Then **restate the goal** in three lines: what the user wants (the outcome, not the method), the problem in the code today, the smallest change you expect. When what you find later rules out the request as written, stop and say so instead of building around it.
 
 ### 1. Orient
 
-Read `CLAUDE.md`, `CONTRIBUTING.md`, the ticket, `.work/spec-index.md` and the glossary (or the `glossary` notes in `.work/notes.md`). Search `.work/notes.md` with `grep -i` for the ticket id, then for the module, requirement codes and error messages; the decisions and gotchas it returns bind this ticket.
+The decisions and notes in the `--ticket` output bind this ticket. If the repo has code, find where the work goes: the module, its entry points, the neighbouring tests, the conventions a new file must match. Send a wide search to a subagent when you have one, so your context stays clean. A fact the next session would lose time rediscovering (where a module lives, an unwritten convention, a trap) becomes a `note` line in `.work/notes.md`, tagged with the ticket and `structure`, `convention` or `gotcha`.
 
-If the repo has code, find where the work goes. Send wide searches to a subagent so your context stays clean: the module, its entry points, the neighbouring tests, the conventions a new file must match. A fact that would cost the next session time to rediscover (where a module lives, which convention is unwritten, a trap) becomes a `note` line in `.work/notes.md`.
-
-Done when you can list: the decisions and notes that bind the ticket, the files you will touch, and the repo's test command.
+Done when you can list the notes that bind the ticket, the files you will touch, and the repo's test command.
 
 ### 2. Fill the gaps
 
-- A question that running something answers (does the library accept this input, which layout reads better, how fast is the slow path): find out by running it, with a throwaway script or `dev:explore-prototype`, instead of asking the user.
-- Acceptance criteria that are ambiguous: call the Skill tool with "dev:clarify-grill" on the missing part only.
-- A choice between options, or an open point or `spike` in `Blocked by`: call the Skill tool with "dev:explore-decide".
-- A question only an outside person can answer: tell the user to type `/dev:clarify-ask` for that person, and carry on with every part of the ticket that does not depend on the answer (under `empowerment`, list the question under `## Result` as `OPEN:` instead, and carry on).
-
-Done when no acceptance criterion is ambiguous, or the ones that remain are named as blocked and the user has agreed to proceed without them.
+- A question a run answers (does the library accept this input, how fast is the slow path): run it, with a throwaway script or `dev:explore-prototype`, instead of asking.
+- An ambiguous acceptance criterion: call the Skill tool with "dev:clarify-grill" on the missing part only.
+- A choice between options, or a `spike` in `Blocked by`: call the Skill tool with "dev:explore-decide".
+- A question only an outside person can answer: build every part of the ticket that does not depend on it, and list the question under `## Result` as `OPEN:`. Under `micromanagement`, also tell the user to type `/dev:clarify-ask`.
 
 ### 3. Plan the proof
 
-Call the Skill tool with "dev:test-plan". Done when the plan is in the ticket file under `## Test plan` and its self-check in step 8 of `test-plan` holds.
+Call the Skill tool with "dev:test-plan". Done when the plan is in the ticket file under `## Test plan`.
 
 ### 4. Build
 
-- **Branch.** Follow `workflow.md`. With delivery `pr`, work on a branch named by the repo's pattern: creating the branch is fine; committing is not. With `commit`, stay on the current branch. Before the first change, write `**Base:** <git rev-parse HEAD>` under the ticket's header lines: it is the fixed point the review compares against. For tier `light` or `full`, record the baseline as [SEQUENCE.md](SEQUENCE.md) says.
-- **Bug ticket.** Call the Skill tool with "dev:debug-diagnose" and let it lead; it records attempts in the notes.
-- **Tier `check`.** Make the change, then run the proof command from the plan.
+- **Base.** `Base:` must be a commit that holds everything but this ticket's work (the ticket file's own header edits ride with the ticket's commit). Planning files not yet committed (setup, spec index, tickets) are committed first under `empowerment` (`chore: plan <epic>`), or printed as a commit for the user. Then write `**Base:** <git rev-parse --short HEAD>` and, for tier `light` or `full`, `**Baseline:**` with the result of the plan's baseline command (`green`, `red: <failing checks>`, or `none: no code at Base`). A check red at `Base:` is pre-existing: list it under `## Result` and leave it, unless it hides this ticket's proof; then say so before building.
+- **Branch.** With delivery `pr`, work on a branch named by the repo's pattern. With `commit`, stay on the current branch.
+- **Bug ticket.** Call the Skill tool with "dev:debug-diagnose" and let it lead.
+- **Tier `check`.** Make the change, run the plan's command.
 - **Tier `light` or `full`.** Call the Skill tool with "dev:test-tdd" and build one slice at a time at the plan's seams.
 
-Run the typecheck regularly, single test files often, and the whole suite once at the end. When a test fails, change the code. When it fails for a reason outside the slice you are building (a leaked key, a race with a container, a query that returns the wrong row), record it as a problem, not a note: an `I-n` line in `.work/notes.md`, an `A-n` line for each approach tried, and an `F-n` line once it is green. Tick each acceptance criterion in the ticket file as it is met.
+Run single test files often and the whole suite once at the end. When a test fails, change the code. A failure from outside the slice (a race, a leaked key, a broken tool) is recorded as a problem: an `I-n` line in `.work/notes.md`, an `A-n` line per approach tried, an `F-n` line once green. Tick each acceptance criterion as it is met.
 
-**When the plan is wrong, stop instead of patching.** The signs: the same workaround shape appears a second time; the work needs files outside the ticket's `Files:` line or another ticket's scope; a lock, a cast or an always-set optional field is needed where the plan assumed none; a second ticket of the epic deviates from the plan the same way the first did. Write what you found under `## Result`, say which tickets it changes, and tell the user to run `/dev:plan-ticket-change` (or `/dev:plan-tickets` for the epic); under `empowerment`, call the Skill tool with that skill yourself and go on with the changed ticket list. One odd edge case is not a sign; a repeated shape is.
+**When the plan is wrong, stop instead of patching.** The signs: the same workaround appears a second time; the work needs another ticket's scope; a lock, a cast or an always-set optional field is needed where the plan assumed none; the ticket's `Proof:` names a command a later ticket creates. Write what you found under `## Result`, and tell the user to run `/dev:plan-ticket-change` (under `empowerment`, call it yourself and go on). A test file or a helper outside the `Files:` line is not a sign: add it to the line.
 
-A problem found on the way that is not fixed in this ticket (a defect in other code, a broken environment): if it affects other tickets or needs someone else, open a `bug` ticket for it through the tracker (for a real tracker, print the command, or run it under `empowerment`: `Tracker and pull request writes` in `workflow.md`); otherwise add an `I-n` line to `.work/notes.md` tagged with this ticket.
+A problem found on the way that this ticket does not fix: when it affects other tickets, open a `bug` ticket through the tracker (`Tracker and pull request writes` in `workflow.md`); otherwise an `I-n` line tagged with this ticket.
 
-Done when every acceptance criterion is ticked and the proof is green on the current code, run by you in this session. For tier `light` or `full`, the verdict is `VERIFIED` by [PROOF.md](../test-plan/PROOF.md).
+Done when every criterion is ticked and the proof is green on the current code, run by you in this session.
 
 ### 5. Review
 
-Read `Review` in `workflow.md` (it follows `Mode`: `typed` under `micromanagement`, `inline` under `empowerment`).
+- **Tier `check`**: none. Write `skip: review: tier check`.
+- **`micromanagement`**: write `skip: review: typed` and name `/dev:review-code <ID>` next to the commit commands.
+- **`empowerment`, tier `light`**: read your own diff once (`git diff <Base>`) against the ticket's criteria and the repo's written standards. Fix what breaks a criterion; list the rest under `## Result`. No subagents.
+- **`empowerment`, tier `full`**: call the Skill tool with "dev:review-code" and the ticket id. Each Act on finding is fixed, or written under `## Result` with the reason it stays.
 
-- **`typed`**: write `skip: review: typed` under `## Result`, go on to delivery, and name `/dev:review-code <ID>` next to the commit commands, so the user can run it before committing (it reads the ticket's `Base:` line as the fixed point). Tier `check` gets no suggestion: the diff is small enough to read.
-- **`inline`**: call the Skill tool with "dev:review-code" and the ticket id (the ticket's `Base:` commit is the fixed point and the ticket file is the spec). Show the aggregated report, then go on.
+### 6. Deliver and close
 
-Done when each Act on finding is either fixed or written under `## Result` with the reason it stays, or the review is skipped. The review is input for the human reviewer, not an approval.
+One commit carries the code and the closed ticket file. Before committing, fill the ticket file:
 
-### 6. Deliver
+- `## Result`: the goal in one line, what changed; the proof command, the output lines that decide it, and the verdict (`VERIFIED`, `NOT VERIFIED` or `INCONCLUSIVE`); pre-existing failures; decisions made (`ASK:` lines, `D-n` ids); follow-ups; the `Applied:` line and `skip:` lines. Do not write the commit hash: `git log --grep '<ID>'` finds it.
+- `Status`: under `empowerment` with delivery `commit`, `done`. In every other case `in-review`, turned to `done` when the user confirms the commit or merge, or when a later session finds the commit on the branch.
+- An `F-n` line confirmed by this ticket is appended again as `(confirmed)`.
+- In `.work/spec-index.md`, when it has them: the epic's line in `## Epics` gains this ticket's id and a gist of at most ten words; an `Infrastructure` row this ticket built says so.
 
-Follow `workflow.md`. `Git writes` follows `Mode`: under `micromanagement`, **do not run `git commit` or `git push`**; print them for the user (a direct request from the user in this session to run them is honoured). Under `empowerment`, run them, never with force. The command that opens the pull request follows `Tracker and pull request writes`: printed under `micromanagement`, run under `empowerment`.
+Then deliver, as `workflow.md` says. Under `micromanagement`, **do not run `git commit` or `git push`**: print the message and the commands (a direct request in this session to run them is honoured). Under `empowerment`, run them, never with force.
 
-- **commit**: print the commit message in the repo's convention, then the commands in order: `git add` with the explicit files from `git status`. Under `private` storage `.work/` already does not appear there (`.git/info/exclude`). Under `in-repo` storage, include it: tickets, spec, notes and plans are the shared record `setup-repo` promised the team; leave out only `.work/proof/` (scratch evidence), unless the test plan asks to keep a script as a committed test. Then `git commit` with that message. When the work is more than one unit, print one commit per unit in the order [SEQUENCE.md](SEQUENCE.md) gives.
-- **pr**: check the diff against the PR size cap first; if it is over, stop, propose how to split the ticket, and tell the user to run `/dev:plan-ticket-change split <ID>` to apply it (under `empowerment`, call it yourself). Then print the branch check, the commit message and commands as above, `git push -u origin <branch>`, and the command that opens the pull request. Call the Skill tool with "dev:review-pr" for the body and print it. The repo's PR template wins over the skill's template.
+- **commit**: the message in the repo's convention, naming the ticket id; `git add` with the explicit files from `git status`. Under `in-repo` storage that includes `.work/` (tickets, spec, notes, plans) except `.work/proof/`. More than one unit of work: one commit per unit, in the order [SEQUENCE.md](SEQUENCE.md) gives.
+- **pr**: check the diff against the PR size cap first; over it, stop and propose a split (`/dev:plan-ticket-change split <ID>`; under `empowerment`, call it yourself). Then the commit as above, `git push -u origin <branch>`, and the command that opens the pull request, with the body from "dev:review-pr". The repo's PR template wins.
 
-Done when the message and the commands are printed (or, under `empowerment`, you have a commit hash and the pushed branch).
+A tracker ticket: mirror the status on the tracker after delivery (`Tracker and pull request writes` in `workflow.md`).
 
-### 7. Close
+### 7. Next
 
-- Set `Status: in-review`: the work is complete and waits for the user to commit or merge it. Set `Status: done` when the user confirms the commit or the merge, or when a later `/dev:implement-ticket` or `/dev:session-progress` finds the commit on the branch. Under `Mode: empowerment` you commit yourself, so set `Status: done` as soon as the commit exists (with delivery `pr`, once the pull request is merged).
-- Fill `## Result`: the goal in one line, then what changed; the proof command, the output lines that decide it, and the verdict (`VERIFIED`, `NOT VERIFIED` or `INCONCLUSIVE`); pre-existing failures from the baseline; the commit message and commands you printed (or the PR or commit); the decisions made; the follow-ups; the `Applied:` line and any `skip:` lines.
-- Turn an `F-n` line from `(unconfirmed)` to `(confirmed)` by appending a line with the same `F-n`.
-- Add `note` lines for anything the next session would lose time without.
-- A tracker ticket: mirror the status on the tracker and close it only after delivery is confirmed. Print those commands for the user, or run them under `empowerment` (`Tracker and pull request writes` in `workflow.md`).
+End with one line naming the next command: `/dev:implement-ticket <ID>` for the next ready ticket, else `/dev:session-progress`.
 
-End with one line naming the next command: `/dev:implement-ticket <ID>` for the next ready ticket whose blockers are done, else `/dev:session-progress`.
-
-Under `Mode: empowerment`, work only the ticket you were given. When you were given `epic <slug>` or `all`, take the next ready ticket and repeat from step 0, until none is ready or a stop rule above fires; after the last one, call the Skill tool with "dev:session-progress" and report.
+Given `epic <slug>` or `all`: run the state command again and take the next ready ticket. When none is ready but the output lists `Decided, no ticket yet`, call the Skill tool with "dev:plan-tickets" for the next epic and go on. Stop when nothing is ready and nothing decided is left to cut: what remains waits on an open point an outside person owes. An open point nobody outside owes is settled by `plan-tickets` step 4, not waited on. Report with the state output, not a new summary.
