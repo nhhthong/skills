@@ -8,7 +8,6 @@
 [![Version](https://img.shields.io/badge/version-2.3.0-2F5BFF)](CHANGELOG.md)
 [![Skills](https://img.shields.io/badge/skills-35-6A3DF0)](#skills)
 [![Node.js](https://img.shields.io/badge/node-%E2%89%A522.18-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **From an empty folder, or one ticket in a large codebase, to a delivery you can prove.**
 
@@ -140,4 +139,4 @@ Node.js 22.18+ is needed only for the ticket linter, the state command and `npm 
 
 ## More
 
-[CHANGELOG](CHANGELOG.md) · [CREDITS](CREDITS.md) · [MIT license](LICENSE)
+[CHANGELOG](CHANGELOG.md) · [CREDITS](CREDITS.md)
