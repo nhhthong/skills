@@ -1,32 +1,35 @@
 <div align="center">
 
-<img src="resources/logo.png" alt="Skills for Standard Developer" width="280">
+<img src="resources/banner.png" alt="Skills for Standard Developer: clarify, plan, implement, prove, review" width="100%">
 
-# Skills for Standard Developer
-
-**From an empty source, or a ticket in a big project, to delivery.**
+<br>
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
-[![Version](https://img.shields.io/badge/version-2.3.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.3.0-2F5BFF)](CHANGELOG.md)
+[![Skills](https://img.shields.io/badge/skills-35-6A3DF0)](#skill-catalog)
 [![Node.js](https://img.shields.io/badge/node-%E2%89%A522.18-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[Quick start](#quick-start) · [How it works](#how-it-works) · [Skills](#skills) · [Changelog](#changelog)
+**From an empty folder, or one ticket in a large codebase, to a delivery you can prove.**
+
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Resume in a new session](#resume-in-a-new-session) · [Skill catalog](#skill-catalog) · [Changelog](CHANGELOG.md)
 
 </div>
 
 ---
 
-35 small skills for Claude Code: agree on what to build, cut it into tickets, prove it works, remember what the last session learned. Skills with a common job share a prefix: type `/dev:clarify-` or `/dev:test-` to list them.
+## Overview
 
-## Why this plugin
+`dev` is a Claude Code plugin of 35 small skills that give an agent a repeatable way to work: agree on what to build, cut it into tickets, build each one against a proof, review it, and leave a record the next session can pick up. Skills that share a job share a prefix, so `/dev:clarify-` or `/dev:test-` lists them.
 
-- **Proof, not claims.** A ticket is done when a command on the real code says `VERIFIED`.
-- **Process sized to risk.** A one-line change runs the existing build. Stored data, outside callers and money get tests per risk and an Impact review.
-- **Plans checked before code.** Larger epics are drafted two ways and compared; every breakdown is linted.
-- **You stay in control.** In `micromanagement`, skills print commit, push and tracker commands for you to run.
-- **Notes across sessions.** Decisions, problems, tries and fixes live in one plain file, `.work/notes.md`, with stable ids.
-- **Your pace.** `setup-repo` asks once: `micromanagement` (the agent asks at every real choice) or `empowerment` (it decides with the recommended answers, logs each as `ASK:`, commits, pushes and opens pull requests itself, and keeps going).
+| | |
+|---|---|
+| **Proof, not claims** | A ticket is done when a command on the real code prints `VERIFIED`, and that command was seen failing first. |
+| **Process sized to risk** | A one-line change runs the existing build. Stored data, outside callers and money get tests per risk and a deeper review. |
+| **Plans checked before code** | Every ticket breakdown is linted; large or entangled epics are drafted forward and backward and compared. |
+| **Cheap to resume** | One command prints where the work stands; one more prints everything a single ticket needs. |
+| **You choose the autonomy** | `micromanagement` asks at every real choice and prints git commands for you. `empowerment` decides, logs each choice as `ASK:`, commits and keeps going. Both stop before anything on the `Always pause` list. |
+| **Nothing to install** | The skills are Markdown. Node.js is used only by the ticket linter and the state command. |
 
 ## Quick start
 
@@ -38,49 +41,88 @@ claude plugin install dev@nhhthong-skills
 Then, inside your project:
 
 ```text
-/dev:setup-repo                      once per repo: storage, delivery, tracker
-/dev:implement-ticket <ticket text>  take one ticket to a printed commit
+/dev:setup-repo                      once per repo: storage, delivery, tracker, mode
+/dev:implement-ticket <ticket text>  take one ticket to a verified commit
 /dev:ask-me <what you want to do>    not sure? get the skills to run, in order
 ```
 
-> **Requires** [Node.js](https://nodejs.org) 22.18+ only to run the ticket checker, the state command and `npm test`; without it the skills fall back to reading the files.
+<details>
+<summary>Typical routes</summary>
+
+| Situation | Run |
+|---|---|
+| An idea or a requirements document, no code yet | `setup-repo` → `clarify-grill-docs` → `plan-spec` → `plan-tickets` → `implement-ticket` |
+| A ticket from Jira or another tracker, in a large repo | `setup-repo` (private storage) → `implement-ticket` with the pasted ticket |
+| Back after a break, or a session died | `session-progress` → `implement-ticket` with no argument |
+| A hard bug | describe it; `debug-diagnose` starts on its own |
+| Before committing | `review-code` |
+
+</details>
 
 ## How it works
 
 ```mermaid
-flowchart TD
-    A["An idea, a spec or a roadmap"] --> S["/dev:setup-repo (once)"]
-    S --> G["/dev:clarify-grill-docs"]
-    G --> P["/dev:plan-spec"]
-    P --> T["/dev:plan-tickets<br/>two-way draft, lint"]
-    T --> W["/dev:implement-ticket"]
-    J["A ticket from Jira or another tracker"] --> W
-    W --> D["Commit message and commands printed<br/>/dev:review-code before you commit"]
-    D --> N{"More tickets?"}
-    N -- yes --> W
-    N -- "phase done" --> T
+flowchart LR
+    A["Idea, spec<br/>or roadmap"] --> S["setup-repo<br/>(once)"]
+    S --> G["clarify-grill-docs"]
+    G --> P["plan-spec"]
+    P --> T["plan-tickets"]
+    T --> W["implement-ticket"]
+    J["Ticket from<br/>another tracker"] --> W
+    W --> R["review-code"]
+    R --> D["Commit"]
+    D -- "next ticket" --> W
+    D -- "epic done" --> T
 ```
 
-`/dev:implement-ticket` runs eight steps (identify, orient, fill the gaps, plan the proof, build, review, deliver, close) and keeps a `Step:` line current, so a dead session resumes with the same command.
+`implement-ticket` takes one ticket through eight steps (identify, orient, fill the gaps, plan the proof, build, review, deliver, close) and keeps a `Step:` line current in the ticket file, so a session that dies resumes with the same command.
 
-A new session loads the old work with one command instead of re-reading the spec, the tickets and the notes:
+### Proof tiers
+
+`test-plan` picks the tier before any code is written. The tier decides how much of the process runs.
+
+| Tier | When | What runs |
+|---|---|---|
+| `check` | A mistake shows at a glance, and a revert undoes it | The repo's existing command |
+| `light` | As above, with one behaviour worth keeping | One test, a baseline of the touched area, one review pass |
+| `full` | Data stored or sent, an outside caller, money, auth | Tests per risk, a full-suite baseline, `review-code` |
+
+### Working modes
+
+| | `micromanagement` (default) | `empowerment` |
+|---|---|---|
+| A real choice | The agent asks and waits | The agent takes the recommended answer and logs `ASK:` |
+| `git commit`, `git push` | Printed for you to run | Run by the agent (never a force-push) |
+| Issues and pull requests | Printed for you to run | Run by the agent |
+| Review | Named for you to run | Run before delivery |
+| `Always pause` (deleting data, shared migrations, deploys, customer messages) | Stops | Stops |
+
+Only a person sets the mode, through `/dev:setup-repo`.
+
+## Resume in a new session
+
+Everything a session learns is written to plain files under `.work/`, so a fresh agent, or a different model, continues without guessing:
+
+```text
+.work/
+├── spec-index.md       requirement codes, open points, epics: one line each
+├── tickets/<epic>/     one file per ticket: status, step, proof, result
+├── notes.md            decisions, issues, attempts and fixes, append-only, with ids
+└── plans/, proof/      planning drafts and proof scripts
+```
+
+Two commands load it, instead of re-reading every file:
 
 ```bash
 node skills/session-progress/state.mts               # config, git, epics, tickets, open points, next command
 node skills/session-progress/state.mts --ticket T-4  # one ticket, its requirement lines, the notes that bind it
 ```
 
-The proof tier decides how much runs:
+With `in-repo` storage the team shares this record; with `private` storage `.work/` stays out of git and nothing else in the repo is touched.
 
-| Tier | When | What runs |
-|---|---|---|
-| `check` | A mistake shows at a glance; a revert undoes it | The repo's existing command |
-| `light` | As above, one behaviour worth keeping | One test, a baseline of the touched area, one review pass by the agent |
-| `full` | Data stored or sent, outside caller, money, auth | Tests per risk, full-suite baseline, `review-code` (Impact and Adversary when something already reads the changed data) |
+## Skill catalog
 
-## Skills
-
-Prefix every name with `/dev:`. **You type** skills run only when called. **Agent** skills also start on their own; the planning, implementing and review skills do so only under `empowerment`.
+Prefix every name with `/dev:`. **You type** skills run only when called. **Agent** skills also start on their own when the work calls for them; the planning, implementing and review skills do so only under `empowerment`.
 
 <details>
 <summary><b>Setup</b>: prepare a repo, a machine and a way to drive the app (3)</summary>
@@ -117,7 +159,7 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 <summary><b>Plan</b>: from source to tickets (3)</summary>
 
 - [`plan-spec`](skills/plan-spec/SKILL.md) (agent): Spec index or full spec; open points stay open.
-- [`plan-tickets`](skills/plan-tickets/SKILL.md) (agent): Epics and tracer-bullet tickets, drafted two ways and linted.
+- [`plan-tickets`](skills/plan-tickets/SKILL.md) (agent): Epics and tracer-bullet tickets, linted; large epics drafted two ways.
 - [`plan-ticket-change`](skills/plan-ticket-change/SKILL.md) (agent): Split, cancel or reopen a ticket.
 
 </details>
@@ -149,7 +191,7 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 <details>
 <summary><b>Review</b>: check the work (4)</summary>
 
-- [`review-code`](skills/review-code/SKILL.md) (agent): Standards and Spec, plus Impact and Adversary for risky changes, in parallel subagents.
+- [`review-code`](skills/review-code/SKILL.md) (agent): Standards and Spec, plus Impact and Adversary when something already reads the changed data.
 - [`review-impact`](skills/review-impact/SKILL.md) (agent): What a change breaks outside its diff, proven by running code.
 - [`review-learn`](skills/review-learn/SKILL.md) (agent): Learning note for a finished ticket or epic.
 - [`review-pr`](skills/review-pr/SKILL.md) (agent): PR body: summary visual, evidence, merge danger.
@@ -168,7 +210,7 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 <details>
 <summary><b>Session</b>: status, handoff, retrospective (3)</summary>
 
-- [`session-progress`](skills/session-progress/SKILL.md) (agent): Where the work stands and what is next.
+- [`session-progress`](skills/session-progress/SKILL.md) (agent): Where the work stands and what is next, from one command.
 - [`session-handoff`](skills/session-handoff/SKILL.md) (agent): A document another agent can continue from.
 - [`session-retro`](skills/session-retro/SKILL.md) (you type): Improve the agent's environment, most severe first.
 
@@ -183,87 +225,33 @@ Prefix every name with `/dev:`. **You type** skills run only when called. **Agen
 
 </details>
 
-## What needs you
+## Requirements
 
-| | |
-|---|---|
-| **Skills ask you** (in `micromanagement` mode) | for an ambiguous requirement, a real choice, `setup-repo`, `setup-need-install`, `session-retro`, and the `Always pause` list: deleting data, shared-database migration, force-push, deploy, customer message |
-| **Skills print, you run** (`micromanagement`) | `git commit`, `git push`, and every `gh` or `glab` write |
-| **Skills run it themselves** (`empowerment`) | commits, non-force pushes, pull requests, issues and the review; they still stop at `Always pause` |
-| **Skills just do** | read code and history, write under `.work/`, run tests and builds, create branches and worktrees |
-
-## Files the skills write
-
-Tickets, spec index, plans, proof scripts and notes go under `.work/`. Under `private` storage `.work/` stays out of git and nothing else is touched.
-
-## Notes
-
-Decisions, problems, tries, fixes and facts go in `.work/notes.md`: one line each, with ids (`D-1`, `I-2`, `F-3`...), appended, never edited. With `in-repo` storage the team shares it; with `private` it stays local.
-
-## Changelog
-
-<details>
-<summary><b>2.3.0</b> (2026-11-14): fewer tokens per ticket, one-command session start, no dead ends</summary>
-
-- `session-progress/state.mts`: one command prints the state of the work, or the brief for one ticket.
-- `workflow.md` template cut in half; `implement-ticket` shorter, one commit per ticket.
-- An open point holds back only its own requirement; a worked spike ends `done` or `waiting`.
-- Two-way planning and the Impact and Adversary review run only where they pay; without subagents they degrade instead of doubling the work.
-- Small specs are one epic; the scaffold rides with the first real ticket.
-
-</details>
-
-<details>
-<summary><b>2.2.0</b> (2026-10-29): a notes file instead of a server, two working modes</summary>
-
-- `memo-post`, `memo-callback` and `help` removed; decisions, problems and fixes live in `.work/notes.md`.
-- `setup-repo` asks `micromanagement` or `empowerment`; under `empowerment` the agent runs on its own and logs `ASK:` lines.
-- `clarify-grill` hands its list back to the calling skill.
-
-</details>
-
-<details>
-<summary><b>2.1.0</b> (2026-10-28): sharper proof, how and why, adversarial review</summary>
-
-- New skills `explore-how` and `design-types`.
-- `review-code` adds an Adversary axis: only findings a rerun proves are kept.
-- A proof counts only once seen to fail; `explore-why` grades claims in five tiers.
-- `Models:` line in `workflow.md` sets the model per kind of subagent.
-- Memory survives a renamed clone; ticket lint fixed for several edge cases.
-
-</details>
-
-<details>
-<summary><b>2.0.1</b> (2026-10-27): fewer stops, more accurate plans</summary>
-
-- Skills ask only on ambiguity or a real choice.
-- `plan-tickets` drafts two ways, compares, lints (`check-tickets.mts`).
-- Tickets carry `Files:` and `Proof:`; `gh` and `glab` writes are always printed.
-
-</details>
-
-<details>
-<summary><b>2.0.0</b> (2026-10-27): proof-first skills from pstack</summary>
-
-- New skills `review-impact`, `explore-why`, `test-benchmark`, `setup-verify`.
-- Rigor follows the ticket's tier; `review-code` adds Impact.
-
-</details>
-
-Full history: [CHANGELOG.md](CHANGELOG.md).
+- [Claude Code](https://code.claude.com) with plugin support.
+- [Node.js](https://nodejs.org) 22.18 or newer, only for the ticket linter, the state command and `npm test`. Without it the skills fall back to reading the files.
+- `gh` or `glab` only when the issue tracker is GitHub or GitLab.
 
 ## Development
 
 ```bash
 npm install && npm test   # skill consistency check, then the script tests
+npm run typecheck
 ```
 
-`npm test` names whatever a new skill is missing: `SKILL.md`, `agents/openai.yaml`, or its line in `plugin.json`, `skills/ask-me/SKILLS.md` and this README.
+`npm test` names whatever a new skill is missing: its `SKILL.md`, `agents/openai.yaml`, or its line in `plugin.json`, `skills/ask-me/SKILLS.md` and this README. Every relative link in a skill must resolve, and every leaf file must be reachable from a `SKILL.md`.
+
+## Changelog
+
+**2.3.0** (2026-11-14): one-command session state, a lighter `implement-ticket`, and open points that hold back only their own requirement. Measured on three sample projects with fresh sessions: same results with about 45% fewer tokens on the run compared, and sessions that died mid-ticket resumed to full marks.
+
+**2.2.0** (2026-10-29): one notes file instead of a memory server; the `micromanagement` and `empowerment` modes.
+
+Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Credits
 
 - [Matt Pocock's skills](https://github.com/mattpocock/skills) (MIT): the base of this repo.
-- [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT): proof levels, tiers, leaf files, two-way planning, and the skills behind `review-impact`, `explore-why`, `explore-how`, `test-benchmark` and `setup-verify`.
+- [pstack](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (MIT): proof levels, tiers, two-way planning, and the skills behind `review-impact`, `explore-why`, `explore-how`, `test-benchmark` and `setup-verify`.
 
 ## License
 
