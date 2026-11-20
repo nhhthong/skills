@@ -2,7 +2,7 @@
 
 Built on [Matt Pocock's skills](https://github.com/mattpocock/skills); v2 ideas from [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack). [Semantic Versioning](https://semver.org/).
 
-## [2.3.0] - 2026-11-14
+## [2.3.0] - 2026-11-20
 
 Cheaper and unblocked. Found by running the skills on three small projects (a transfer service, a webhook receiver, a CRUD API) with fresh sessions on two models, scored by black-box tests. No breaking change: a repo set up with 2.2.0 keeps working, and its longer `workflow.md` stays valid.
 
