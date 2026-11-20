@@ -58,4 +58,6 @@ One line per skill: what it does, and when to reach for it. `type` = you type th
 ## other
 - `/dev:wizard` (type): generate a script that walks you through steps only a human can do.
 - `/dev:agent-docs` (auto): write skills, `CLAUDE.md` and other documents agents read.
+- `/dev:technical-writing` (auto): write docs people read: README, ADR, how-to, PR body, commit message.
+- `/dev:unslop` (auto): cut AI tells (filler, hedging, AI vocabulary) from text people read.
 - `/dev:ask-me` (type): say what you want to do, get the command to run.

@@ -15,6 +15,7 @@ Cheaper and unblocked. Found by running the skills on three small projects (a tr
 - `review-code`: Impact and Adversary run when something already reads the changed data, not for a new route nothing calls; without subagents the axes run in turn.
 - `test-plan`: a scaffold ticket is `light` with a smoke test.
 - `check-tickets.mts`: accepts `Status: waiting`.
+- `unslop` and `technical-writing` (new): rules for text people read. `review-pr` and `review-learn` write by `technical-writing`; `clarify-ask` by `unslop`.
 
 ## [2.2.0] - 2026-10-29
 

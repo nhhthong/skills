@@ -49,9 +49,11 @@
     "./skills/setup-need-install",
     "./skills/setup-repo",
     "./skills/setup-verify",
+    "./skills/technical-writing",
     "./skills/test-benchmark",
     "./skills/test-plan",
     "./skills/test-tdd",
+    "./skills/unslop",
     "./skills/wizard"
   ]
 }
