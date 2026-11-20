@@ -33,6 +33,8 @@ Done when each section of the template below has a source, or you know it has no
 
 ### 3. Write the note
 
+Write it by `dev:technical-writing` (an explanation, in its terms).
+
 Use the template. Map each section to its source:
 
 | Section | Source |

@@ -6,7 +6,7 @@
 
 [![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-D97757?logo=anthropic&logoColor=white)](https://code.claude.com/docs/en/plugins)
 [![Version](https://img.shields.io/badge/version-2.3.0-2F5BFF)](CHANGELOG.md)
-[![Skills](https://img.shields.io/badge/skills-35-6A3DF0)](#skills)
+[![Skills](https://img.shields.io/badge/skills-37-6A3DF0)](#skills)
 [![Node.js](https://img.shields.io/badge/node-%E2%89%A522.18-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 
 **From an empty folder, or one ticket in a large codebase, to a delivery you can prove.**
@@ -19,7 +19,7 @@
 
 ## Overview
 
-`dev` is a Claude Code plugin of 35 small skills: agree on what to build, cut it into tickets, build each against a proof, review it, and leave a record the next session can pick up.
+`dev` is a Claude Code plugin of 37 small skills: agree on what to build, cut it into tickets, build each against a proof, review it, and leave a record the next session can pick up.
 
 - **Proof, not claims.** A ticket is done when a command on the real code prints `VERIFIED`, after it was seen failing.
 - **Process sized to risk.** A one-line change runs the existing build; stored data, outside callers and money get tests per risk and a deeper review.
@@ -55,7 +55,7 @@ node skills/session-progress/state.mts --ticket T-4  # one ticket, its requireme
 Prefix every name with `/dev:`. **You type** skills run only when called; **agent** skills also start on their own.
 
 <details>
-<summary>All 35 skills</summary>
+<summary>All 37 skills</summary>
 
 **Setup**: prepare a repo, a machine and a way to drive the app
 
@@ -124,6 +124,8 @@ Prefix every name with `/dev:`. **You type** skills run only when called; **agen
 - [`ask-me`](skills/ask-me/SKILL.md) (you type): Say what you want, get the skills to run.
 - [`wizard`](skills/wizard/SKILL.md) (you type): A script for steps only a human can do.
 - [`agent-docs`](skills/agent-docs/SKILL.md) (agent): Write skills, `CLAUDE.md` and other agent documents.
+- [`technical-writing`](skills/technical-writing/SKILL.md) (agent): Write docs people read: pick the doc type, then plain sentences.
+- [`unslop`](skills/unslop/SKILL.md) (agent): Cut AI tells from text people read.
 
 </details>
 
